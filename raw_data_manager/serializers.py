@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CategoryTree, RawCategory, RawLiquor, CategoryTreeWithName
+from .models import CategoryTree, Country, Image, RawCategory, RawLiquor, CategoryTreeWithName
 
 class RawLiquorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,4 +19,14 @@ class CategoryTreeSerializer(serializers.ModelSerializer):
 class CategoryTreeWithNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = CategoryTreeWithName
+        fields = '__all__'
+
+class CountrySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Country
+        fields = '__all__'
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
         fields = '__all__'

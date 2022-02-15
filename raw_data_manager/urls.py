@@ -8,7 +8,7 @@ from raw_data_manager import views
 
 urlpatterns = [
 
-    # The home page
     path('api/categ_tree', views.categTree, name='categTree'),
+    path('api/country', views.country, name='country'),
 
 ]

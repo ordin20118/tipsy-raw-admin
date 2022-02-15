@@ -69,3 +69,33 @@ class CategoryTreeWithName(models.Model):
     class Meta:
         managed = False
         db_table = 'category_tree'
+
+class Country(models.Model):
+    country_id = models.IntegerField(primary_key=True)
+    parent_id = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=45, blank=True, null=True)
+    name_eng = models.CharField(max_length=45, blank=True, null=True)
+    type = models.IntegerField(blank=True, null=True)
+    alpha2 = models.CharField(max_length=10, blank=True, null=True)
+    alpha3 = models.CharField(max_length=10, blank=True, null=True)
+    image = models.CharField(max_length=500, blank=True, null=True)
+    reg_date = models.DateTimeField(blank=True, null=True)
+    update_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'country'
+        
+
+class Image(models.Model):
+    image_id = models.AutoField(primary_key=True)
+    image_type = models.IntegerField(blank=True, null=True)
+    content_id = models.IntegerField(blank=True, null=True)
+    content_type = models.IntegerField(blank=True, null=True)
+    path = models.CharField(max_length=200, blank=True, null=True)
+    is_open = models.IntegerField(blank=True, null=True)
+    reg_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'image'
