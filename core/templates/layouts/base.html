@@ -34,6 +34,7 @@
     <!-- Specific Page CSS goes HERE  -->
     {% block stylesheets %}{% endblock stylesheets %}
 
+	{% include 'includes/scripts.html' %}
 </head>
 <body>
 	<div class="wrapper">
@@ -59,8 +60,7 @@
 
 	</div>
 
-	{% include 'includes/scripts.html' %}
-
+	
     <!-- Specific Page JS goes HERE  -->
     {% block javascripts %}{% endblock javascripts %}
 

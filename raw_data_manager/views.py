@@ -1,10 +1,45 @@
 from django.utils import timezone
+from core.settings import BASE_DIR
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import render
+from raw_data_manager.forms import *
 from raw_data_manager.models import *
 from raw_data_manager.serializers import *
+from django.template import loader
+from django.http import HttpResponse
+import mimetypes
+import PIL.Image as pilimg
 
+@api_view(['GET'])
+def test(request):
+    
+    if request.method == 'GET':
+        file_name = request.GET.get('filename', '')
+
+    if file_name == '':
+        return None
+
+    print("base:%s" % BASE_DIR)
+
+    fl_path = '/home/ubuntu'+'/{}'.format(file_name)
+    filename = file_name
+    
+    fl_path = '/Users/gwanga/Downloads/snoopy1.png'
+
+    print("path=%s" % fl_path)
+
+    
+
+    #a = pilimg.open('/data/datastore/image/default_image.jpg')
+    #a = pilimg.open('/Users/gwanga/Downloads/snoopy1.png')
+    fl = open(fl_path, 'rb')
+
+    mime_type, _ = mimetypes.guess_type(fl_path)
+    response = HttpResponse(fl, content_type=mime_type)
+    response['Content-Disposition'] = "attachment; filename=%s" % filename
+
+    return response
 
 
 def makeCategTree(parentId, treeKey, childDic, treeList):
@@ -103,6 +138,58 @@ def categTree(request):
             tree.save()
         
         return Response(serializedTree.data)
+        #return Response(serializer.data, status=status.HTTP_201_CREATED)
+        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+@api_view(['GET', 'POST'])
+def liquor(request):
+    
+    if request.method == 'GET':
+        # categTrees = CategoryTree.objects.all()	
+        # serializer = CategoryTreeSerializer(categTrees, many=True) 
+        # print(serializer.data)
+
+        categTrees = CategoryTreeWithName.objects.raw('''
+            SELECT 
+                tree.*,
+                categ1.name as category1_name,
+                categ2.name as category2_name,
+                categ3.name as category3_name,
+                categ4.name as category4_name
+            FROM tipsy_raw.category_tree tree
+            LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON tree.category1_id = categ1.id
+            LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON tree.category2_id = categ2.id
+            LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON tree.category3_id = categ3.id
+            LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON tree.category4_id = categ4.id
+        ''')
+        serializer = CategoryTreeWithNameSerializer(categTrees, many=True) 
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        respone = 'this is test response'
+        
+        print(request.POST)
+
+        form = LiquorForm(request.POST, request.FILES)
+        print(form)
+
+        if form.is_valid():
+            print("Valid!!")
+        else:
+            print("No Validated")
+        
+
+        # validate data
+
+        # save data
+        
+        # make response
+
+        return Response(respone)
         #return Response(serializer.data, status=status.HTTP_201_CREATED)
         #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

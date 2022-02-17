@@ -6,6 +6,7 @@
 {% block stylesheets %}{% endblock stylesheets %}
 
 {% block content %}
+
 	<div class="content">
 		<div class="page-inner">
 			<div class="page-header">
@@ -30,6 +31,13 @@
 					</li>
 				</ul>
 			</div>
+			<form action="/raw_data_manager/api/liquor" method="post">
+				{% csrf_token %}
+				<table>
+					{{ form.as_table }}
+				</table>
+				<input type="submit">
+			</form>
 			<div class="row">
 				<div class="col-md-12">
 					<div class="card">
@@ -75,7 +83,7 @@
 									</div>
 
 									<div class="form-group">
-										<button class="btn btn-secondary">중복 확인</button>
+										<button id="chckDuplicateBtn" class="btn btn-secondary" disabled>중복 확인</button>
 									</div>
 									
 									<br>
@@ -83,17 +91,23 @@
 									<div class="form-group form-group-default">
 										<label>도수</label>
 										<div class="col-md-9 p-0">
-											<input type="text" class="form-control input-full" id="abvInput" placeholder="ex) 40" style="display:inline; width: 80%!important;"> 
+											<input id="abvInput" type="text" class="form-control input-full" placeholder="ex) 40" style="display:inline; width: 80%!important;"> 
 											<span> % </span>
 										</div>
 									</div>
 
-									<div class="form-group form-group-default">
-										<label>국가</label>
-										<select class="form-control" id="countrySelect">
-											<option>선택없음</option>
-										</select>
+									<div class="dropdown">
+										<button class="btn btn-secondary dropdown-toggle" type="button" id="countrySelectButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+											국가 선택
+										</button>
+										<div id="country" class="dropdown-menu" aria-labelledby="countrySelectButton" style="height: 150px; overflow: scroll;">
+											<a class="dropdown-item" href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Flag_of_Gabon.svg/22px-Flag_of_Gabon.svg.png" style="margin: 0px 9px 0px 0px;">Action</a>
+											<a class="dropdown-item" href="#">Another action</a>
+											<a class="dropdown-item" href="#">Something else here</a>
+										</div>
 									</div>
+
+									<br>
 
 									<div class="form-group form-group-default">
 										<label>지역</label>
@@ -154,26 +168,26 @@
 										<label for="">카테고리</label>
 										<div class="form-group form-group-default">
 											<label for="categ1Select">level 1</label>
-											<select class="form-control" id="categ1Select">
-												<option>선택없음</option>
+											<select class="form-control" id="categ1Select" onchange="printCategSelect(1)">
+												<option value=0>선택없음</option>
 											</select>
 										</div>
 										<div class="form-group form-group-default">
 											<label for="categ2Select">level 2</label>
-											<select class="form-control" id="categ2Select">
-												<option>선택없음</option>
+											<select class="form-control" id="categ2Select" onchange="printCategSelect(2)">
+												<option value=0>선택없음</option>
 											</select>
 										</div>
 										<div class="form-group form-group-default">
 											<label for="categ3Select">level 3</label>
-											<select class="form-control" id="categ3Select">
-												<option>선택없음</option>
+											<select class="form-control" id="categ3Select" onchange="printCategSelect(3)">
+												<option value=0>선택없음</option>
 											</select>
 										</div>
 										<div class="form-group form-group-default">
 											<label for="categ4Select">level 4</label>
-											<select class="form-control" id="categ4Select">
-												<option>선택없음</option>
+											<select class="form-control" id="categ4Select" onchange="printCategSelect(4)">
+												<option value=0>선택없음</option>
 											</select>
 										</div>
 									</div>
@@ -184,7 +198,7 @@
 											<div class="input-group-prepend">
 												<span class="input-group-text">$</span>
 											</div>
-											<input type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
+											<input id="priceInput" type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
 											<!-- <div class="input-group-append">
 												<span class="input-group-text">.00</span>
 											</div> -->
@@ -195,24 +209,21 @@
 
 								<div class="col-md-6 col-lg-4">
 									<div class="form-group">
-										<label for="desc">설명</label>
-										<textarea class="form-control" id="desc" rows="5">
-
-										</textarea>
+										<label for="descInput">설명</label>
+										<textarea class="form-control" id="descInput" rows="5"></textarea>
 									</div>
 
 									<div class="form-group">
-										<label for="history">유래</label>
-										<textarea class="form-control" id="history" rows="5">
-
-										</textarea>
+										<label for="historyInput">유래</label>
+										<textarea class="form-control" id="historyInput" rows="5"></textarea>
 									</div>
 								</div>
 							</div>
 						</div>
 						<div class="card-action">
-							<button class="btn btn-success">Submit</button>
-							<button class="btn btn-danger">Cancel</button>
+							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
+							<button class="btn btn-success">등록</button>
+							<button class="btn btn-danger">취소</button>
 						</div>
 					</div>
 				</div>
@@ -220,7 +231,442 @@
 		</div>
 	</div>
 
+	<script type="text/javascript">
+
+		var selCountry = 0;
+		var selCategory;
+		
+		var countryList = null;
+		var categoryList = null;
+
+		var numberRegex = /^[0-9|'.']*$/;
+		var koreanRegex = /[^ㄱ-ㅎ가-힣\s0-9]/g;
+		var englishRegex = /[^a-zA-Z\s0-9]/g;
+
+		$(document).ready(function(){
+
+			loadCategTree()
+			loadCountryData()
+			setEvent()
+			sendLiquorData()
+    
+    	});
+
+		function setSuccessOrError(el, isSuccess) {
+			if(isSuccess){
+				$(el).parent().removeClass('has-error')
+				$(el).parent().addClass('has-success')
+			} else {
+				$(el).parent().removeClass('has-success')
+				$(el).parent().addClass('has-error')
+			}
+		}
+
+
+		function setEvent() {
+			
+			$('#korNameInput').change(function(){
+				// 한국어만
+				if( koreanRegex.test($("#korNameInput").val()) ) {
+					alert("한글만 입력해주세요");
+					$("#korNameInput").val('')
+					setSuccessOrError($(this), false)
+					return;
+				}
+
+				if($("#korNameInput").val() != null && $("#korNameInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+					$("#chckDuplicateBtn").attr("disabled",false); 
+					isDupliCheck = false;
+				}
+				
+			});
+
+
+			$('#enNameInput').change(function(){
+				// 영어만
+				if( englishRegex.test($("#enNameInput").val()) ) {
+					alert("영어만 입력해주세요");
+					nameEnReward = 0;
+					$("#enNameInput").val('')
+					setSuccessOrError($(this), false)
+					return;
+				}
+
+				if($("#enNameInput").val() != null && $("#enNameInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+					$("#chckDuplicateBtn").attr("disabled",false); 
+					isDupliCheck = false;
+				}
+			});
+
+
+			$('#regionInput').change(function(){
+
+				// 영어만
+				if( englishRegex.test($("#regionInput").val()) ) {
+					setSuccessOrError($(this), false)
+					alert("영어만 입력해주세요");
+					$("#regionInput").val('')
+					return;
+				}
+
+				if($("#regionInput").val() != null && $("#regionInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+				}
+
+			});
+
+			$('#abvInput').change(function(){
+
+				// 숫자만
+				if( !numberRegex.test($("#abvInput").val()) ) {
+					alert("숫자만 입력해주세요");
+					abvReward = 0;
+					$("#abvInput").val('')
+					setSuccessOrError($(this), false)
+					return;
+				}
+
+				if($("#abvInput").val() != null && $("#abvInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+				}
+
+			});
+
+			$('#priceInput').change(function(){
+
+				// 숫자만
+				if( !numberRegex.test($("#priceInput").val()) ) {
+					alert("숫자만 입력해주세요");
+					abvReward = 0;
+					$("#priceInput").val('')
+					setSuccessOrError($(this), false)
+					return;
+				}
+
+				if($("#priceInput").val() != null && $("#priceInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+				}
+
+			});
+
+			$("#descInput").change(function() {
+
+				if($("#descInput").val() != null && $("#descInput").val().length > 20) {
+					setSuccessOrError($(this), true)
+				} else {
+					alert('20자 이상 입력해주세요');
+					setSuccessOrError($(this), false)
+				}			
+
+			});
+
+			$("#historyInput").change(function() {
+
+				if($("#historyInput").val() != null && $("#historyInput").val().length > 20) {
+					setSuccessOrError($(this), true)
+				} else {
+					alert('20자 이상 입력해주세요');
+					setSuccessOrError($(this), false)
+				}
+
+			});
+
+		}
+
+
+
+
+		function sendLiquorData() {
+			
+			let formData = {
+				"name_kr": "태",
+				"name_en": "test name"
+			}
+
+			let dataStr = JSON.stringify(formData);
+
+			var url = "/raw_data_manager/api/liquor";
+
+			$.ajax({
+				url:url,
+				type:"post",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				//contentType:false,
+				//processData:false,
+				data:formData,
+				success:function(data){
+					console.log("insert liquor result")
+					console.log(data)
+				},
+				error:function(request, status, error){
+				}
+			})
+
+		}
+
+		var categTree = []
+		var categMap = new Map()
+		var categLv1 = new Map()
+		var categLv2Parent = new Map()
+		var categLv3Parent = new Map()
+		var categLv4Parent = new Map()
+		function loadCategTree() {
+
+			var url = "/raw_data_manager/api/categ_tree"
+			
+			$.ajax({
+				url: url,
+				type:'get',
+				success:function(data){
+					console.log(data);
+					if(data.length > 0) {
+
+						categTree = data;
+
+						// 변수 설정
+						for (var categ of data) {
+							//console.log(categ)
+							// '^'을 기준으로 split
+							// 깊이에 따라서 부모 설정
+							var treeStr = categ['categ_tree_key'];
+							splitedArr = treeStr.split('^');
+
+							if(splitedArr.length > 0) {
+								
+								for(var i=1; i<=splitedArr.length; i++){
+									if(i == 1) {
+										var info = {
+											'id': categ['category1_id'],
+											'parent': -1,
+											'name': categ['category1_name']
+										}
+										categLv1.set(info['id'], info);
+										categMap.set(info['id'], info);
+									} else if(i == 2) {
+										var info = {
+											'id': categ['category2_id'],
+											'parent': categ['category1_id'],
+											'name': categ['category2_name']
+										}
+										
+										if(categMap.get(info['id']) == null) {
+											if(categLv2Parent.get(info['parent']) != null) {
+												// parent가 등록되어 있으면 기존의 리스트에 추가 
+												var childList = categLv2Parent.get(info['parent']);
+												childList.push(info);
+												categLv2Parent.set(info['parent'], childList);
+											} else {
+												// parent가 등록되어 있지 않으면 새로 리스트 생성해서 넣기
+												var newChildList = new Array()
+												newChildList.push(info);
+												categLv2Parent.set(info['parent'], newChildList);
+											}
+											categMap.set(info['id'], info);
+										}
+										
+									} else if(i == 3) {
+										var info = {
+											'id': categ['category3_id'],
+											'parent': categ['category2_id'],
+											'name': categ['category3_name']
+										}
+
+										if(categMap.get(info['id']) == null) {
+											if(categLv3Parent.get(info['parent']) != null) {
+												// parent가 등록되어 있으면 기존의 리스트에 추가 
+												var childList = categLv3Parent.get(info['parent']);
+												childList.push(info);
+												categLv3Parent.set(info['parent'], childList);
+											} else {
+												// parent가 등록되어 있지 않으면 새로 리스트 생성해서 넣기
+												var newChildList = new Array()
+												newChildList.push(info);
+												categLv3Parent.set(info['parent'], newChildList);
+											}
+											categMap.set(info['id'], info);
+										}
+									} else if(i == 4) {
+										var info = {
+											'id': categ['category4_id'],
+											'parent': categ['category3_id'],
+											'name': categ['category4_name']
+										}
+
+										if(categMap.get(info['id']) == null) {
+											if(categLv4Parent.get(info['parent']) != null) {
+												// parent가 등록되어 있으면 기존의 리스트에 추가 
+												var childList = categLv4Parent.get(info['parent']);
+												childList.push(info);
+												categLv4Parent.set(info['parent'], childList);
+											} else {
+												// parent가 등록되어 있지 않으면 새로 리스트 생성해서 넣기
+												var newChildList = new Array()
+												newChildList.push(info);
+												categLv4Parent.set(info['parent'], newChildList);
+											}
+											categMap.set(info['id'], info);
+										}
+									}
+								}
+
+							}
+						}
+
+						printCategSelect(0)
+
+					}
+				},
+				error:function(request, status, error){
+					
+				}
+	    	});
+		}
+
+		function printCategSelect(selLv) {
+  		
+			let noneItem = '<option value=0>선택 없음</option>';
+			
+			if(selLv == 0) {		
+				initCategSelect(1);
+			} else if(selLv == 4) {
+				return;
+			}
+			
+			if($('#categ1Select').val() == 0) {
+				categLv1.forEach(function(value, key) {
+					let categ = value;
+					let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+					$('#categ1Select').append(item);
+				});
+			}
+			
+			// 카테고리 레벨1 선택되었을 때
+			if($('#categ1Select').val() != 0 && selLv == 1) {
+
+				initCategSelect(2);
+				let parentId = Number($('#categ1Select').val());
+
+				// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
+				if(categLv2Parent.get(parentId) != null){
+					let childList = categLv2Parent.get(parentId);
+					childList.forEach(function(categ) {
+						let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+						$('#categ2Select').append(item);
+					})
+				}
+			}
+			
+			// 카테고리 레벨2 선택되었을 때
+			if($('#categ2Select').val() != 0 && selLv == 2) {
+				initCategSelect(3);
+				let parentId = Number($('#categ2Select').val());
+
+				// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
+				if(categLv3Parent.get(parentId) != null){
+					let childList = categLv3Parent.get(parentId);
+					childList.forEach(function(categ) {
+						let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+						$('#categ3Select').append(item);
+					})
+				}
+			}
+			
+			// 카테고리 레벨3 선택되었을 때
+			if($('#categ3Select').val() != 0 && selLv == 3) {
+				initCategSelect(4);
+				let parentId = Number($('#categ3Select').val());
+
+				// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
+				if(categLv4Parent.get(parentId) != null){
+					let childList = categLv4Parent.get(parentId);
+					childList.forEach(function(categ) {
+						let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+						$('#categ4Select').append(item);
+					})
+				}
+			}
+		}
+
+		function initCategSelect(level){	
+			let noneItem = '<option value=0>선택 없음</option>';	
+			let count = 0;
+			for(var i=level; count<=(5-level); i++,count++) {
+				$('#categ'+i+'Select').empty();
+				$('#categ'+i+'Select').append(noneItem);
+			}
+		}
+
+
+
+
+
+
+		// 국가 데이터 load
+		var countryList = []
+		function loadCountryData() {
+			
+			var url = "/raw_data_manager/api/country"
+			
+			$.ajax({
+				url: url,
+				type:'get',
+				success:function(data){
+					console.log(data);
+					if(data.length > 0) {
+						printCountry(data)						
+					}
+					//  else{
+					// 	alert(getErrorMsg(data['state']));
+					// }
+				},
+				error:function(request, status, error){
+					
+				}
+	    	});
+		}
+
+		function printCountry(data) {
+
+			countryList = data
+
+			$('#country').empty();
+			var defaultOption = '<a class="dropdown-item" href="javascript:selectCountry(0)">국가 선택</a>';
+			$('#country').append(defaultOption);
+			
+			for(var i=0; i<countryList.length; i++) {   
+				var country = countryList[i];             
+				var option = '<a class="dropdown-item" href="javascript:selectCountry('+country['country_id']+')"><img src="'+country['image']+'" style="margin: 0px 9px 0px 0px;">'+country['name']+'</a>';
+				
+				$('#country').append(option);
+			}
+		}
+
+		function selectCountry(id) {
+
+			if(id == 0) {
+				$("#countrySelectButton").html('국가 선택');
+				// 선택된 아이디 설정
+				selCountry = id;
+				return;
+			}
+
+			for(var i=0; i<countryList.length; i++) {
+				if(countryList[i]['country_id'] == id) {
+					// 텍스트 설정
+					$("#countrySelectButton").html('<img src="'+countryList[i]['image']+'" style="margin: 0px 9px 0px 0px;">' + countryList[i]['name']);
+					// 선택된 아이디 설정
+					selCountry = id;
+				}
+			}
+		}	
+	</script>
 {% endblock content %}
+
+
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
