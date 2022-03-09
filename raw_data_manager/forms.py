@@ -6,6 +6,7 @@ from .validators import *
 class LiquorForm(forms.Form):
 	name_kr = forms.CharField(max_length=100, validators=[blank_validate])
 	name_en = forms.CharField(max_length=200, validators=[blank_validate])
+	vintage = forms.IntegerField(required=False, validators=[int_zero_validate])
 	abv = forms.FloatField(validators=[float_zero_validate])
 	country_id = forms.IntegerField(validators=[int_zero_validate])
 	region = forms.CharField(max_length=45, required=False, validators=[blank_validate])

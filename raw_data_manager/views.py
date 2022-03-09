@@ -204,17 +204,6 @@ def liquor(request):
                     raise Exception("No Image File")
                 else:          
                     
-
-                    '''
-                        image_id = models.AutoField(primary_key=True)
-                        image_type = models.IntegerField(blank=True, null=True)
-                        content_id = models.IntegerField(blank=True, null=True)
-                        content_type = models.IntegerField(blank=True, null=True)
-                        path = models.CharField(max_length=200, blank=True, null=True)
-                        is_open = models.IntegerField(blank=True, null=True)
-                        reg_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
-                    '''
-                    
                     # 1. 이미지 데이터 DB 저장
                     imgData = Image()
                     imgData.image_type = Image.IMG_TYPE_REP
@@ -233,8 +222,6 @@ def liquor(request):
 
                     # 3. 원본, 300, 600 3가지로 저장          
                     # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
-
-                    
                     # 업로드할 이미지 데이터 pillow로 객체화
                     img = pilimg.open(imageFile)
 
@@ -248,27 +235,16 @@ def liquor(request):
                     
                     img.save(imgOrgPath)
 
-                    # 300, 600 리사이징 후 저장
+                    # resize 300
                     img300Path = imgDir + str(imgData.image_id) + '_300.' + 'png'
                     height_300 = getScaledHeight(img.width, img.height, 300)
-
-                    print("width:%s, height:%s, scaledHeight: %s" % (img.width, img.height, height_300))
 
                     img300 = img.resize((300, height_300))
                     img300.save(img300Path)
 
-                    print("width:%s, height:%s" % (img300.width, img300.height))
-
-
-
-                    ####################################
-
-
-                    
+                    # resize 600
                     img600Path = imgDir + str(imgData.image_id) + '_600.' + 'png'
                     height_600 = getScaledHeight(img.width, img.height, 600)
-                    
-                    print("width:%s, height:%s, scaledHeight: %s" % (img.width, img.height, height_600))
                     
                     img600 = img.resize((600, height_600))
                     img600.save(img600Path)
@@ -277,7 +253,7 @@ def liquor(request):
                     imgData.path = imgPath + "/" + str(imgData.image_id)
                     imgData.save(update_fields=['path'])
 
-                    print("width:%s, height:%s" % (img600.width, img600.height))
+                    
 
                     # 임시 파일 저장 이름
                     #length_of_string = 8
