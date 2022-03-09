@@ -67,8 +67,8 @@
 
 									<div class="form-group">
 										<label for="exampleFormControlFile1">이미지</label>
-										<input type="file" class="form-control-file" id="imageFileInput">
-										<img id="thumb" class="photo" height="50%" width="50%" alt="이미지 미리보기...">
+										<input id="imageFileInput" accept="image/*" type="file" class="form-control-file" onchange="previewFile()">
+										<img id="thumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
 									</div>
 
 									<div class="form-group form-group-default">
@@ -222,7 +222,7 @@
 						</div>
 						<div class="card-action">
 							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
-							<button class="btn btn-success">등록</button>
+							<button class="btn btn-success" onclick="javascript:sendLiquorData()">등록</button>
 							<button class="btn btn-danger">취소</button>
 						</div>
 					</div>
@@ -247,8 +247,8 @@
 
 			loadCategTree()
 			loadCountryData()
-			setEvent()
-			sendLiquorData()
+			setEvent()			
+			previewFile()
     
     	});
 
@@ -376,27 +376,145 @@
 		}
 
 
+		function previewFile() {
+			
+			console.log("previewFile()")
+
+			//var preview = document.querySelector('img');
+			var preview = document.getElementById('thumb');
+			var file	= document.querySelector('input[type=file]').files[0];
+			var reader	= new FileReader();
+
+			reader.addEventListener("load", function() {
+				preview.src = reader.result;
+			}, false);
+
+			if(file) {
+				reader.readAsDataURL(file);
+			} else {
+
+				console.log(prefix + "/raw_data_manager/image/default_image.jpg")
+
+				$("#thumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
+			}			
+		}
 
 
 		function sendLiquorData() {
 			
-			let formData = {
-				"name_kr": "태",
-				"name_en": "test name"
+			let formData = new FormData;
+
+
+			// 필수 데이터 확인
+			let imageData = $("#imageFileInput")[0].files[0];
+
+			
+			if(imageData == null){
+				alert("이미지를 선택해주세요!")
+				return 0;
+			} else {
+				formData.append("image_file", imageData)
 			}
 
-			let dataStr = JSON.stringify(formData);
+			let korName = $('#korNameInput').val();
+			if(korName != null && korName.length > 0){
+				formData.append('name_kr', korName);
+			} else {
+				alert('술의 한국 이름을 입력해주세요.')
+				return 0;
+			}
+			
+			
+
+			let enName = $('#enNameInput').val();
+			if(enName != null && enName.length > 0){
+				formData.append('name_en', enName);
+			} else {
+				alert('술의 영어 이름을 입력해주세요.')
+				return 0;
+			}
+
+			// TODO: 이름 중복 확인
+
+			let abv = $('#abvInput').val();
+			if(abv != null && abv.length > 0){
+				formData.append('abv', parseFloat(abv));
+			} else {
+				alert('술의 도수를 입력해주세요.')
+				return 0;
+			}
+
+
+			if(selCountry != null && selCountry != 0){
+				formData.append('country_id', selCountry);
+			} else {
+				alert('술의 원산지를 선택해주세요.')
+				return 0;
+			}
+
+			categ1 = $('#categ1Select').val();
+			categ2 = $('#categ2Select').val();
+			categ3 = $('#categ3Select').val();
+			categ4 = $('#categ4Select').val();
+
+			// categ1, categ2에 대한 선택만 확인
+			if(categ1 != null && categ1 != "0"
+				&& categ2 != null && categ2 != "0") {
+				
+				formData.append("category1_id", parseInt(categ1));
+				formData.append("category2_id", parseInt(categ2));
+
+				if(categ3 != null && categ3 != "0") {
+					formData.append("category3_id", parseInt(categ3));
+				}
+
+				if(categ4 != null && categ4 != "0") {
+					formData.append("category4_id", parseInt(categ4));
+				}
+
+			} else {
+				alert('카테고리를 선택해주세요!')
+				return 0;
+			}
+
+			// 선택 입력 데이터 확인
+			// 지역, 가격, 설명, 유래
+			let region = $('#regionInput').val();
+			if(region != null && region.length > 0){
+				formData.append("region", region);
+			}
+
+			let price = $('#priceInput').val();
+			if(price != null && price.length > 0){
+				formData.append("price", parseFloat(price));
+			}
+
+			let desc = $('#descInput').val();
+			if(desc != null && desc.length > 0){
+				formData.append("description", desc);
+			}
+
+			let history = $('#historyInput').val();
+			if(history != null && history.length > 0){
+				formData.append("history", history);
+			}
+			
+
+			console.log("보내는 데이터 확인")
+			console.log(formData)
 
 			var url = "/raw_data_manager/api/liquor";
 
+			console.log("술 등록 API URL : " + url)
+			
 			$.ajax({
 				url:url,
 				type:"post",
 				headers: {
 					'X-CSRFTOKEN' : '{{ csrf_token }}'
 				},
-				//contentType:false,
-				//processData:false,
+				contentType:false,
+				processData:false,
 				data:formData,
 				success:function(data){
 					console.log("insert liquor result")
@@ -422,7 +540,7 @@
 				url: url,
 				type:'get',
 				success:function(data){
-					console.log(data);
+					//console.log(data);
 					if(data.length > 0) {
 
 						categTree = data;
@@ -532,61 +650,71 @@
 			
 			if(selLv == 0) {		
 				initCategSelect(1);
-			} else if(selLv == 4) {
-				return;
-			}
-			
-			if($('#categ1Select').val() == 0) {
 				categLv1.forEach(function(value, key) {
 					let categ = value;
 					let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
 					$('#categ1Select').append(item);
 				});
+			} else if(selLv == 4) {
+				return;
 			}
 			
+			
 			// 카테고리 레벨1 선택되었을 때
-			if($('#categ1Select').val() != 0 && selLv == 1) {
+			if(selLv == 1) {
 
 				initCategSelect(2);
-				let parentId = Number($('#categ1Select').val());
 
-				// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
-				if(categLv2Parent.get(parentId) != null){
-					let childList = categLv2Parent.get(parentId);
-					childList.forEach(function(categ) {
-						let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
-						$('#categ2Select').append(item);
-					})
+				if($('#categ1Select').val() != '0'){
+					let parentId = Number($('#categ1Select').val());
+
+					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
+					if(categLv2Parent.get(parentId) != null){
+						let childList = categLv2Parent.get(parentId);
+						childList.forEach(function(categ) {
+							let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+							$('#categ2Select').append(item);
+						})
+					}
 				}
+				
 			}
 			
 			// 카테고리 레벨2 선택되었을 때
-			if($('#categ2Select').val() != 0 && selLv == 2) {
+			if(selLv == 2) {
 				initCategSelect(3);
-				let parentId = Number($('#categ2Select').val());
 
-				// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
-				if(categLv3Parent.get(parentId) != null){
-					let childList = categLv3Parent.get(parentId);
-					childList.forEach(function(categ) {
-						let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
-						$('#categ3Select').append(item);
-					})
+				if($('#categ2Select').val() != '0'){
+
+					let parentId = Number($('#categ2Select').val());
+
+					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
+					if(categLv3Parent.get(parentId) != null){
+						let childList = categLv3Parent.get(parentId);
+						childList.forEach(function(categ) {
+							let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+							$('#categ3Select').append(item);
+						})
+					}
 				}
 			}
 			
 			// 카테고리 레벨3 선택되었을 때
-			if($('#categ3Select').val() != 0 && selLv == 3) {
+			if(selLv == 3) {
 				initCategSelect(4);
-				let parentId = Number($('#categ3Select').val());
 
-				// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
-				if(categLv4Parent.get(parentId) != null){
-					let childList = categLv4Parent.get(parentId);
-					childList.forEach(function(categ) {
-						let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
-						$('#categ4Select').append(item);
-					})
+				if($('#categ3Select').val() != '0'){
+
+					let parentId = Number($('#categ3Select').val());
+
+					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
+					if(categLv4Parent.get(parentId) != null){
+						let childList = categLv4Parent.get(parentId);
+						childList.forEach(function(categ) {
+							let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+							$('#categ4Select').append(item);
+						})
+					}
 				}
 			}
 		}
@@ -615,7 +743,7 @@
 				url: url,
 				type:'get',
 				success:function(data){
-					console.log(data);
+					//console.log(data);
 					if(data.length > 0) {
 						printCountry(data)						
 					}

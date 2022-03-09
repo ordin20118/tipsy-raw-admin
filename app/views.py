@@ -14,6 +14,8 @@ def index(request):
     
     context = {}
     context['segment'] = 'index'
+    # context['prefix'] = 'http://211.37.150.105:8000'
+    context['prefix'] = 'http://tipsy.co.kr:8000'
 
     html_template = loader.get_template( 'index.html' )
     return HttpResponse(html_template.render(context, request))
@@ -21,6 +23,7 @@ def index(request):
 @login_required(login_url="/login/")
 def pages(request):
     context = {}
+    context['prefix'] = 'http://tipsy.co.kr:8000'
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:

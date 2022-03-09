@@ -120,8 +120,8 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(CORE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 
-MEDIA_URL = "media/"
-DATA_ROOT = "/data/datastore"
+IMAGE_PATH = "/image"
+DATA_ROOT = "/Users/gwanga/datastore"
 
 # Extra places for collectstatic to find static files.
 STATICFILES_DIRS = (

@@ -1,0 +1,6 @@
+
+
+class ContentInfo():
+    CONTENT_TYPE_LOQUOR = 100
+    CONTENT_TYPE_COCTAIL = 200
+    CONTENT_TYPE_FLAG = 901
