@@ -31,13 +31,7 @@
 					</li>
 				</ul>
 			</div>
-			<form action="/raw_data_manager/api/liquor" method="post">
-				{% csrf_token %}
-				<table>
-					{{ form.as_table }}
-				</table>
-				<input type="submit">
-			</form>
+			
 			<div class="row">
 				<div class="col-md-12">
 					<div class="card">
@@ -422,6 +416,7 @@
 				console.log(prefix + "/raw_data_manager/image/default_image.jpg")
 
 				$("#thumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
+
 			}			
 		}
 
@@ -550,6 +545,8 @@
 				success:function(data){
 					console.log("insert liquor result")
 					console.log(data)
+					alert("주류 정보 등록 완료.")
+					location.replace("/liquor_list.html")
 				},
 				error:function(request, status, error){
 				}

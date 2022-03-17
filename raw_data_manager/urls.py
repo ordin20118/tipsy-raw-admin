@@ -11,7 +11,6 @@ urlpatterns = [
     path('api/categ_tree', views.categTree, name='categTree'),
     path('api/country', views.country, name='country'),
     path('api/liquor', views.liquor, name='liquor'),
-    #path('image/*', views.image, name='image'),
     re_path(r'^image/.*\.*', views.image, name='image'),
 
 ]

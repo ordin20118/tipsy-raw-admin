@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import CategoryTree, Country, Image, RawCategory, RawLiquor, CategoryTreeWithName
+from .classes import *
 
 class RawLiquorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,3 +31,14 @@ class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
         fields = '__all__'
+
+class SearchParamSerializer(serializers.Serializer):
+    page = serializers.IntegerField()
+    per_page = serializers.IntegerField()
+    list = RawLiquorSerializer()
+    # content = serializers.CharField(max_length=200)
+    # created = serializers.DateTimeField()
+
+
+
+

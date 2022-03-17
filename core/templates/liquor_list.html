@@ -1,0 +1,292 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Datatables {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+	<div class="content">
+		<div class="page-inner">
+			<div class="page-header">
+				<h4 class="page-title">술 데이터</h4>
+				<ul class="breadcrumbs">
+					<li class="nav-home">
+						<a href="#">
+							<i class="flaticon-home"></i>
+						</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">Tables</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">Datatables</a>
+					</li>
+				</ul>
+			</div>
+			<div class="row">
+				
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="d-flex align-items-center">
+								<h4 class="card-title">주류 데이터 조회</h4>
+								<button class="btn btn-primary btn-round ml-auto" onclick="javascript:moveToInsertLiquor()">
+									<i class="fa fa-plus"></i>
+									데이터 추가
+								</button>
+							</div>
+						</div>
+						<div class="card-body">
+							
+							<div class="table-responsive">
+								<table id="add-row" class="display table table-striped table-hover" >
+									<thead>
+										<tr>
+											<th style="width: 3%">주류<br>번호</th>
+											<th style="width: 10%">카테고리</th>
+											<th style="width: 10%">이름</th>
+											<th style="width: 0%">도수</th>
+											<th style="width: 9%">원산지</th>
+											<th style="width: 10%">상태</th>
+											<th style="width: 8%">등록자</th>
+											<th style="width: 10%">등록일</th>
+											<th style="width: 6%">Action</th>
+										</tr>
+									</thead>
+									<tfoot>
+										<tr>
+											<th>주류<br>번호</th>
+											<th>카테고리</th>
+											<th>이름</th>
+											<th>도수</th>
+											<th>원산지</th>
+											<th>상태</th>
+											<th>등록자</th>
+											<th>등록일</th>
+										</tr>
+									</tfoot>
+									<tbody>
+										<tr>
+											<td>2052</td>
+											<td>
+												증류주<br>
+												위스키<br>
+												아메리칸 위스키<br>
+												버번 위스키<br>
+											</td>
+											<td>
+												젝다니엘 허니<br>
+												JackDinel Honey
+											</td>
+											<td>35.5%</td>
+											<td>세인트빈센트 그레나딘</td>
+											<td>
+												<div class="btn-success btn-border btn-round" style="padding: 10px;">업로드됨</div>
+												<div class="btn-warning btn-border btn-round" style="padding: 10px;">컨펌필요</div>
+											</td>
+											<td>pangho</td>
+											<td>2022-03-15</td>
+											<td>
+												<div class="form-button-action">
+													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+														<i class="fa fa-edit"></i>
+													</button>
+													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+														<i class="fa fa-times"></i>
+													</button>
+												</div>
+											</td>
+										</tr>
+
+										<tr>
+											<td>2052</td>
+											<td>
+												증류주<br>
+												위스키<br>
+												아메리칸 위스키<br>
+												버번 위스키<br>
+											</td>
+											<td>
+												젝다니엘 허니<br>
+												JackDinel Honey
+											</td>
+											<td>35.5%</td>
+											<td>세인트빈센트 그레나딘</td>
+											<td>
+												<div class="btn-success btn-border btn-round" style="padding: 10px;">업로드됨</div>
+												<div class="btn-warning btn-border btn-round" style="padding: 10px;">컨펌필요</div>
+											</td>
+											<td>pangho</td>
+											<td>2022-03-15</td>
+											<td>
+												<div class="form-button-action">
+													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+														<i class="fa fa-edit"></i>
+													</button>
+													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+														<i class="fa fa-times"></i>
+													</button>
+												</div>
+											</td>
+										</tr>
+
+										<tr>
+											<td>2052</td>
+											<td>
+												증류주<br>
+												위스키<br>
+												아메리칸 위스키<br>
+												버번 위스키<br>
+											</td>
+											<td>
+												젝다니엘 허니<br>
+												JackDinel Honey
+											</td>
+											<td>35.5%</td>
+											<td>세인트빈센트 그레나딘</td>
+											<td>
+												<div class="btn-success btn-border btn-round" style="padding: 10px;">업로드됨</div>
+												<div class="btn-warning btn-border btn-round" style="padding: 10px;">컨펌필요</div>
+											</td>
+											<td>pangho</td>
+											<td>2022-03-15</td>
+											<td>
+												<div class="form-button-action">
+													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+														<i class="fa fa-edit"></i>
+													</button>
+													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+														<i class="fa fa-times"></i>
+													</button>
+												</div>
+											</td>
+										</tr>
+										
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+	<!-- Atlantis DEMO methods, don't include it in your project! -->
+	<script src="/static/assets/js/setting-demo2.js"></script>
+	<script >
+		
+		var gPage = 1;
+		var perPage = 10;
+
+		function moveToInsertLiquor() {
+			location.href = "/insert_liquor.html"
+		}
+
+		$(document).ready(function() {
+
+			loadLiqourList();
+
+			
+
+
+
+			// ####### sample function #######
+
+			$('#basic-datatables').DataTable({
+			});
+
+			$('#multi-filter-select').DataTable( {
+				"pageLength": 5,
+				initComplete: function () {
+					this.api().columns().every( function () {
+						var column = this;
+						var select = $('<select class="form-control"><option value=""></option></select>')
+						.appendTo( $(column.footer()).empty() )
+						.on( 'change', function () {
+							var val = $.fn.dataTable.util.escapeRegex(
+								$(this).val()
+								);
+
+							column
+							.search( val ? '^'+val+'$' : '', true, false )
+							.draw();
+						} );
+
+						column.data().unique().sort().each( function ( d, j ) {
+							select.append( '<option value="'+d+'">'+d+'</option>' )
+						} );
+					} );
+				}
+			});
+
+			// Add Row
+			$('#add-row').DataTable({
+				"pageLength": 5,
+			});
+
+			var action = '<td> <div class="form-button-action"> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
+
+			$('#addRowButton').click(function() {
+				$('#add-row').dataTable().fnAddData([
+					$("#addName").val(),
+					$("#addPosition").val(),
+					$("#addOffice").val(),
+					action
+					]);
+				$('#addRowModal').modal('hide');
+
+			});
+		});
+
+
+		function loadLiqourList(page) {
+
+			if(page == null) {
+				page = gPage
+			}
+
+			var url = "/raw_data_manager/api/liquor?page="+page+"&perPage="+perPage;
+
+			$.ajax({
+				url:url,
+				type:"get",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				success:function(data){
+					console.log("load liquor result")
+					console.log(data)
+					printLiquorList(data)
+				},
+				error:function(request, status, error){
+				}
+			});
+
+		}
+
+		function printLiquorList(data) {
+
+			for(var i=0; i<data.length; i++) {
+
+			}
+
+		}
+
+
+	</script>
+
+{% endblock javascripts %}

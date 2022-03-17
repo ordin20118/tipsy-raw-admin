@@ -4,6 +4,8 @@ from django.utils import timezone
 from core.settings import DATA_ROOT, IMAGE_PATH
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.core import serializers as cserializers
+from django.db.models import Count
 from django.shortcuts import render
 from raw_data_manager.forms import *
 from raw_data_manager.models import *
@@ -18,6 +20,7 @@ import mimetypes
 import PIL.Image as pilimg
 import string
 import random
+import json
 import os
 
 from utils.ImagePathUtil import imageIdToPath
@@ -43,7 +46,7 @@ def image(request):
         return response
 
     elif request.method == 'POST':
-        return None
+        return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
 
 
 def makeCategTree(parentId, treeKey, childDic, treeList):
@@ -142,32 +145,57 @@ def categTree(request):
             tree.save()
         
         return Response(serializedTree.data)
-        #return Response(serializer.data, status=status.HTTP_201_CREATED)
-        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
 
 
 @api_view(['GET', 'POST'])
 def liquor(request):
     
     if request.method == 'GET':
-        # categTrees = CategoryTree.objects.all()	
-        # serializer = CategoryTreeSerializer(categTrees, many=True) 
-        # print(serializer.data)
 
-        categTrees = CategoryTreeWithName.objects.raw('''
-            SELECT 
-                tree.*,
-                categ1.name as category1_name,
-                categ2.name as category2_name,
-                categ3.name as category3_name,
-                categ4.name as category4_name
-            FROM tipsy_raw.category_tree tree
-            LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON tree.category1_id = categ1.id
-            LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON tree.category2_id = categ2.id
-            LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON tree.category3_id = categ3.id
-            LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON tree.category4_id = categ4.id
-        ''')
-        serializer = CategoryTreeWithNameSerializer(categTrees, many=True) 
+        page = int(request.GET.get('page', 1))
+        perPage = int(request.GET.get('perPage', 10))
+        totalCount = RawLiquor.objects.all().count()
+
+        pageInfo = Paging(page,totalCount,perPage)
+        pages = pageInfo.getPages()
+        firstRow = pageInfo.getFirstRow()
+
+        # print(pages)
+        # print("[%s 페이지 첫번째 row 번호]: %s" % (page, firstRow))
+
+        
+        liquorList = RawLiquor.objects.order_by('-liquor_id')[firstRow:firstRow+perPage].values()
+    
+    
+        paramList = []
+        sParam = SearchParam()
+        sParam.list = liquorList
+
+        paramList.append(sParam)
+
+
+        data = cserializers.serialize("json", paramList)
+
+        print("##############################")
+        print(data)
+    
+        #liquorList = RawLiquor.objects.all()[0:10]
+    
+        # liquor_list = CategoryTreeWithName.objects.raw('''
+        #     SELECT 
+        #         tree.*,
+        #         categ1.name as category1_name,
+        #         categ2.name as category2_name,
+        #         categ3.name as category3_name,
+        #         categ4.name as category4_name
+        #     FROM tipsy_raw.category_tree tree
+        #     LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON tree.category1_id = categ1.id
+        #     LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON tree.category2_id = categ2.id
+        #     LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON tree.category3_id = categ3.id
+        #     LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON tree.category4_id = categ4.id
+        # ''')
+        serializer = RawLiquorSerializer(liquorList, many=True) 
         return Response(serializer.data)
 
     elif request.method == 'POST':
@@ -188,15 +216,26 @@ def liquor(request):
                 liquor = form.save(commit=False)
                 liquor.upload_state = 0
                 liquor.update_state = 0
+                liquor.reg_admin = request.user.id
                 liquor.reg_date = timezone.now()
                 liquor.save()
 
-                liquorStr = RawLiquorSerializer(liquor) 
-                
                 liquorId = liquor.liquor_id
-                print("[pk 확인] => %s" % liquorId)
 
-
+                    # admin_id = models.IntegerField()
+                    # job_code = models.IntegerField(blank=True, null=True)
+                    # job_name = models.CharField(max_length=45, blank=True, null=True)
+                    # content_id = models.IntegerField(blank=True, null=True)
+                    # content_type = models.IntegerField(blank=True, null=True)
+                    # reg_date = models.DateTimeField(auto_now_add=True)
+                logInfo = ManageLog()
+                logInfo.admin_id = request.user.id
+                logInfo.job_code = JobInfo.JOB_ADD_SPIRITS
+                logInfo.job_name = JobInfo.JOBN_ADD_SPIRITS
+                logInfo.content_id = liquorId
+                logInfo.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
+                logInfo.save()
+                
                 # save img data
                 imageFile = request.FILES.get('image_file', False)
 
@@ -208,17 +247,12 @@ def liquor(request):
                     imgData = Image()
                     imgData.image_type = Image.IMG_TYPE_REP
                     imgData.content_id = liquorId
-                    imgData.content_type = ContentInfo.CONTENT_TYPE_LOQUOR
+                    imgData.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
                     imgData.is_open = Image.IMG_STATUS_PUB
                     imgData.save()
 
-
-                    print("[이미지 ID 확인 => %s" % imgData.image_id)
-                    
                     # 2. 이미지 ID를 이용한 경로 생성
                     imgPath = imageIdToPath(imgData.image_id)
-
-                    print("[생성된 이미지 경로] => %s" % imgPath)
 
                     # 3. 원본, 300, 600 3가지로 저장          
                     # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
@@ -253,8 +287,6 @@ def liquor(request):
                     imgData.path = imgPath + "/" + str(imgData.image_id)
                     imgData.save(update_fields=['path'])
 
-                    
-
                     # 임시 파일 저장 이름
                     #length_of_string = 8
                     #tmpName = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length_of_string))
@@ -266,8 +298,6 @@ def liquor(request):
                 return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
       
         return Response(respone)
-        #return Response(serializer.data, status=status.HTTP_201_CREATED)
-        #return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 

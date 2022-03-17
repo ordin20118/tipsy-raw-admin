@@ -22,6 +22,8 @@ class RawLiquor(models.Model):
     price = models.FloatField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     history = models.TextField(blank=True, null=True)
+    reg_admin = models.IntegerField(blank=True, null=True)
+    update_admin = models.IntegerField(blank=True, null=True)
     reg_date = models.DateTimeField(blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
 
@@ -108,5 +110,18 @@ class Image(models.Model):
     class Meta:
         managed = False
         db_table = 'image'
+
+
+class ManageLog(models.Model):
+    admin_id = models.IntegerField()
+    job_code = models.IntegerField(blank=True, null=True)
+    job_name = models.CharField(max_length=45, blank=True, null=True)
+    content_id = models.IntegerField(blank=True, null=True)
+    content_type = models.IntegerField(blank=True, null=True)
+    reg_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'manage_log'
 
 
