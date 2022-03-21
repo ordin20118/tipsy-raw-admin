@@ -8,9 +8,10 @@ from raw_data_manager import views
 
 urlpatterns = [
 
-    path('api/categ_tree', views.categTree, name='categTree'),
+    path('api/categ_tree', views.categ_tree, name='categTree'),
     path('api/country', views.country, name='country'),
     path('api/liquor', views.liquor, name='liquor'),
+    path('api/page_info/<str:name>', views.page_info, name='pageInfo'),
     re_path(r'^image/.*\.*', views.image, name='image'),
 
 ]

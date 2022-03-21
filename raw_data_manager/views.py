@@ -1,5 +1,4 @@
 from email.contentmanager import raw_data_manager
-from tkinter import image_types
 from django.utils import timezone
 from core.settings import DATA_ROOT, IMAGE_PATH
 from rest_framework.response import Response
@@ -16,6 +15,8 @@ from django.template import loader
 from django.http import HttpResponse
 from rest_framework import status
 from django.db import transaction
+from django.core.serializers.json import DjangoJSONEncoder
+import pickle
 import mimetypes
 import PIL.Image as pilimg
 import string
@@ -49,7 +50,7 @@ def image(request):
         return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
 
 
-def makeCategTree(parentId, treeKey, childDic, treeList):
+def make_categ_tree(parentId, treeKey, childDic, treeList):
     
     if len(treeKey) == 0:
         treeKey += str(parentId)
@@ -60,18 +61,18 @@ def makeCategTree(parentId, treeKey, childDic, treeList):
     if parentId in childDic:
         hasChild = True
         
-        tree = makeTreeInstance(treeKey)
+        tree = make_tree_instance(treeKey)
         treeList.append(tree)
         # 또 자식 확인
         childs = childDic[parentId]
         for child in childs:
-            makeCategTree(child.id, treeKey, childDic, treeList)
+            make_categ_tree(child.id, treeKey, childDic, treeList)
     else:
-        tree = makeTreeInstance(treeKey)
+        tree = make_tree_instance(treeKey)
         treeList.append(tree)
 
 # make CategoryTree instance from category tree key
-def makeTreeInstance(treeKey):
+def make_tree_instance(treeKey):
     tree = CategoryTree()
     tree.categ_tree_key = treeKey
     
@@ -91,7 +92,7 @@ def makeTreeInstance(treeKey):
 
 # 카테고리 트리 만들기
 @api_view(['GET', 'POST'])
-def categTree(request):
+def categ_tree(request):
     
     if request.method == 'GET':
         # categTrees = CategoryTree.objects.all()	
@@ -135,7 +136,7 @@ def categTree(request):
         # 자식의 자식 확인
         for categ in totalCategs:
             if categ.parent == -1:
-                makeCategTree(categ.id, '', categChilds, categTrees)
+                make_categ_tree(categ.id, '', categChilds, categTrees)
 
 
         serializedTree = CategoryTreeSerializer(categTrees, many=True)
@@ -145,7 +146,31 @@ def categTree(request):
             tree.save()
         
         return Response(serializedTree.data)
-        
+
+
+@api_view(['GET'])
+def page_info(request, name):
+
+    if request.method == 'GET':
+
+        page = int(request.GET.get('page', 1))
+        perPage = int(request.GET.get('perPage', 10))
+        totalCount = None
+
+        # 이름에 따라서 테이블 데이터에 대한 페이지 정보 제공
+        if name == "liquor":
+            totalCount = RawLiquor.objects.all().count()
+            pageInfo = Paging(page,totalCount,perPage)
+            pages = pageInfo.getPages()
+            firstRow = pageInfo.getFirstRow()
+            return Response(pageInfo.__dict__)
+        elif name == "country":
+            return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
+
+    else:
+        return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET', 'POST'])
@@ -161,42 +186,28 @@ def liquor(request):
         pages = pageInfo.getPages()
         firstRow = pageInfo.getFirstRow()
 
-        # print(pages)
-        # print("[%s 페이지 첫번째 row 번호]: %s" % (page, firstRow))
+        #liquorList = RawLiquor.objects.order_by('-liquor_id')[firstRow:firstRow+perPage].values()
+        liquorList = list(RawLiquor.objects.order_by('-liquor_id')[firstRow:firstRow+perPage].values())
 
+
+
+        # TODO: join된 데이터를 한번에 조회 할 수 있도록 sql 쿼리 작성
+        # - 가능하면 sql 쿼리들을 하나의 파일에 묶어서 두는게 좋을듯 ... (Spring의 mapper 처럼)
+        # 간단한 join은 model에서 해결할 수 있도록 ... 
+
+    
+
+        # 페이징 정보와 함께 묶어서 Serialize 해주고싶지만 하지못함
+        #sParam = SearchParam()
+        #sParam.list = liquorList
+        #res = cserializers.serialize("json", paramList)
+        #res = json.dumps(sParam, cls=DjangoJSONEncoder)
+        #res = json.dumps(sParam.paging.__dict__, default=str)
         
-        liquorList = RawLiquor.objects.order_by('-liquor_id')[firstRow:firstRow+perPage].values()
-    
-    
-        paramList = []
-        sParam = SearchParam()
-        sParam.list = liquorList
 
-        paramList.append(sParam)
-
-
-        data = cserializers.serialize("json", paramList)
-
-        print("##############################")
-        print(data)
-    
-        #liquorList = RawLiquor.objects.all()[0:10]
-    
-        # liquor_list = CategoryTreeWithName.objects.raw('''
-        #     SELECT 
-        #         tree.*,
-        #         categ1.name as category1_name,
-        #         categ2.name as category2_name,
-        #         categ3.name as category3_name,
-        #         categ4.name as category4_name
-        #     FROM tipsy_raw.category_tree tree
-        #     LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON tree.category1_id = categ1.id
-        #     LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON tree.category2_id = categ2.id
-        #     LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON tree.category3_id = categ3.id
-        #     LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON tree.category4_id = categ4.id
-        # ''')
         serializer = RawLiquorSerializer(liquorList, many=True) 
         return Response(serializer.data)
+        
 
     elif request.method == 'POST':
         respone = 'this is test response'

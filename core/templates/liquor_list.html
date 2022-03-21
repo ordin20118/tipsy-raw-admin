@@ -10,7 +10,7 @@
 	<div class="content">
 		<div class="page-inner">
 			<div class="page-header">
-				<h4 class="page-title">술 데이터</h4>
+				<h4 class="page-title">주류</h4>
 				<ul class="breadcrumbs">
 					<li class="nav-home">
 						<a href="#">
@@ -21,13 +21,13 @@
 						<i class="flaticon-right-arrow"></i>
 					</li>
 					<li class="nav-item">
-						<a href="#">Tables</a>
+						<a href="#">주류</a>
 					</li>
 					<li class="separator">
 						<i class="flaticon-right-arrow"></i>
 					</li>
 					<li class="nav-item">
-						<a href="#">Datatables</a>
+						<a href="#">데이터 조회</a>
 					</li>
 				</ul>
 			</div>
@@ -45,6 +45,11 @@
 							</div>
 						</div>
 						<div class="card-body">
+							<div class="col-sm-12 col-md-6">
+								<div id="add-row_filter" class="dataTables_filter">
+									<label>Search:<input type="search" class="form-control form-control-sm" placeholder="" aria-controls="add-row"></label>
+								</div>
+							</div>
 							
 							<div class="table-responsive">
 								<table id="add-row" class="display table table-striped table-hover" >
@@ -73,71 +78,7 @@
 											<th>등록일</th>
 										</tr>
 									</tfoot>
-									<tbody>
-										<tr>
-											<td>2052</td>
-											<td>
-												증류주<br>
-												위스키<br>
-												아메리칸 위스키<br>
-												버번 위스키<br>
-											</td>
-											<td>
-												젝다니엘 허니<br>
-												JackDinel Honey
-											</td>
-											<td>35.5%</td>
-											<td>세인트빈센트 그레나딘</td>
-											<td>
-												<div class="btn-success btn-border btn-round" style="padding: 10px;">업로드됨</div>
-												<div class="btn-warning btn-border btn-round" style="padding: 10px;">컨펌필요</div>
-											</td>
-											<td>pangho</td>
-											<td>2022-03-15</td>
-											<td>
-												<div class="form-button-action">
-													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-														<i class="fa fa-edit"></i>
-													</button>
-													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-														<i class="fa fa-times"></i>
-													</button>
-												</div>
-											</td>
-										</tr>
-
-										<tr>
-											<td>2052</td>
-											<td>
-												증류주<br>
-												위스키<br>
-												아메리칸 위스키<br>
-												버번 위스키<br>
-											</td>
-											<td>
-												젝다니엘 허니<br>
-												JackDinel Honey
-											</td>
-											<td>35.5%</td>
-											<td>세인트빈센트 그레나딘</td>
-											<td>
-												<div class="btn-success btn-border btn-round" style="padding: 10px;">업로드됨</div>
-												<div class="btn-warning btn-border btn-round" style="padding: 10px;">컨펌필요</div>
-											</td>
-											<td>pangho</td>
-											<td>2022-03-15</td>
-											<td>
-												<div class="form-button-action">
-													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-														<i class="fa fa-edit"></i>
-													</button>
-													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-														<i class="fa fa-times"></i>
-													</button>
-												</div>
-											</td>
-										</tr>
-
+									<tbody id="liquorTable">
 										<tr>
 											<td>2052</td>
 											<td>
@@ -200,56 +141,6 @@
 
 			loadLiqourList();
 
-			
-
-
-
-			// ####### sample function #######
-
-			$('#basic-datatables').DataTable({
-			});
-
-			$('#multi-filter-select').DataTable( {
-				"pageLength": 5,
-				initComplete: function () {
-					this.api().columns().every( function () {
-						var column = this;
-						var select = $('<select class="form-control"><option value=""></option></select>')
-						.appendTo( $(column.footer()).empty() )
-						.on( 'change', function () {
-							var val = $.fn.dataTable.util.escapeRegex(
-								$(this).val()
-								);
-
-							column
-							.search( val ? '^'+val+'$' : '', true, false )
-							.draw();
-						} );
-
-						column.data().unique().sort().each( function ( d, j ) {
-							select.append( '<option value="'+d+'">'+d+'</option>' )
-						} );
-					} );
-				}
-			});
-
-			// Add Row
-			$('#add-row').DataTable({
-				"pageLength": 5,
-			});
-
-			var action = '<td> <div class="form-button-action"> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
-
-			$('#addRowButton').click(function() {
-				$('#add-row').dataTable().fnAddData([
-					$("#addName").val(),
-					$("#addPosition").val(),
-					$("#addOffice").val(),
-					action
-					]);
-				$('#addRowModal').modal('hide');
-
-			});
 		});
 
 
@@ -261,6 +152,7 @@
 
 			var url = "/raw_data_manager/api/liquor?page="+page+"&perPage="+perPage;
 
+			// request liquor data
 			$.ajax({
 				url:url,
 				type:"get",
@@ -276,11 +168,108 @@
 				}
 			});
 
+			// request liquor pages
+
 		}
 
 		function printLiquorList(data) {
 
+			/*
+
+				<tr>
+					<td>2052</td>
+					<td>
+						증류주<br>
+						위스키<br>
+						아메리칸 위스키<br>
+						버번 위스키<br>
+					</td>
+					<td>
+						젝다니엘 허니<br>
+						JackDinel Honey
+					</td>
+					<td>35.5%</td>
+					<td>세인트빈센트 그레나딘</td>
+					<td>
+						<div class="btn-success btn-border btn-round" style="padding: 10px;">업로드됨</div>
+						<div class="btn-warning btn-border btn-round" style="padding: 10px;">컨펌필요</div>
+					</td>
+					<td>pangho</td>
+					<td>2022-03-15</td>
+					<td>
+						<div class="form-button-action">
+							<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+								<i class="fa fa-edit"></i>
+							</button>
+							<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+								<i class="fa fa-times"></i>
+							</button>
+						</div>
+					</td>
+				</tr>
+
+			*/
+
+			$('#liquorTable').empty();
 			for(var i=0; i<data.length; i++) {
+
+				var liquor = data[i];
+
+				// 정보 수정 상태(0:정상, 1:변경됨-컨펌 필요)
+				var updateState = liquor['update_state'];
+				var updateStateStr = "-"
+				if(updateState == 0) {
+					updateStateStr = "정상"
+				} else if(updateState == 1) {
+					updateStateStr = "컨펌 필요"
+				}
+
+				// 서비스 업로드 상태(0:업로드 안됨, 1:업로드됨)
+				var uploadState = liquor['upload_state'];
+				var uploadStateStr = "-"
+				if(uploadState == 0) {
+					uploadStateStr = "업로드 안됨"
+				} else if(updateState == 1) {
+					uploadStateStr = "업로드됨"
+				}
+
+				
+				// 등록, 수정 관리자명
+				// 국가 이름
+				// 카테고리 이름
+
+				var regDateStr = "-"
+				if(liquor['update_date'] == null) {
+					regDateStr = moment(liquor['reg_date']).format("YYYY-MM-DD");
+				} else {
+					regDateStr = moment(liquor['update_date']).format("YYYY-MM-DD");
+				}
+						
+				var item = 	"<tr>" + 
+							"	<td>" + liquor['liquor_id'] + "</td>" + 
+							"	<td>카테고리</td>" + 
+							"	<td>" + liquor['name_kr'] + "<br>" + liquor['name_en'] + "</td>" + 
+							"	<td>" + liquor['abv'] + "%</td>" + 
+							"	<td>국가</td>" + 
+							"	<td>" +
+							'		<div class="btn-success btn-border btn-round" style="padding: 10px;">' + uploadStateStr + '</div>' +  
+							'		<div class="btn-warning btn-border btn-round" style="padding: 10px;">' + updateStateStr + '</div>' + 
+							"	</td>" + 
+							"	<td>" + liquor['reg_admin'] + "</td>" + 
+							'	<td>' + regDateStr + '</td>' + 
+							'	' + 
+							'	' + 
+							'	' + 
+							'	' + 
+							'	' + 
+							'	' + 
+							'	' + 
+							'	' + 
+							'	' + 
+							"	</td>" + 
+							"</tr>";
+
+				$('#liquorTable').append(item);
 
 			}
 

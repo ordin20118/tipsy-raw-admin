@@ -40,31 +40,35 @@ class Paging():
     DEF_PER_PAGE = 10
 
     def __init__(self, nowPage=1, totalCount=0, perPage=10):
-        self.perPage = perPage
-        self.nowPage = nowPage
-        self.totalCount = totalCount
-        self.pageRange = 10
+        self.per_page = perPage
+        self.now_page = nowPage
+        self.total_count = totalCount
+        self.page_range = 10
+        self.makePages()
+
 
     def getLastRow(self):
-        return self.perPage * self.nowPage
+        return self.per_page * self.now_page
 
     def getFirstRow(self):
-        return self.perPage * self.nowPage - self.perPage
+        return self.per_page * self.now_page - self.per_page
 
     def getMaxPage(self):
-        return int(math.ceil(self.totalCount / (self.perPage * float(1))))
+        return int(math.ceil(self.total_count / (self.per_page * float(1))))
 
-    def getPages(self):
-        startPage = int((math.ceil(self.nowPage/self.pageRange)-1)*self.pageRange)+1
+    def makePages(self):
+        startPage = int((math.ceil(self.now_page/self.page_range)-1)*self.page_range)+1
         pages = []
 
-        for i in range(0,self.pageRange):
+        for i in range(0,self.page_range):
             pages.append(startPage)
             startPage += 1
             if startPage > self.getMaxPage():
                 break
+        self.pages = pages
 
-        return pages
+    def getPages(self):
+        return self.pages
 
 
 class OrderBy():

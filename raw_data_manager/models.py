@@ -125,3 +125,4 @@ class ManageLog(models.Model):
         db_table = 'manage_log'
 
 
+
