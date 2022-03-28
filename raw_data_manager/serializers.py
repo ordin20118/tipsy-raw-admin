@@ -1,11 +1,17 @@
 from rest_framework import serializers
-from .models import CategoryTree, Country, Image, RawCategory, RawLiquor, CategoryTreeWithName
+from .models import CategoryTree, Country, Image, JoinedLiquor, RawCategory, RawLiquor, CategoryTreeWithName
 from .classes import *
 
 class RawLiquorSerializer(serializers.ModelSerializer):
     class Meta:
         model = RawLiquor
         fields = '__all__'
+
+class JoinedLiquorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JoinedLiquor
+        fields = '__all__'
+
 
 class RawCategorySerializer(serializers.ModelSerializer):
     class Meta:

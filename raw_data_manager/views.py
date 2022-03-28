@@ -186,18 +186,42 @@ def liquor(request):
         pages = pageInfo.getPages()
         firstRow = pageInfo.getFirstRow()
 
-        #liquorList = RawLiquor.objects.order_by('-liquor_id')[firstRow:firstRow+perPage].values()
-        liquorList = list(RawLiquor.objects.order_by('-liquor_id')[firstRow:firstRow+perPage].values())
+        # #liquorList = RawLiquor.objects.order_by('-liquor_id')[firstRow:firstRow+perPage].values()
+        # liquorList = list(RawLiquor.objects.order_by('-liquor_id')[firstRow:firstRow+perPage].values())
+        # serializer = RawLiquorSerializer(liquorList, many=True) 
 
+    
+        # TODO: join에 대한 내용을 model에 반영해서 조회하기
+        liquorList = JoinedLiquor.objects.raw('''
+            SELECT 
+                raw_liquor.*,
+                categ1.name as category1_name,
+                categ2.name as category2_name,
+                categ3.name as category3_name,
+                categ4.name as category4_name,
+                country.name as country_name,
+                reg_user.username as reg_admin_name,
+                update_user.username as update_admin_name
+            FROM tipsy_raw.raw_liquor
+            LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = raw_liquor.category1_id
+            LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = raw_liquor.category2_id
+            LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON categ3.id = raw_liquor.category3_id
+            LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON categ4.id = raw_liquor.category4_id
+            LEFT OUTER JOIN tipsy_raw.country ON country.country_id = raw_liquor.country_id
+            LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = raw_liquor.reg_admin
+            LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin
+        ''')
+        
+        serializer = JoinedLiquorSerializer(liquorList, many=True) 
+     
 
-
-        # TODO: join된 데이터를 한번에 조회 할 수 있도록 sql 쿼리 작성
-        # - 가능하면 sql 쿼리들을 하나의 파일에 묶어서 두는게 좋을듯 ... (Spring의 mapper 처럼)
-        # 간단한 join은 model에서 해결할 수 있도록 ... 
+        # TODO: 이미지는 모두 조회해서 대표가 있는 경우 대표 이미지를 주고
+        # 대표 이미지가 없다면 뭘 주나..?
+        # 이미지 리스트를 model에 추가해서 줄 수 있나...?
 
     
 
-        # 페이징 정보와 함께 묶어서 Serialize 해주고싶지만 하지못함
+        # TODO: 페이징 정보와 함께 묶어서 Serialize 해주고싶지만 하지못함
         #sParam = SearchParam()
         #sParam.list = liquorList
         #res = cserializers.serialize("json", paramList)
@@ -205,7 +229,7 @@ def liquor(request):
         #res = json.dumps(sParam.paging.__dict__, default=str)
         
 
-        serializer = RawLiquorSerializer(liquorList, many=True) 
+        
         return Response(serializer.data)
         
 

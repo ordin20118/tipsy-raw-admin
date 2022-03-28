@@ -1,3 +1,4 @@
+from django.db import models
 import math
 
 class ContentInfo():
@@ -18,7 +19,7 @@ class JobInfo():
     JOBN_REMOVE_SPIRITS = "술 정보 제거(영구)"
 
 
-class SearchParam():
+class SearchParam(models.Model):
     
     STATE_SUCCESS = 0
     STATE_ERROR   = 1
@@ -35,7 +36,7 @@ class SearchParam():
         self.paging = Paging()
         self.orderby = OrderBy()
 
-class Paging():
+class Paging(models.Model):
 
     DEF_PER_PAGE = 10
 
@@ -71,7 +72,7 @@ class Paging():
         return self.pages
 
 
-class OrderBy():
+class OrderBy(models.Model):
 
     SORT_ASC = "asc"
     SORT_DESC = "desc"
