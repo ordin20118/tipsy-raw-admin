@@ -22,13 +22,12 @@ class RawLiquor(models.Model):
     price = models.FloatField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     history = models.TextField(blank=True, null=True)
+    site = models.IntegerField(blank=True, null=True)
+    url = models.CharField(max_length=1000, blank=True, null=True)
     reg_admin = models.IntegerField(blank=True, null=True)
     update_admin = models.IntegerField(blank=True, null=True)
     reg_date = models.DateTimeField(blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
-
-    reg_admin_name = models.CharField(max_length=150, blank=True, null=True)
-    update_admin_name = models.CharField(max_length=150, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -55,6 +54,8 @@ class JoinedLiquor(models.Model):
     price = models.FloatField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     history = models.TextField(blank=True, null=True)
+    site = models.IntegerField(blank=True, null=True)
+    url = models.CharField(max_length=1000, blank=True, null=True)
     reg_admin = models.IntegerField(blank=True, null=True)
     update_admin = models.IntegerField(blank=True, null=True)
     reg_date = models.DateTimeField(blank=True, null=True)
@@ -69,6 +70,10 @@ class JoinedLiquor(models.Model):
     category3_name = models.CharField(max_length=45, blank=True, null=True)
     category4_name = models.CharField(max_length=45, blank=True, null=True)
     rep_img = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'raw_liquor'
 
 
 

@@ -56,6 +56,7 @@
 									<thead>
 										<tr>
 											<th style="width: 3%">주류<br>번호</th>
+											<th style="width: 10%">이미지</th>
 											<th style="width: 10%">카테고리</th>
 											<th style="width: 10%">이름</th>
 											<th style="width: 0%">도수</th>
@@ -69,6 +70,7 @@
 									<tfoot>
 										<tr>
 											<th>주류<br>번호</th>
+											<th>이미지</th>
 											<th>카테고리</th>
 											<th>이름</th>
 											<th>도수</th>
@@ -76,6 +78,7 @@
 											<th>상태</th>
 											<th>등록자</th>
 											<th>등록일</th>
+											<th>Action</th>
 										</tr>
 									</tfoot>
 									<tbody id="liquorTable">
@@ -179,6 +182,9 @@
 				<tr>
 					<td>2052</td>
 					<td>
+						<img src="">
+					</td>
+					<td>
 						증류주<br>
 						위스키<br>
 						아메리칸 위스키<br>
@@ -244,9 +250,19 @@
 				} else {
 					regDateStr = moment(liquor['update_date']).format("YYYY-MM-DD");
 				}
-						
+
+				var imgPath = imgprefix + "/" + liquor['rep_img']
+				if(liquor['rep_img'].indexOf('default') >= 0) {
+					imgPath += ".png"
+				} else {
+					imgPath += "_300.png"
+				}				
+				
 				var item = 	"<tr>" + 
 							"	<td>" + liquor['liquor_id'] + "</td>" + 
+							"	<td>" +
+							"		<img src='" + imgPath + "' style='width:80px; height:80px;'>" +
+							"	</td>" + 
 							"	<td>카테고리</td>" + 
 							"	<td>" + liquor['name_kr'] + "<br>" + liquor['name_en'] + "</td>" + 
 							"	<td>" + liquor['abv'] + "%</td>" + 

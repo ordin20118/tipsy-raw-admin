@@ -201,7 +201,8 @@ def liquor(request):
                 categ4.name as category4_name,
                 country.name as country_name,
                 reg_user.username as reg_admin_name,
-                update_user.username as update_admin_name
+                update_user.username as update_admin_name,
+                if(image.path is null, 'default', image.path) as rep_img
             FROM tipsy_raw.raw_liquor
             LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = raw_liquor.category1_id
             LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = raw_liquor.category2_id
@@ -210,6 +211,7 @@ def liquor(request):
             LEFT OUTER JOIN tipsy_raw.country ON country.country_id = raw_liquor.country_id
             LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = raw_liquor.reg_admin
             LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin
+            LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0
         ''')
         
         serializer = JoinedLiquorSerializer(liquorList, many=True) 
@@ -251,18 +253,20 @@ def liquor(request):
                 liquor = form.save(commit=False)
                 liquor.upload_state = 0
                 liquor.update_state = 0
+                liquor.site = 0
                 liquor.reg_admin = request.user.id
                 liquor.reg_date = timezone.now()
                 liquor.save()
 
                 liquorId = liquor.liquor_id
 
-                    # admin_id = models.IntegerField()
-                    # job_code = models.IntegerField(blank=True, null=True)
-                    # job_name = models.CharField(max_length=45, blank=True, null=True)
-                    # content_id = models.IntegerField(blank=True, null=True)
-                    # content_type = models.IntegerField(blank=True, null=True)
-                    # reg_date = models.DateTimeField(auto_now_add=True)
+                # admin_id = models.IntegerField()
+                # job_code = models.IntegerField(blank=True, null=True)
+                # job_name = models.CharField(max_length=45, blank=True, null=True)
+                # content_id = models.IntegerField(blank=True, null=True)
+                # content_type = models.IntegerField(blank=True, null=True)
+                # reg_date = models.DateTimeField(auto_now_add=True)
+
                 logInfo = ManageLog()
                 logInfo.admin_id = request.user.id
                 logInfo.job_code = JobInfo.JOB_ADD_SPIRITS
