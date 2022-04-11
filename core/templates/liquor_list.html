@@ -57,7 +57,7 @@
 									<div class="row">
 										<div class="col-sm-12">
 											<!-- <table id="basic-datatables" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info"> -->
-											<table id="add-row" class="display table table-striped table-hover">
+											<table id="add-row" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info">
 												<thead>
 													<tr>
 														<th style="width: 10%">주류<br>번호</th>
@@ -291,9 +291,8 @@
 		});
 
 		function moveToModifyPage(liquorId) {
-			alert(liquorId+'의 수정 페이지로 이동해볼까요?')
+			location.href = "modify_liquor.html?liquorId="+liquorId;
 		}
-
 
 		function loadLiqourList(page) {
 

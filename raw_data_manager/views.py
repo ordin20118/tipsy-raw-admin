@@ -3,8 +3,6 @@ from django.utils import timezone
 from core.settings import DATA_ROOT, IMAGE_PATH
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from django.core import serializers as cserializers
-from django.db.models import Count
 from django.shortcuts import render
 from raw_data_manager.forms import *
 from raw_data_manager.models import *
@@ -15,14 +13,9 @@ from django.template import loader
 from django.http import HttpResponse
 from rest_framework import status
 from django.db import transaction
-from django.core.serializers.json import DjangoJSONEncoder
 from django.core.paginator import Paginator
-import pickle
 import mimetypes
 import PIL.Image as pilimg
-import string
-import random
-import json
 import os
 
 from utils.ImagePathUtil import imageIdToPath

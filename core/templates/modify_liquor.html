@@ -245,14 +245,30 @@
 		var koreanRegex = /[^ㄱ-ㅎ가-힣\s0-9]/g;
 		var englishRegex = /[^a-zA-Z\s0-9]/g;
 
-		$(document).ready(function(){
+		var liquor = null;
 
-			loadCategTree()
-			loadCountryData()
-			setEvent()			
-			previewFile()
+		$(document).ready(function(){
+			
+			// |escapejs
+			liquor = JSON.parse('{{liquor|safe}}');
+
+			console.log(liquor)
+			console.log(liquor['name_kr'])
+			
+			setLiquorData(liquor);
+
+			// loadCategTree();
+			// loadCountryData();
+			// setEvent();	
+			// previewFile();
     
     	});
+		
+		function setLiquorData(data){
+
+
+		}
+	
 
 		function setSuccessOrError(el, isSuccess) {
 			if(isSuccess){
