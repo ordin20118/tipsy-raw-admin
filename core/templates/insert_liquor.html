@@ -77,7 +77,7 @@
 									</div>
 
 									<div class="form-group">
-										<button id="chckDuplicateBtn" class="btn btn-secondary" disabled>중복 확인</button>
+										<button id="chckDuplicateBtn" class="btn btn-secondary" onclick="checkNameDup()" disabled>중복 확인</button>
 									</div>
 									
 									<br>
@@ -235,6 +235,8 @@
 
 	<script type="text/javascript">
 
+		var isDupliCheck = false;
+
 		var selCountry = 0;
 		var selCategory;
 		
@@ -247,10 +249,10 @@
 
 		$(document).ready(function(){
 
-			loadCategTree()
-			loadCountryData()
-			setEvent()			
-			previewFile()
+			loadCategTree();
+			loadCountryData();
+			setEvent();		
+			previewFile();
     
     	});
 
@@ -394,6 +396,45 @@
 			});
 
 		}
+
+		function checkNameDup() {
+
+			var nameKr = $('#korNameInput').val();
+			var nameEn = $('#enNameInput').val();
+
+			var url = "/raw_data_manager/api/liquor_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
+
+			$.ajax({
+				url: url,
+				type:'get',
+				success:function(data){
+
+					console.log(data);
+
+					if(data.length > 0) {
+
+						isDupliCheck = false;
+
+						// UI에 빨갛게 표시
+						setSuccessOrError($('#korNameInput'), false);
+						setSuccessOrError($('#enNameInput'), false);
+
+						// 경고 알림 띄우기
+						var dupList = "";
+						for(var i=0; i<data.length; i++) {
+							dupList += "중복: " + data[i]['name_kr'] + " / " + data[i]['name_en'] + "\n";
+						}
+						printWarningPanel("주류 데이터 중복!", dupList);		
+					} else {
+						isDupliCheck = true;
+					}
+				
+				}
+			});
+
+		}
+
+	
 
 
 		function previewFile() {
