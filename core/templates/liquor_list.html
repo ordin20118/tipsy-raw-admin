@@ -45,77 +45,221 @@
 							</div>
 						</div>
 						<div class="card-body">
-							<div class="col-sm-12 col-md-6">
-								<div id="add-row_filter" class="dataTables_filter">
-									<label>Search:<input type="search" class="form-control form-control-sm" placeholder="" aria-controls="add-row"></label>
-								</div>
-							</div>
-							
 							<div class="table-responsive">
-								<table id="add-row" class="display table table-striped table-hover" >
-									<thead>
-										<tr>
-											<th style="width: 3%">주류<br>번호</th>
-											<th style="width: 10%">이미지</th>
-											<th style="width: 10%">카테고리</th>
-											<th style="width: 10%">이름</th>
-											<th style="width: 0%">도수</th>
-											<th style="width: 9%">원산지</th>
-											<th style="width: 10%">상태</th>
-											<th style="width: 8%">등록자</th>
-											<th style="width: 10%">등록일</th>
-											<th style="width: 6%">Action</th>
-										</tr>
-									</thead>
-									<tfoot>
-										<tr>
-											<th>주류<br>번호</th>
-											<th>이미지</th>
-											<th>카테고리</th>
-											<th>이름</th>
-											<th>도수</th>
-											<th>원산지</th>
-											<th>상태</th>
-											<th>등록자</th>
-											<th>등록일</th>
-											<th>Action</th>
-										</tr>
-									</tfoot>
-									<tbody id="liquorTable">
-										<tr>
-											<td>2052</td>
-											<td>
-												증류주<br>
-												위스키<br>
-												아메리칸 위스키<br>
-												버번 위스키<br>
-											</td>
-											<td>
-												젝다니엘 허니<br>
-												JackDinel Honey
-											</td>
-											<td>35.5%</td>
-											<td>세인트빈센트 그레나딘</td>
-											<td>
-												<div class="btn-success btn-border btn-round" style="padding: 10px;">업로드됨</div>
-												<div class="btn-warning btn-border btn-round" style="padding: 10px;">컨펌필요</div>
-											</td>
-											<td>pangho</td>
-											<td>2022-03-15</td>
-											<td>
-												<div class="form-button-action">
-													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
-														<i class="fa fa-edit"></i>
-													</button>
-													<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
-														<i class="fa fa-times"></i>
-													</button>
-												</div>
-											</td>
-										</tr>
-										
-									</tbody>
-								</table>
+								<div id="basic-datatables_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+									<div class="row">
+										<div class="col-sm-12 col-md-6">
+											<div id="basic-datatables_filter" class="dataTables_filter">
+												<label>Search:<input type="search" class="form-control form-control-sm" placeholder="" aria-controls="basic-datatables"></label>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+											<!-- <table id="basic-datatables" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info"> -->
+											<table id="add-row" class="display table table-striped table-hover">
+												<thead>
+													<tr>
+														<th style="width: 10%">주류<br>번호</th>
+														<th style="width: 10%">이미지</th>
+														<th style="width: 15%">카테고리</th>
+														<th style="width: 20%">이름(ko/en)</th>
+														<th style="width: 1%">도수</th>
+														<th style="width: 10%">원산지</th>
+														<th style="width: 10%">상태</th>
+														<th style="width: 8%">등록자</th>
+														<th style="width: 15%">등록일</th>
+														<th style="width: 6%">Action</th>
+													</tr>
+												</thead>
+												<tfoot>
+													<tr>
+														<th>주류<br>번호</th>
+														<th>이미지</th>
+														<th>카테고리</th>
+														<th>이름(ko/en)</th>
+														<th>도수</th>
+														<th>원산지</th>
+														<th>상태</th>
+														<th>등록자</th>
+														<th>등록일</th>
+														<th>Action</th>
+													</tr>
+												</tfoot>
+												<tbody id="liquorTable">
+													{% for liquor in liquor_list %}
+													<tr>
+														<td>{{liquor.liquor_id}}</td>
+														<td>
+															{% if 'default' in liquor.rep_img %}
+															<img src="{{ imgprefix }}/{{liquor.rep_img}}.png" style='width:80px; height:80px;'>
+															{% else %}
+															<img src="{{ imgprefix }}/{{liquor.rep_img}}_300.png" style='width:70px;'>
+															{% endif %}
+														</td>
+														<td style="font-size: 11px;">															
+															{% if liquor.category1_name != None %}
+																{{liquor.category1_name}}<br>
+															{% endif %}
+															{% if liquor.category2_name != None %}
+																{{liquor.category2_name}}<br>
+															{% endif %}
+															{% if liquor.category3_name != None %}
+																{{liquor.category3_name}}<br>
+															{% endif %}
+															{% if liquor.category4_name != None %}
+																{{liquor.category4_name}}<br>
+															{% endif %}
+														</td>
+														<td>
+															{% if liquor.name_kr != None %}
+																{{liquor.name_kr}}<br>
+															{% endif %}
+															{% if liquor.name_en != None %}
+																{{liquor.name_en}}<br>
+															{% endif %}
+														</td>															
+														<td style="font-size: 13px;">
+															{% if liquor.abv != None %}
+																{{liquor.abv}}%
+															{% endif %}
+														</td>															
+														<td style="font-size: 13px;">
+															{% if liquor.country_name != None %}
+																{{liquor.country_name}}
+															{% endif %}
+														</td>
+														<td>
+															{% if liquor.upload_state == 0 %}
+																<button class="btn btn-danger">
+																	<span class="btn-label"><i class="fa fa-exclamation-circle"></i></span>
+																	<span style="font-size: 11px;">업로드 안됨</span>
+																</button>																
+															{% elif liquor.upload_state == 1 %}
+																<button class="btn btn-success">
+																	<span class="btn-label"><i class="fa fa-check"></i></span>
+																	<span style="font-size: 11px;">업로드됨</span>																	
+																</button>
+															{% else %}
+																<div class="btn-success btn-border btn-round" style="padding: 10px;">-</div>
+															{% endif %}
+
+
+															{% if liquor.update_state == 0 %}
+																<button class="btn btn-success">
+																	<span class="btn-label"><i class="fa fa-check"></i></span>
+																	<span style="font-size: 11px;">정상</span>																			
+																</button>
+															{% elif liquor.update_state == 1 %}
+																<button class="btn btn-warning">
+																	<span class="btn-label"><i class="fa fa-exclamation-circle"></i></span>
+																	<span style="font-size: 11px;">컨펌 필요</span>																			
+																</button>
+															{% else %}
+																<div class="btn-success btn-border btn-round" style="padding: 10px;">-</div>
+															{% endif %}
+														</td>
+														<td>
+															{% if liquor.update_admin_name != None %}
+															{{ liquor.update_admin_name }}
+															{% elif liquor.reg_admin_name != None %}
+															{{ liquor.reg_admin_name }}
+															{% else %}
+															-
+															{% endif %}
+														</td>
+														<td>
+															{% if liquor.update_date != None %}
+															{{ liquor.update_date|date:"Y-m-d" }}
+															{% elif liquor.reg_date != None %}
+															{{ liquor.reg_date|date:"Y-m-d" }}
+															{% else %}
+															-
+															{% endif %}
+														</td>
+														<td>
+															<div class="form-button-action">
+																<button type="button" onclick="javascript:moveToModifyPage('{{liquor.liquor_id}}')" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="데이터 수정">
+																	<i class="fa fa-edit"></i>
+																</button>
+															</div>
+														</td>
+													</tr>
+													{% endfor %}
+
+													<!-- <tr>
+														<td>2052</td>
+														<td>
+															증류주<br>
+															위스키<br>
+															아메리칸 위스키<br>
+															버번 위스키<br>
+														</td>
+														<td>
+															젝다니엘 허니<br>
+															JackDinel Honey
+														</td>
+														<td>35.5%</td>
+														<td>세인트빈센트 그레나딘</td>
+														<td>
+															<div class="btn-success btn-border btn-round" style="padding: 10px;">업로드됨</div>
+															<div class="btn-warning btn-border btn-round" style="padding: 10px;">컨펌필요</div>
+														</td>
+														<td>pangho</td>
+														<td>2022-03-15</td>
+														<td>
+															<div class="form-button-action">
+																<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+																	<i class="fa fa-edit"></i>
+																</button>
+																<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+																	<i class="fa fa-times"></i>
+																</button>
+															</div>
+														</td>
+													</tr> -->
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-sm-12 col-md-5">
+											<!-- <div class="dataTables_info" id="basic-datatables_info" role="status" aria-live="polite">
+												Showing 1 to 10 of 57 entries
+											</div> -->
+										</div>
+										<div class="col-sm-12 col-md-7">
+											<div class="dataTables_paginate paging_simple_numbers" id="basic-datatables_paginate">
+												<ul class="pagination">
+													{% if liquor_list.has_previous %}
+													<li class="paginate_button page-item previous" id="basic-datatables_previous">
+														<a href="?page={{ liquor_list.previous_page_number }}" aria-controls="basic-datatables" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
+													</li>
+													{% endif %}
+													{% for page_number in liquor_list.paginator.page_range %}
+													{% if page_number >= liquor_list.number|add:-3 and page_number <= liquor_list.number|add:3 %}
+													{% if page_number == liquor_list.number %}
+													<li class="paginate_button page-item active">
+														<a href="?page={{ page_number }}" aria-controls="basic-datatables" data-dt-idx="1" tabindex="0" class="page-link">{{ page_number }}</a>
+													</li>
+													{% else %}
+													<li class="paginate_button page-item ">
+														<a href="?page={{ page_number }}" aria-controls="basic-datatables" data-dt-idx="2" tabindex="0" class="page-link">{{ page_number }}</a>
+													</li>
+													{% endif %}	
+													{% endif %}													
+        											{% endfor %}													
+													{% if liquor_list.has_next %}
+													<li class="paginate_button page-item next" id="basic-datatables_next">
+														<a href="?page={{ question_list.next_page_number }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
+													</li>
+													{% endif %}
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -142,9 +286,13 @@
 
 		$(document).ready(function() {
 
-			loadLiqourList();
+			//loadLiqourList();
 
 		});
+
+		function moveToModifyPage(liquorId) {
+			alert(liquorId+'의 수정 페이지로 이동해볼까요?')
+		}
 
 
 		function loadLiqourList(page) {
@@ -221,9 +369,24 @@
 
 				var liquor = data[i];
 
+				var category = "";
+				if(liquor['category1_name'] != null){
+					category += liquor['category1_name'] + "<br>";
+				}
+				if(liquor['category2_name'] != null){
+					category += liquor['category2_name'] + "<br>";
+				}
+				if(liquor['category3_name'] != null){
+					category += liquor['category3_name'] + "<br>";
+				}
+				if(liquor['category4_name'] != null){
+					category += liquor['category4_name'] + "<br>";
+				}
+
+
 				// 정보 수정 상태(0:정상, 1:변경됨-컨펌 필요)
 				var updateState = liquor['update_state'];
-				var updateStateStr = "-"
+				var updateStateStr = "-";
 				if(updateState == 0) {
 					updateStateStr = "정상"
 				} else if(updateState == 1) {
@@ -232,7 +395,7 @@
 
 				// 서비스 업로드 상태(0:업로드 안됨, 1:업로드됨)
 				var uploadState = liquor['upload_state'];
-				var uploadStateStr = "-"
+				var uploadStateStr = "-";
 				if(uploadState == 0) {
 					uploadStateStr = "업로드 안됨"
 				} else if(updateState == 1) {
@@ -244,7 +407,14 @@
 				// 국가 이름
 				// 카테고리 이름
 
-				var regDateStr = "-"
+				var lastAdminName = "-";
+				if(liquor['reg_admin_name'] != null) {
+					lastAdminName = liquor['reg_admin_name'];
+				} else if(liquor['update_admin_name'] != null) {
+					lastAdminName = liquor['update_admin_name'];
+				}
+
+				var regDateStr = "-";
 				if(liquor['update_date'] == null) {
 					regDateStr = moment(liquor['reg_date']).format("YYYY-MM-DD");
 				} else {
@@ -256,22 +426,28 @@
 					imgPath += ".png"
 				} else {
 					imgPath += "_300.png"
-				}				
+				}	
+				
+				var countryName = "-";
+				if(liquor['country_name'] != null){
+					countryName = liquor['country_name'];
+				}
+
 				
 				var item = 	"<tr>" + 
 							"	<td>" + liquor['liquor_id'] + "</td>" + 
 							"	<td>" +
 							"		<img src='" + imgPath + "' style='width:80px; height:80px;'>" +
 							"	</td>" + 
-							"	<td>카테고리</td>" + 
+							"	<td>" + category + "</td>" + 
 							"	<td>" + liquor['name_kr'] + "<br>" + liquor['name_en'] + "</td>" + 
 							"	<td>" + liquor['abv'] + "%</td>" + 
-							"	<td>국가</td>" + 
+							"	<td>" + countryName + "</td>" + 
 							"	<td>" +
 							'		<div class="btn-success btn-border btn-round" style="padding: 10px;">' + uploadStateStr + '</div>' +  
 							'		<div class="btn-warning btn-border btn-round" style="padding: 10px;">' + updateStateStr + '</div>' + 
 							"	</td>" + 
-							"	<td>" + liquor['reg_admin'] + "</td>" + 
+							"	<td>" + lastAdminName + "</td>" + 
 							'	<td>' + regDateStr + '</td>' + 
 							'	' + 
 							'	' + 

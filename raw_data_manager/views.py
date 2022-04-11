@@ -16,6 +16,7 @@ from django.http import HttpResponse
 from rest_framework import status
 from django.db import transaction
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core.paginator import Paginator
 import pickle
 import mimetypes
 import PIL.Image as pilimg
@@ -180,7 +181,7 @@ def liquor(request):
 
         page = int(request.GET.get('page', 1))
         perPage = int(request.GET.get('perPage', 10))
-        totalCount = RawLiquor.objects.all().count()
+        totalCount = RawLiquor.objects.all().count()    # TODO: 비효율적인 코드
 
         pageInfo = Paging(page,totalCount,perPage)
         pages = pageInfo.getPages()
@@ -192,7 +193,7 @@ def liquor(request):
 
     
         # TODO: join에 대한 내용을 model에 반영해서 조회하기
-        liquorList = JoinedLiquor.objects.raw('''
+        liquorList = JoinedLiquor.objects.order_by('-liquor_id').raw('''
             SELECT 
                 raw_liquor.*,
                 categ1.name as category1_name,
@@ -213,24 +214,20 @@ def liquor(request):
             LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin
             LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0
         ''')
-        
-        serializer = JoinedLiquorSerializer(liquorList, many=True) 
+
+
+        paginator = Paginator(liquorList, perPage)  # 페이지당 10개씩 보여주기
+        page_obj = paginator.get_page(page)
+
+        serializer = JoinedLiquorSerializer(page_obj, many=True) 
+        #serializer = JoinedLiquorSerializer(liquorList, many=True) 
      
-
-        # TODO: 이미지는 모두 조회해서 대표가 있는 경우 대표 이미지를 주고
-        # 대표 이미지가 없다면 뭘 주나..?
-        # 이미지 리스트를 model에 추가해서 줄 수 있나...?
-
-    
-
         # TODO: 페이징 정보와 함께 묶어서 Serialize 해주고싶지만 하지못함
         #sParam = SearchParam()
         #sParam.list = liquorList
         #res = cserializers.serialize("json", paramList)
         #res = json.dumps(sParam, cls=DjangoJSONEncoder)
         #res = json.dumps(sParam.paging.__dict__, default=str)
-        
-
         
         return Response(serializer.data)
         
@@ -338,6 +335,45 @@ def liquor(request):
       
         return Response(respone)
 
+
+@api_view(['GET'])
+def liquor_dup_chck(request):
+
+    # name_kr, name_en 수신
+    name_kr = request.GET.get('nameKr')
+    name_en = request.GET.get('nameEn')
+
+    # null and '' check
+    # lowercase, remove whitespace
+    if name_kr != None and len(name_kr) > 0:
+        name_kr = name_kr.lower()
+        name_kr = name_kr.replace(" ", "")
+    else:
+        name_kr = ""
+
+    if name_en != None and len(name_en) > 0:
+        name_en = name_en.lower()
+        name_en = name_en.replace(" ", "")
+    else:
+        name_en = ""
+
+    q = '''
+        SELECT 
+            liquor_id,
+            name_kr,
+            name_en
+        FROM tipsy_raw.raw_liquor
+        WHERE lower(replace(name_kr, ' ', '')) = '%s'
+        OR lower(replace(name_en, ' ', '')) = '%s'        
+    ''' % (name_kr, name_en)
+
+    # db query
+    dup_list = RawLiquor.objects.raw(q)
+    serialized_dup_list = RawLiquorSerializer(dup_list, many=True) 
+    
+    # TODO: 이름 리스트만 반환 할 수 있도록 변경
+    
+    return Response(serialized_dup_list.data)
 
 
 # 국가 데이터 API
