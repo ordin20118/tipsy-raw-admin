@@ -60,13 +60,14 @@
 											<table id="add-row" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info">
 												<thead>
 													<tr>
-														<th style="width: 10%">주류<br>번호</th>
+														<th style="width: 6%">주류<br>번호</th>
 														<th style="width: 10%">이미지</th>
 														<th style="width: 15%">카테고리</th>
 														<th style="width: 20%">이름(ko/en)</th>
 														<th style="width: 1%">도수</th>
 														<th style="width: 10%">원산지</th>
-														<th style="width: 10%">상태</th>
+														<th style="width: 7%">상태</th>
+														<th style="width: 8%">업로드</th>
 														<th style="width: 8%">등록자</th>
 														<th style="width: 15%">등록일</th>
 														<th style="width: 6%">Action</th>
@@ -81,6 +82,7 @@
 														<th>도수</th>
 														<th>원산지</th>
 														<th>상태</th>
+														<th>업로드</th>
 														<th>등록자</th>
 														<th>등록일</th>
 														<th>Action</th>
@@ -130,30 +132,26 @@
 															{% endif %}
 														</td>
 														<td>
-															{% if liquor.upload_state == 0 %}
-																<button class="btn btn-danger">
-																	<span class="btn-label"><i class="fa fa-exclamation-circle"></i></span>
-																	<span style="font-size: 11px;">업로드 안됨</span>
-																</button>																
-															{% elif liquor.upload_state == 1 %}
-																<button class="btn btn-success">
-																	<span class="btn-label"><i class="fa fa-check"></i></span>
-																	<span style="font-size: 11px;">업로드됨</span>																	
+															{% if liquor.update_state == 0 %}
+																<button type="button" class="btn btn-icon btn-round btn-success">
+																	<i class="fa fa-check"></i>
+																</button>																															
+															{% elif liquor.update_state == 1 %}
+																<button type="button" class="btn btn-icon btn-round btn-warning">
+																	<i class="fa fas fa-exclamation"></i>
 																</button>
 															{% else %}
 																<div class="btn-success btn-border btn-round" style="padding: 10px;">-</div>
 															{% endif %}
-
-
-															{% if liquor.update_state == 0 %}
-																<button class="btn btn-success">
-																	<span class="btn-label"><i class="fa fa-check"></i></span>
-																	<span style="font-size: 11px;">정상</span>																			
-																</button>
-															{% elif liquor.update_state == 1 %}
-																<button class="btn btn-warning">
-																	<span class="btn-label"><i class="fa fa-exclamation-circle"></i></span>
-																	<span style="font-size: 11px;">컨펌 필요</span>																			
+														</td>
+														<td>
+															{% if liquor.upload_state == 0 %}
+																<button type="button" class="btn btn-icon btn-round btn-warning">
+																	<i class="fa fas fa-exclamation"></i>
+																</button>												
+															{% elif liquor.upload_state == 1 %}
+																<button type="button" class="btn btn-icon btn-round btn-success">
+																	<i class="fa fa-check"></i>
 																</button>
 															{% else %}
 																<div class="btn-success btn-border btn-round" style="padding: 10px;">-</div>
@@ -202,8 +200,12 @@
 														<td>35.5%</td>
 														<td>세인트빈센트 그레나딘</td>
 														<td>
-															<div class="btn-success btn-border btn-round" style="padding: 10px;">업로드됨</div>
-															<div class="btn-warning btn-border btn-round" style="padding: 10px;">컨펌필요</div>
+															<button type="button" class="btn btn-icon btn-round btn-success">
+																<i class="fa fa-check"></i>
+															</button>
+															<button type="button" class="btn btn-icon btn-round btn-success">
+																<i class="fa fa-check"></i>
+															</button>
 														</td>
 														<td>pangho</td>
 														<td>2022-03-15</td>
@@ -252,7 +254,7 @@
         											{% endfor %}													
 													{% if liquor_list.has_next %}
 													<li class="paginate_button page-item next" id="basic-datatables_next">
-														<a href="?page={{ question_list.next_page_number }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
+														<a href="?page={{ liquor_list.next_page_number }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
 													</li>
 													{% endif %}
 												</ul>
@@ -344,8 +346,12 @@
 					<td>35.5%</td>
 					<td>세인트빈센트 그레나딘</td>
 					<td>
-						<div class="btn-success btn-border btn-round" style="padding: 10px;">업로드됨</div>
-						<div class="btn-warning btn-border btn-round" style="padding: 10px;">컨펌필요</div>
+						<button type="button" class="btn btn-icon btn-round btn-success">
+							<i class="fa fa-check"></i>
+						</button>
+						<button type="button" class="btn btn-icon btn-round btn-success">
+							<i class="fa fa-check"></i>
+						</button>
 					</td>
 					<td>pangho</td>
 					<td>2022-03-15</td>
@@ -384,21 +390,29 @@
 
 
 				// 정보 수정 상태(0:정상, 1:변경됨-컨펌 필요)
-				var updateState = liquor['update_state'];
-				var updateStateStr = "-";
+				var updateState = liquor['update_state'];				
+				var updateStateUi = '-';
 				if(updateState == 0) {
-					updateStateStr = "정상"
-				} else if(updateState == 1) {
-					updateStateStr = "컨펌 필요"
+					updateStateUi = '<button type="button" class="btn btn-icon btn-round btn-success">' +
+									'	<i class="fa fa-check"></i>' +
+									'</button>';
+				} else if(updateState == 1) {				
+					updateStateUi = '<button type="button" class="btn btn-icon btn-round btn-warning">' +
+									'	<i class="fa fas fa-exclamation"></i>' +
+									'</button>';
 				}
 
 				// 서비스 업로드 상태(0:업로드 안됨, 1:업로드됨)
 				var uploadState = liquor['upload_state'];
-				var uploadStateStr = "-";
+				var uploadStateUi = "-";
 				if(uploadState == 0) {
-					uploadStateStr = "업로드 안됨"
+					uploadStateUi = '<button type="button" class="btn btn-icon btn-round btn-warning">' +
+									'	<i class="fa fas fa-exclamation"></i>' +
+									'</button>';
 				} else if(updateState == 1) {
-					uploadStateStr = "업로드됨"
+					uploadStateUi = '<button type="button" class="btn btn-icon btn-round btn-success">' +
+									'	<i class="fa fa-check"></i>' +
+									'</button>';
 				}
 
 				
@@ -443,9 +457,11 @@
 							"	<td>" + liquor['abv'] + "%</td>" + 
 							"	<td>" + countryName + "</td>" + 
 							"	<td>" +
-							'		<div class="btn-success btn-border btn-round" style="padding: 10px;">' + uploadStateStr + '</div>' +  
-							'		<div class="btn-warning btn-border btn-round" style="padding: 10px;">' + updateStateStr + '</div>' + 
-							"	</td>" + 
+									uploadStateUi +
+							"	</td>" +							
+							"	<td>" + 
+									updateStateUi +
+							"	</td>" +
 							"	<td>" + lastAdminName + "</td>" + 
 							'	<td>' + regDateStr + '</td>' + 
 							'	' + 

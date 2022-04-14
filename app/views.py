@@ -69,7 +69,7 @@ def liquorList(request):
 
     # load data
     page = int(request.GET.get('page', 1))
-    perPage = int(request.GET.get('perPage', 2))
+    perPage = int(request.GET.get('perPage', 10))
 
     # TODO: join에 대한 내용을 model에 반영해서 조회하기
     liquorList = JoinedLiquor.objects.order_by('-liquor_id').raw('''
@@ -93,7 +93,6 @@ def liquorList(request):
         LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin
         LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0
     ''')
-
 
     paginator = Paginator(liquorList, perPage)  # 페이지당 10개씩 보여주기
     page_obj = paginator.get_page(page)
@@ -156,15 +155,9 @@ def liquorModify(request):
     liquor_bjson = JSONRenderer().render(serialize_liquor.data)    
     stream = io.BytesIO(liquor_bjson)
     liquor_dict = JSONParser().parse(stream)    
-    
-    print(liquor_dict)
+    liquor_json = json.dumps(liquor_dict, ensure_ascii=False)
 
-    test_json = json.dumps(liquor_dict, ensure_ascii=False)
-
-    print(test_json)
-
-    context['liquor'] = test_json
-
+    context['liquor'] = liquor_json
 
     html_template = loader.get_template( 'modify_liquor.html' )   
     return HttpResponse(html_template.render(context, request))
