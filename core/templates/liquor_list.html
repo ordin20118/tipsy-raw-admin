@@ -133,11 +133,11 @@
 														</td>
 														<td>
 															{% if liquor.update_state == 0 %}
-																<button type="button" class="btn btn-icon btn-round btn-success">
+																<button type="button" class="btn btn-icon btn-round btn-success" title="정상">
 																	<i class="fa fa-check"></i>
 																</button>																															
 															{% elif liquor.update_state == 1 %}
-																<button type="button" class="btn btn-icon btn-round btn-warning">
+																<button type="button" class="btn btn-icon btn-round btn-warning" title="수정 내용\n확인 필요">
 																	<i class="fa fas fa-exclamation"></i>
 																</button>
 															{% else %}
@@ -146,11 +146,11 @@
 														</td>
 														<td>
 															{% if liquor.upload_state == 0 %}
-																<button type="button" class="btn btn-icon btn-round btn-warning">
+																<button type="button" class="btn btn-icon btn-round btn-warning" title="업로드 안됨">
 																	<i class="fa fas fa-exclamation"></i>
 																</button>												
 															{% elif liquor.upload_state == 1 %}
-																<button type="button" class="btn btn-icon btn-round btn-success">
+																<button type="button" class="btn btn-icon btn-round btn-success" title="업로드됨">
 																	<i class="fa fa-check"></i>
 																</button>
 															{% else %}
