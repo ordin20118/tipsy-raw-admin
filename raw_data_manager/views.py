@@ -446,38 +446,30 @@ def equipment(request):
         print(request.POST)
         print("\n\n")
 
-        # 장비 데이터 저장 + 이미지 저장 트랜잭션 처리
+        # 도구 데이터 저장 + 이미지 저장 트랜잭션 처리
         with transaction.atomic():
 
             # validate data
-            form = LiquorForm(request.POST, request.FILES)
+            form = EquipmentForm(request.POST, request.FILES)
             
             if form.is_valid():
                 print("Valid!!")
-                # save liquor data in DB
-                liquor = form.save(commit=False)
-                liquor.upload_state = 0
-                liquor.update_state = 0
-                liquor.site = 0
-                liquor.reg_admin = request.user.id
-                liquor.reg_date = timezone.now()
-                liquor.save()
+                # save equipment data in DB
+                equipment = form.save(commit=False)
+                equipment.upload_state = 0
+                equipment.update_state = 0
+                equipment.reg_admin = request.user.id
+                equipment.reg_date = timezone.now()
+                equipment.save()
 
-                liquorId = liquor.liquor_id
-
-                # admin_id = models.IntegerField()
-                # job_code = models.IntegerField(blank=True, null=True)
-                # job_name = models.CharField(max_length=45, blank=True, null=True)
-                # content_id = models.IntegerField(blank=True, null=True)
-                # content_type = models.IntegerField(blank=True, null=True)
-                # reg_date = models.DateTimeField(auto_now_add=True)
+                equipId = equipment.equip_id
 
                 logInfo = ManageLog()
                 logInfo.admin_id = request.user.id
-                logInfo.job_code = JobInfo.JOB_ADD_SPIRITS
-                logInfo.job_name = JobInfo.JOBN_ADD_SPIRITS
-                logInfo.content_id = liquorId
-                logInfo.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
+                logInfo.job_code = JobInfo.JOB_ADD_EQUIP
+                logInfo.job_name = JobInfo.JOBN_ADD_EQUIP
+                logInfo.content_id = equipId
+                logInfo.content_type = ContentInfo.CONTENT_TYPE_EQUIP
                 logInfo.save()
                 
                 # save img data
@@ -490,8 +482,8 @@ def equipment(request):
                     # 1. 이미지 데이터 DB 저장
                     imgData = Image()
                     imgData.image_type = Image.IMG_TYPE_REP
-                    imgData.content_id = liquorId
-                    imgData.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
+                    imgData.content_id = equipId
+                    imgData.content_type = ContentInfo.CONTENT_TYPE_EQUIP
                     imgData.is_open = Image.IMG_STATUS_PUB
                     imgData.save()
 
@@ -617,6 +609,46 @@ def ingredient_dup_chck(request):
     # db query
     dup_list = Ingredient.objects.raw(q)
     serialized_dup_list = IngredientSerializer(dup_list, many=True) 
+    
+    # TODO: 이름 리스트만 반환 할 수 있도록 변경
+    
+    return Response(serialized_dup_list.data)
+
+
+@api_view(['GET'])
+def equipment_dup_chck(request):
+
+    # name_kr, name_en 수신
+    name_kr = request.GET.get('nameKr')
+    name_en = request.GET.get('nameEn')
+
+    # null and '' check
+    # lowercase, remove whitespace
+    if name_kr != None and len(name_kr) > 0:
+        name_kr = name_kr.lower()
+        name_kr = name_kr.replace(" ", "")
+    else:
+        name_kr = ""
+
+    if name_en != None and len(name_en) > 0:
+        name_en = name_en.lower()
+        name_en = name_en.replace(" ", "")
+    else:
+        name_en = ""
+
+    q = '''
+        SELECT 
+            equip_id,
+            name_kr,
+            name_en
+        FROM tipsy_raw.equipment
+        WHERE lower(replace(name_kr, ' ', '')) = '%s'
+        OR lower(replace(name_en, ' ', '')) = '%s'        
+    ''' % (name_kr, name_en)
+
+    # db query
+    dup_list = Equipment.objects.raw(q)
+    serialized_dup_list = EquipmentSerializer(dup_list, many=True) 
     
     # TODO: 이름 리스트만 반환 할 수 있도록 변경
     

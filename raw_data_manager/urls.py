@@ -15,7 +15,8 @@ urlpatterns = [
     path('api/equipment', views.equipment, name='equipment'),
     path('api/page_info/<str:name>', views.page_info, name='pageInfo'),
     path('api/liquor_dup_chck', views.liquor_dup_chck, name='liquorDupChck'),
-    path('api/ingredient_dup_chck', views.ingredient_dup_chck, name='ingredientDupChck'),    
+    path('api/ingredient_dup_chck', views.ingredient_dup_chck, name='ingredientDupChck'),
+    path('api/equipment_dup_chck', views.equipment_dup_chck, name='equipmentDupChck'),
     re_path(r'^image/.*\.*', views.image, name='image'),
 
 ]

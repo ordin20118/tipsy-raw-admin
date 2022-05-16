@@ -170,7 +170,7 @@ def liquorModify(request):
 def ingredientList(request):
     
     context = {}
-    context['segment'] = 'liquorList'
+    context['segment'] = 'ingredientList'
     context['prefix'] = 'http://tipsy.co.kr:8000'
     context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
 
@@ -212,7 +212,7 @@ def ingredientList(request):
 def equipmentList(request):
     
     context = {}
-    context['segment'] = 'liquorList'
+    context['segment'] = 'equipList'
     context['prefix'] = 'http://tipsy.co.kr:8000'
     context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
 

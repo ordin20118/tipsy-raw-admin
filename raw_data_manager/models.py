@@ -130,7 +130,7 @@ class JoinedIngredient(models.Model):
         db_table = 'ingredient'
 
 class Equipment(models.Model):
-    equip_id = models.IntegerField(primary_key=True)
+    equip_id = models.AutoField(primary_key=True)
     name_kr = models.CharField(max_length=100, blank=True, null=True)
     name_en = models.CharField(max_length=100, blank=True, null=True)
     upload_state = models.IntegerField(blank=True, null=True)
@@ -144,7 +144,28 @@ class Equipment(models.Model):
     update_admin = models.IntegerField(blank=True, null=True)
     reg_date = models.DateTimeField(blank=True, null=True)
     update_date = models.DateTimeField(blank=True, null=True)
-    
+   
+    class Meta:
+        managed = False
+        db_table = 'equipment'
+
+
+class JoinedEquipment(models.Model):
+    equip_id = models.AutoField(primary_key=True)
+    name_kr = models.CharField(max_length=100, blank=True, null=True)
+    name_en = models.CharField(max_length=100, blank=True, null=True)
+    upload_state = models.IntegerField(blank=True, null=True)
+    update_state = models.IntegerField(blank=True, null=True)
+    category1_id = models.IntegerField(blank=True, null=True)
+    category2_id = models.IntegerField(blank=True, null=True)
+    category3_id = models.IntegerField(blank=True, null=True)
+    category4_id = models.IntegerField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    reg_admin = models.IntegerField(blank=True, null=True)
+    update_admin = models.IntegerField(blank=True, null=True)
+    reg_date = models.DateTimeField(blank=True, null=True)
+    update_date = models.DateTimeField(blank=True, null=True)
+     
     # Joined Data
     reg_admin_name = models.CharField(max_length=150, blank=True, null=True)
     update_admin_name = models.CharField(max_length=150, blank=True, null=True)
@@ -153,27 +174,6 @@ class Equipment(models.Model):
     category3_name = models.CharField(max_length=45, blank=True, null=True)
     category4_name = models.CharField(max_length=45, blank=True, null=True)
     rep_img = models.CharField(max_length=200, blank=True, null=True)
-
-    class Meta:
-        managed = False
-        db_table = 'equipment'
-
-
-class JoinedEquipment(models.Model):
-    equip_id = models.IntegerField(primary_key=True)
-    name_kr = models.CharField(max_length=100, blank=True, null=True)
-    name_en = models.CharField(max_length=100, blank=True, null=True)
-    upload_state = models.IntegerField(blank=True, null=True)
-    update_state = models.IntegerField(blank=True, null=True)
-    category1_id = models.IntegerField(blank=True, null=True)
-    category2_id = models.IntegerField(blank=True, null=True)
-    category3_id = models.IntegerField(blank=True, null=True)
-    category4_id = models.IntegerField(blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
-    reg_admin = models.IntegerField(blank=True, null=True)
-    update_admin = models.IntegerField(blank=True, null=True)
-    reg_date = models.DateTimeField(blank=True, null=True)
-    update_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         managed = False

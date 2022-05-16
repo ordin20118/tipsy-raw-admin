@@ -426,7 +426,10 @@
 							dupList += "중복: " + data[i]['name_kr'] + " / " + data[i]['name_en'] + "\n";
 						}
 						printWarningPanel("주류 데이터 중복!", dupList);		
-					} else {
+					} else {						
+						printSuccessPanel("주류 데이터 중복 없음", "")						
+						setSuccessOrError($('#korNameInput'), true);
+						setSuccessOrError($('#enNameInput'), true);
 						isDupliCheck = true;
 					}
 				

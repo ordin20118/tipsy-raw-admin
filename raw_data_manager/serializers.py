@@ -22,6 +22,16 @@ class JoinedIngredientSerializer(serializers.ModelSerializer):
         model = JoinedIngredient
         fields = '__all__'
 
+class EquipmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Equipment
+        fields = '__all__'
+
+class JoinedEquipmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JoinedEquipment
+        fields = '__all__'
+
 
 class RawCategorySerializer(serializers.ModelSerializer):
     class Meta:
