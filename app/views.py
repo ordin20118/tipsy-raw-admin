@@ -103,6 +103,8 @@ def liquorList(request):
     return HttpResponse(html_template.render(context, request))
 
 
+
+
 @login_required(login_url="/login/")
 def liquorModify(request):
     
@@ -160,4 +162,89 @@ def liquorModify(request):
     context['liquor'] = liquor_json
 
     html_template = loader.get_template( 'modify_liquor.html' )   
+    return HttpResponse(html_template.render(context, request))
+
+
+
+@login_required(login_url="/login/")
+def ingredientList(request):
+    
+    context = {}
+    context['segment'] = 'liquorList'
+    context['prefix'] = 'http://tipsy.co.kr:8000'
+    context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
+
+    # load data
+    page = int(request.GET.get('page', 1))
+    perPage = int(request.GET.get('perPage', 10))
+
+    # TODO: join에 대한 내용을 model에 반영해서 조회하기
+    ingredientList = JoinedIngredient.objects.order_by('-ingd_id').raw('''
+        SELECT 
+            ingredient.*,
+            categ1.name as category1_name,
+            categ2.name as category2_name,
+            categ3.name as category3_name,
+            categ4.name as category4_name,
+            reg_user.username as reg_admin_name,
+            update_user.username as update_admin_name,
+            if(image.path is null, 'default', image.path) as rep_img
+        FROM tipsy_raw.ingredient
+        LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = ingredient.category1_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = ingredient.category2_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON categ3.id = ingredient.category3_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON categ4.id = ingredient.category4_id
+        LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = ingredient.reg_admin
+        LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = ingredient.update_admin
+        LEFT OUTER JOIN image ON image.content_id = ingredient.ingd_id AND image.content_type = 300 AND image.image_type = 0
+    ''')
+
+    paginator = Paginator(ingredientList, perPage)  # 페이지당 10개씩 보여주기
+    page_obj = paginator.get_page(page)
+
+    context['ingredient_list'] = page_obj
+
+    html_template = loader.get_template( 'ingredient_list.html' )
+    return HttpResponse(html_template.render(context, request))
+
+
+@login_required(login_url="/login/")
+def equipmentList(request):
+    
+    context = {}
+    context['segment'] = 'liquorList'
+    context['prefix'] = 'http://tipsy.co.kr:8000'
+    context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
+
+    # load data
+    page = int(request.GET.get('page', 1))
+    perPage = int(request.GET.get('perPage', 10))
+
+    # TODO: join에 대한 내용을 model에 반영해서 조회하기
+    equipmentList = JoinedEquipment.objects.order_by('-equip_id').raw('''
+        SELECT 
+            equipment.*,
+            categ1.name as category1_name,
+            categ2.name as category2_name,
+            categ3.name as category3_name,
+            categ4.name as category4_name,
+            reg_user.username as reg_admin_name,
+            update_user.username as update_admin_name,
+            if(image.path is null, 'default', image.path) as rep_img
+        FROM tipsy_raw.equipment
+        LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = equipment.category1_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = equipment.category2_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON categ3.id = equipment.category3_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON categ4.id = equipment.category4_id
+        LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = equipment.reg_admin
+        LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = equipment.update_admin
+        LEFT OUTER JOIN image ON image.content_id = equipment.equip_id AND image.content_type = 400 AND image.image_type = 0
+    ''')
+
+    paginator = Paginator(equipmentList, perPage)  # 페이지당 10개씩 보여주기
+    page_obj = paginator.get_page(page)
+
+    context['equipment_list'] = page_obj
+
+    html_template = loader.get_template( 'equipment_list.html' )
     return HttpResponse(html_template.render(context, request))

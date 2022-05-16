@@ -4,19 +4,47 @@ import math
 class ContentInfo():
     CONTENT_TYPE_LIQUOR = 100
     CONTENT_TYPE_COCTAIL = 200
+    CONTENT_TYPE_INGREDIENT = 300
+    CONTENT_TYPE_EQUIP = 400
     CONTENT_TYPE_FLAG = 901
 
-# 1001: 술 정보 등록
-# 1002: 술 정보 수정
-# 1003: 술 정보 제거(영구)
+
 class JobInfo():
     JOB_ADD_SPIRITS = 1001
     JOB_MODIFY_SPIRITS = 1002
     JOB_REMOVE_SPIRITS = 1003
+    JOB_INACTIVE_SPIRITS = 1004
+    JOB_ACTIVE_SPIRITS = 1005
+
+    JOB_ADD_INGREDIENT = 3001
+    JOB_MODIFY_INGREDIENT = 3002
+    JOB_REMOVE_INGREDIENT = 3003
+    JOB_INACTIVE_INGREDIENT = 3004
+    JOB_ACTIVE_INGREDIENT = 3005
+
+    JOB_ADD_EQUIP = 4001
+    JOB_MODIFY_EQUIP = 4002
+    JOB_REMOVE_EQUIP = 4003
+    JOB_INACTIVE_EQUIP = 4004
+    JOB_ACTIVE_EQUIP = 4005
 
     JOBN_ADD_SPIRITS = "술 정보 등록"
     JOBN_MODIFY_SPIRITS = "술 정보 수정"
     JOBN_REMOVE_SPIRITS = "술 정보 제거(영구)"
+    JOBN_INACTIVE_SPIRITS = "술 정보 비활성"
+    JOBN_ACTIVE_SPIRITS = "술 정보 활성"
+    
+    JOBN_ADD_INGREDIENT = "재료 정보 등록"
+    JOBN_MODIFY_INGREDIENT = "재료 정보 수정"
+    JOBN_REMOVE_INGREDIENT = "재료 정보 제거(영구)"
+    JOBN_INACTIVE_INGREDIENT = "재료 정보 비활성"
+    JOBN_ACTIVE_INGREDIENT = "재료 정보 활성"
+
+    JOBN_ADD_EQUIP = "도구 정보 등록"
+    JOBN_MODIFY_EQUIP = "도구 정보 수정"
+    JOBN_REMOVE_EQUIP = "도구 정보 제거(영구)"
+    JOBN_INACTIVE_EQUIP = "도구 정보 비활성"
+    JOBN_ACTIVE_EQUIP = "도구 정보 활성"
 
 
 class SearchParam(models.Model):

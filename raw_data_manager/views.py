@@ -226,12 +226,227 @@ def liquor(request):
         
 
     elif request.method == 'POST':
-        respone = 'this is test response'
+        respone = 'Success Save Liquor Data'
         
         print(request.POST)
         print("\n\n")
 
         # 술 데이터 저장 + 이미지 저장 트랜잭션 처리
+        with transaction.atomic():
+
+            # validate data
+            form = LiquorForm(request.POST, request.FILES)
+            
+            if form.is_valid():
+                print("Valid!!")
+                # save liquor data in DB
+                liquor = form.save(commit=False)
+                liquor.upload_state = 0
+                liquor.update_state = 0
+                liquor.site = 0
+                liquor.reg_admin = request.user.id
+                liquor.reg_date = timezone.now()
+                liquor.save()
+
+                liquorId = liquor.liquor_id
+
+                # admin_id = models.IntegerField()
+                # job_code = models.IntegerField(blank=True, null=True)
+                # job_name = models.CharField(max_length=45, blank=True, null=True)
+                # content_id = models.IntegerField(blank=True, null=True)
+                # content_type = models.IntegerField(blank=True, null=True)
+                # reg_date = models.DateTimeField(auto_now_add=True)
+
+                logInfo = ManageLog()
+                logInfo.admin_id = request.user.id
+                logInfo.job_code = JobInfo.JOB_ADD_SPIRITS
+                logInfo.job_name = JobInfo.JOBN_ADD_SPIRITS
+                logInfo.content_id = liquorId
+                logInfo.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
+                logInfo.save()
+                
+                # save img data
+                imageFile = request.FILES.get('image_file', False)
+
+                if imageFile == False:
+                    raise Exception("No Image File")
+                else:          
+                    
+                    # 1. 이미지 데이터 DB 저장
+                    imgData = Image()
+                    imgData.image_type = Image.IMG_TYPE_REP
+                    imgData.content_id = liquorId
+                    imgData.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
+                    imgData.is_open = Image.IMG_STATUS_PUB
+                    imgData.save()
+
+                    # 2. 이미지 ID를 이용한 경로 생성
+                    imgPath = imageIdToPath(imgData.image_id)
+
+                    # 3. 원본, 300, 600 3가지로 저장          
+                    # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
+                    # 업로드할 이미지 데이터 pillow로 객체화
+                    img = pilimg.open(imageFile)
+
+                    # 저장할 경로 폴더 존재 확인
+                    imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
+
+                    if os.path.isdir(imgDir) == False:
+                        os.makedirs(imgDir)
+                    
+                    imgOrgPath = imgDir + str(imgData.image_id) + '.' + 'png'
+                    
+                    img.save(imgOrgPath)
+
+                    # resize 300
+                    img300Path = imgDir + str(imgData.image_id) + '_300.' + 'png'
+                    height_300 = getScaledHeight(img.width, img.height, 300)
+
+                    img300 = img.resize((300, height_300))
+                    img300.save(img300Path)
+
+                    # resize 600
+                    img600Path = imgDir + str(imgData.image_id) + '_600.' + 'png'
+                    height_600 = getScaledHeight(img.width, img.height, 600)
+                    
+                    img600 = img.resize((600, height_600))
+                    img600.save(img600Path)
+
+                    # DB에 이미지 경로 업데이트
+                    imgData.path = imgPath + "/" + str(imgData.image_id)
+                    imgData.save(update_fields=['path'])
+
+                    # 임시 파일 저장 이름
+                    #length_of_string = 8
+                    #tmpName = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length_of_string))
+
+                return Response(respone, status=status.HTTP_200_OK)
+            else:
+                print("No Validated")
+                # TODO: return error response
+                return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+      
+        return Response(respone)
+
+
+
+
+@api_view(['GET', 'POST'])
+def ingredient(request):
+    
+    if request.method == 'GET':
+        return ""        
+
+    elif request.method == 'POST':
+        
+        respone = 'Success Save Ingredient Data'
+
+        print(request.POST)
+        print("\n\n")
+
+        # 재료 데이터 저장 + 이미지 저장 트랜잭션 처리
+        with transaction.atomic():
+
+            # validate data
+            form = IngredientForm(request.POST, request.FILES)
+            
+            if form.is_valid():
+                print("Valid!!")
+                # save ingredient data in DB
+                ingredient = form.save(commit=False)
+                ingredient.upload_state = 0
+                ingredient.update_state = 0
+                ingredient.reg_admin = request.user.id
+                ingredient.reg_date = timezone.now()
+                ingredient.save()
+
+                ingdId = ingredient.ingd_id
+
+                logInfo = ManageLog()
+                logInfo.admin_id = request.user.id
+                logInfo.job_code = JobInfo.JOB_ADD_INGREDIENT
+                logInfo.job_name = JobInfo.JOBN_ADD_INGREDIENT
+                logInfo.content_id = ingdId
+                logInfo.content_type = ContentInfo.CONTENT_TYPE_INGREDIENT
+                logInfo.save()
+                
+                # save img data
+                imageFile = request.FILES.get('image_file', False)
+
+                if imageFile == False:
+                    raise Exception("No Image File")
+                else:          
+                    
+                    # 1. 이미지 데이터 DB 저장
+                    imgData = Image()
+                    imgData.image_type = Image.IMG_TYPE_REP
+                    imgData.content_id = ingdId
+                    imgData.content_type = ContentInfo.CONTENT_TYPE_INGREDIENT
+                    imgData.is_open = Image.IMG_STATUS_PUB
+                    imgData.save()
+
+                    # 2. 이미지 ID를 이용한 경로 생성
+                    imgPath = imageIdToPath(imgData.image_id)
+
+                    # 3. 원본, 300, 600 3가지로 저장          
+                    # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
+                    # 업로드할 이미지 데이터 pillow로 객체화
+                    img = pilimg.open(imageFile)
+
+                    # 저장할 경로 폴더 존재 확인
+                    imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
+
+                    if os.path.isdir(imgDir) == False:
+                        os.makedirs(imgDir)
+                    
+                    imgOrgPath = imgDir + str(imgData.image_id) + '.' + 'png'
+                    
+                    img.save(imgOrgPath)
+
+                    # resize 300
+                    img300Path = imgDir + str(imgData.image_id) + '_300.' + 'png'
+                    height_300 = getScaledHeight(img.width, img.height, 300)
+
+                    img300 = img.resize((300, height_300))
+                    img300.save(img300Path)
+
+                    # resize 600
+                    img600Path = imgDir + str(imgData.image_id) + '_600.' + 'png'
+                    height_600 = getScaledHeight(img.width, img.height, 600)
+                    
+                    img600 = img.resize((600, height_600))
+                    img600.save(img600Path)
+
+                    # DB에 이미지 경로 업데이트
+                    imgData.path = imgPath + "/" + str(imgData.image_id)
+                    imgData.save(update_fields=['path'])
+
+                    # 임시 파일 저장 이름
+                    #length_of_string = 8
+                    #tmpName = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length_of_string))
+
+                return Response(respone, status=status.HTTP_200_OK)
+            else:
+                print("No Validated")
+                # TODO: return error response
+                return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+      
+        return Response(respone)
+
+@api_view(['GET', 'POST'])
+def equipment(request):
+    
+    if request.method == 'GET':
+        return ""
+        
+
+    elif request.method == 'POST':
+        respone = 'this is test response'
+        
+        print(request.POST)
+        print("\n\n")
+
+        # 장비 데이터 저장 + 이미지 저장 트랜잭션 처리
         with transaction.atomic():
 
             # validate data
@@ -363,6 +578,45 @@ def liquor_dup_chck(request):
     # db query
     dup_list = RawLiquor.objects.raw(q)
     serialized_dup_list = RawLiquorSerializer(dup_list, many=True) 
+    
+    # TODO: 이름 리스트만 반환 할 수 있도록 변경
+    
+    return Response(serialized_dup_list.data)
+
+@api_view(['GET'])
+def ingredient_dup_chck(request):
+
+    # name_kr, name_en 수신
+    name_kr = request.GET.get('nameKr')
+    name_en = request.GET.get('nameEn')
+
+    # null and '' check
+    # lowercase, remove whitespace
+    if name_kr != None and len(name_kr) > 0:
+        name_kr = name_kr.lower()
+        name_kr = name_kr.replace(" ", "")
+    else:
+        name_kr = ""
+
+    if name_en != None and len(name_en) > 0:
+        name_en = name_en.lower()
+        name_en = name_en.replace(" ", "")
+    else:
+        name_en = ""
+
+    q = '''
+        SELECT 
+            ingd_id,
+            name_kr,
+            name_en
+        FROM tipsy_raw.ingredient
+        WHERE lower(replace(name_kr, ' ', '')) = '%s'
+        OR lower(replace(name_en, ' ', '')) = '%s'        
+    ''' % (name_kr, name_en)
+
+    # db query
+    dup_list = Ingredient.objects.raw(q)
+    serialized_dup_list = IngredientSerializer(dup_list, many=True) 
     
     # TODO: 이름 리스트만 반환 할 수 있도록 변경
     

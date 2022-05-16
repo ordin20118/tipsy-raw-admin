@@ -1,0 +1,287 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Datatables {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+	<div class="content">
+		<div class="page-inner">
+			<div class="page-header">
+				<h4 class="page-title">재료</h4>
+				<ul class="breadcrumbs">
+					<li class="nav-home">
+						<a href="#">
+							<i class="flaticon-home"></i>
+						</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">재료</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">데이터 조회</a>
+					</li>
+				</ul>
+			</div>
+			<div class="row">
+				
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="d-flex align-items-center">
+								<h4 class="card-title">재료 데이터 조회</h4>
+								<button class="btn btn-primary btn-round ml-auto" onclick="javascript:moveToInsertIngredient()">
+									<i class="fa fa-plus"></i>
+									데이터 추가
+								</button>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<div id="basic-datatables_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+									<div class="row">
+										<div class="col-sm-12 col-md-6">
+											<div id="basic-datatables_filter" class="dataTables_filter">
+												<label>Search:<input type="search" class="form-control form-control-sm" placeholder="" aria-controls="basic-datatables"></label>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+											<!-- <table id="basic-datatables" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info"> -->
+											<table id="add-row" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info">
+												<thead>
+													<tr>
+														<th style="width: 6%">재료<br>번호</th>
+														<th style="width: 10%">이미지</th>
+														<th style="width: 15%">카테고리</th>
+														<th style="width: 20%">이름(ko/en)</th>
+														<th style="width: 7%">상태</th>
+														<th style="width: 8%">업로드</th>
+														<th style="width: 8%">등록자</th>
+														<th style="width: 15%">등록일</th>
+														<th style="width: 6%">Action</th>
+													</tr>
+												</thead>
+												<tfoot>
+													<tr>
+														<th>재료<br>번호</th>
+														<th>이미지</th>
+														<th>카테고리</th>
+														<th>이름(ko/en)</th>
+														<th>상태</th>
+														<th>업로드</th>
+														<th>등록자</th>
+														<th>등록일</th>
+														<th>Action</th>
+													</tr>
+												</tfoot>
+												<tbody id="ingredientTable">
+													{% for ingredient in ingredient_list %}
+													<tr>
+														<td>{{ingredient.ingd_id}}</td>
+														<td>
+															{% if 'default' in ingredient.rep_img %}
+															<img src="{{ imgprefix }}/{{ingredient.rep_img}}.png" style='width:80px; height:80px;'>
+															{% else %}
+															<img src="{{ imgprefix }}/{{ingredient.rep_img}}_300.png" style='width:70px;'>
+															{% endif %}
+														</td>
+														<td style="font-size: 11px;">															
+															{% if ingredient.category1_name != None %}
+																{{ingredient.category1_name}}<br>
+															{% endif %}
+															{% if ingredient.category2_name != None %}
+																{{ingredient.category2_name}}<br>
+															{% endif %}
+															{% if ingredient.category3_name != None %}
+																{{ingredient.category3_name}}<br>
+															{% endif %}
+															{% if ingredient.category4_name != None %}
+																{{ingredient.category4_name}}<br>
+															{% endif %}
+														</td>
+														<td>
+															{% if ingredient.name_kr != None %}
+																{{ingredient.name_kr}}<br>
+															{% endif %}
+															{% if ingredient.name_en != None %}
+																{{ingredient.name_en}}<br>
+															{% endif %}
+														</td>
+														<td>
+															{% if ingredient.update_state == 0 %}
+																<button type="button" class="btn btn-icon btn-round btn-success" title="정상">
+																	<i class="fa fa-check"></i>
+																</button>																															
+															{% elif ingredient.update_state == 1 %}
+																<button type="button" class="btn btn-icon btn-round btn-warning" title="수정 내용\n확인 필요">
+																	<i class="fa fas fa-exclamation"></i>
+																</button>
+															{% else %}
+																<div class="btn-success btn-border btn-round" style="padding: 10px;">-</div>
+															{% endif %}
+														</td>
+														<td>
+															{% if ingredient.upload_state == 0 %}
+																<button type="button" class="btn btn-icon btn-round btn-warning" title="업로드 안됨">
+																	<i class="fa fas fa-exclamation"></i>
+																</button>												
+															{% elif ingredient.upload_state == 1 %}
+																<button type="button" class="btn btn-icon btn-round btn-success" title="업로드됨">
+																	<i class="fa fa-check"></i>
+																</button>
+															{% else %}
+																<div class="btn-success btn-border btn-round" style="padding: 10px;">-</div>
+															{% endif %}
+														</td>
+														<td>
+															{% if ingredient.update_admin_name != None %}
+															{{ ingredient.update_admin_name }}
+															{% elif ingredient.reg_admin_name != None %}
+															{{ ingredient.reg_admin_name }}
+															{% else %}
+															-
+															{% endif %}
+														</td>
+														<td>
+															{% if ingredient.update_date != None %}
+															{{ ingredient.update_date|date:"Y-m-d" }}
+															{% elif ingredient.reg_date != None %}
+															{{ ingredient.reg_date|date:"Y-m-d" }}
+															{% else %}
+															-
+															{% endif %}
+														</td>
+														<td>
+															<div class="form-button-action">
+																<button type="button" onclick="javascript:moveToModifyPage('{{ingredient.ingd_id}}')" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="데이터 수정">
+																	<i class="fa fa-edit"></i>
+																</button>
+															</div>
+														</td>
+													</tr>
+													{% endfor %}
+
+													<!-- <tr>
+														<td>2052</td>
+														<td>
+															증류주<br>
+															위스키<br>
+															아메리칸 위스키<br>
+															버번 위스키<br>
+														</td>
+														<td>
+															젝다니엘 허니<br>
+															JackDinel Honey
+														</td>
+														<td>35.5%</td>
+														<td>세인트빈센트 그레나딘</td>
+														<td>
+															<button type="button" class="btn btn-icon btn-round btn-success">
+																<i class="fa fa-check"></i>
+															</button>
+															<button type="button" class="btn btn-icon btn-round btn-success">
+																<i class="fa fa-check"></i>
+															</button>
+														</td>
+														<td>pangho</td>
+														<td>2022-03-15</td>
+														<td>
+															<div class="form-button-action">
+																<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task">
+																	<i class="fa fa-edit"></i>
+																</button>
+																<button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove">
+																	<i class="fa fa-times"></i>
+																</button>
+															</div>
+														</td>
+													</tr> -->
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-sm-12 col-md-5">
+											<!-- <div class="dataTables_info" id="basic-datatables_info" role="status" aria-live="polite">
+												Showing 1 to 10 of 57 entries
+											</div> -->
+										</div>
+										<div class="col-sm-12 col-md-7">
+											<div class="dataTables_paginate paging_simple_numbers" id="basic-datatables_paginate">
+												<ul class="pagination">
+													{% if ingredient_list.has_previous %}
+													<li class="paginate_button page-item previous" id="basic-datatables_previous">
+														<a href="?page={{ ingredient_list.previous_page_number }}" aria-controls="basic-datatables" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
+													</li>
+													{% endif %}
+													{% for page_number in ingredient_list.paginator.page_range %}
+													{% if page_number >= ingredient_list.number|add:-3 and page_number <= ingredient_list.number|add:3 %}
+													{% if page_number == ingredient_list.number %}
+													<li class="paginate_button page-item active">
+														<a href="?page={{ page_number }}" aria-controls="basic-datatables" data-dt-idx="1" tabindex="0" class="page-link">{{ page_number }}</a>
+													</li>
+													{% else %}
+													<li class="paginate_button page-item ">
+														<a href="?page={{ page_number }}" aria-controls="basic-datatables" data-dt-idx="2" tabindex="0" class="page-link">{{ page_number }}</a>
+													</li>
+													{% endif %}	
+													{% endif %}													
+        											{% endfor %}													
+													{% if ingredient_list.has_next %}
+													<li class="paginate_button page-item next" id="basic-datatables_next">
+														<a href="?page={{ ingredient_list.next_page_number }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
+													</li>
+													{% endif %}
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+	<!-- Atlantis DEMO methods, don't include it in your project! -->
+	<script src="/static/assets/js/setting-demo2.js"></script>
+	<script >
+		
+		var gPage = 1;
+		var perPage = 10;
+
+		function moveToInsertIngredient() {
+			location.href = "/insert_ingredient.html"
+		}
+
+		$(document).ready(function() {
+
+
+		});
+
+		function moveToModifyPage(ingdId) {
+			location.href = "modify_ingredient.html?ingdId="+ingdId;
+		}
+
+
+	</script>
+
+{% endblock javascripts %}

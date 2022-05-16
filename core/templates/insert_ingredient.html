@@ -10,7 +10,7 @@
 	<div class="content">
 		<div class="page-inner">
 			<div class="page-header">
-				<h4 class="page-title">주류</h4>
+				<h4 class="page-title">재료</h4>
 				<ul class="breadcrumbs">
 					<li class="nav-home">
 						<a href="#">
@@ -21,7 +21,7 @@
 						<i class="flaticon-right-arrow"></i>
 					</li>
 					<li class="nav-item">
-						<a href="#">주류</a>
+						<a href="#">재료</a>
 					</li>
 					<li class="separator">
 						<i class="flaticon-right-arrow"></i>
@@ -36,29 +36,12 @@
 				<div class="col-md-12">
 					<div class="card">
 						<div class="card-header">
-							<div class="card-title">주류 데이터 추가</div>
+							<div class="card-title">재료 데이터 추가</div>
 						</div>
 						<div class="card-body">
 							<div class="row">
 								<div class="col-md-6 col-lg-4">
-									
 								
-									<!-- Success class sample
-									<div class="form-group has-success">
-										<label for="korNameInput">술 이름(한국어)</label>
-										<input type="text" id="korNameInput" placeholder="" class="form-control">
-									</div>
-									-->
-
-									<!-- Error class sample
-									<div class="form-group has-error has-feedback">
-										<label for="errorInput">Error Input</label>
-										<input type="text" id="errorInput" value="Error" class="form-control">
-										<small id="emailHelp" class="form-text text-muted">Please provide a valid informations.</small>
-									</div>
-									-->
-
-
 									<div class="form-group">
 										<label for="exampleFormControlFile1">이미지</label>
 										<input id="imageFileInput" accept="image/*" type="file" class="form-control-file" onchange="previewFile()">
@@ -66,106 +49,23 @@
 									</div>
 
 									<div class="form-group form-group-default">
-										<label>술 이름(한국어)</label>
-										<input id="korNameInput" type="text" class="form-control" placeholder="술의 한국어 이름을 입력하세요.">
+										<label>재료 이름(한국어)</label>
+										<input id="korNameInput" type="text" class="form-control" placeholder="재료의 한국어 이름을 입력하세요.">
 										<!-- <small id="emailHelp" class="form-text text-muted">Please provide a valid informations.</small> -->
 									</div>
 
 									<div class="form-group form-group-default">
-										<label>술 이름(영어)</label>
-										<input id="enNameInput" type="text" class="form-control" placeholder="술의 영어 이름을 입력하세요.">
+										<label>재료 이름(영어)</label>
+										<input id="enNameInput" type="text" class="form-control" placeholder="재료의 영어 이름을 입력하세요.">
 									</div>
 
 									<div class="form-group">
 										<button id="chckDuplicateBtn" class="btn btn-secondary" onclick="checkNameDup()" disabled>중복 확인</button>
 									</div>
-									
-									<br>
-
-									<div class="form-group form-group-default">
-										<label>년산</label>
-										<div class="col-md-9 p-0">
-											<input id="vintageInput" type="text" class="form-control input-full" placeholder="ex) 12" style="display:inline; width: 80%!important;"> 
-											<span> 년산 </span>
-										</div>
-									</div>
-
-									<div class="form-group form-group-default">
-										<label>도수</label>
-										<div class="col-md-9 p-0">
-											<input id="abvInput" type="text" class="form-control input-full" placeholder="ex) 40" style="display:inline; width: 80%!important;"> 
-											<span> % </span>
-										</div>
-									</div>
-
-									<div class="dropdown">
-										<button class="btn btn-secondary dropdown-toggle" type="button" id="countrySelectButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-											원산지 선택
-										</button>
-										<div id="country" class="dropdown-menu" aria-labelledby="countrySelectButton" style="height: 150px; overflow: scroll;">
-											<a class="dropdown-item" href="#"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Flag_of_Gabon.svg/22px-Flag_of_Gabon.svg.png" style="margin: 0px 9px 0px 0px;">Action</a>
-											<a class="dropdown-item" href="#">Another action</a>
-											<a class="dropdown-item" href="#">Something else here</a>
-										</div>
-									</div>
-
-									<br>
-
-									<div class="form-group form-group-default">
-										<label>지역</label>
-										<input id="regionInput" type="text" class="form-control" placeholder="ex) Napa Valley">
-									</div>
-
-								
-									
-									<!--
-									<div class="form-group">
-										<label class="form-label">형태</label>
-										<div class="selectgroup w-100">
-											<label class="selectgroup-item">
-												<input type="checkbox" name="transportation" value="2" class="selectgroup-input">
-												<span class="selectgroup-button selectgroup-button-icon">
-													<i class="icon-screen-smartphone"></i>
-													<div>
-														<input type="text" name="bottleVolume" style="width: 25px;height:20px;font-size: 8px;">
-														<span style="font-size: 8px;">mL</span>
-													</div>
- 												</span>
-											</label>
-											<label class="selectgroup-item">
-												<input type="checkbox" name="transportation" value="1" class="selectgroup-input" checked="">
-												<span class="selectgroup-button selectgroup-button-icon">
-													<i class="icon-screen-tablet"></i>
-													<div>
-														<input type="text" name="bottleVolume" style="width: 25px;height:20px;font-size: 8px;">
-														<span style="font-size: 8px;">mL</span>
-													</div>
-												</span>
-											</label>
-											<label class="selectgroup-item">
-												<input type="checkbox" name="transportation" value="6" class="selectgroup-input">
-												<span class="selectgroup-button selectgroup-button-icon">
-													<i class="icon-screen-desktop"></i>
-													<div>
-														<input type="text" name="bottleVolume" style="width: 25px;height:20px;font-size: 8px;">
-														<span style="font-size: 8px;">mL</span>
-													</div>
-												</span>
-											</label>
-										</div>
-									</div>
-									-->
-								
-									<!-- <div class="form-check">
-										<label class="form-check-label">
-											<input class="form-check-input" type="checkbox" value="">
-											<span class="form-check-sign">Agree with terms and conditions</span>
-										</label>
-									</div> -->
 								</div>
 
 
-								<div class="col-md-6 col-lg-4">		
+								<!-- <div class="col-md-6 col-lg-4">		
 									<div class="form-group">
 										<label for="">카테고리</label>
 										<div class="form-group form-group-default">
@@ -193,20 +93,7 @@
 											</select>
 										</div>
 									</div>
-
-									<div class="form-group">
-										<label for="">가격</label>
-										<div class="input-group mb-3">
-											<div class="input-group-prepend">
-												<span class="input-group-text">$</span>
-											</div>
-											<input id="priceInput" type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
-											<!-- <div class="input-group-append">
-												<span class="input-group-text">.00</span>
-											</div> -->
-										</div>
-									</div>
-								</div>
+								</div> -->
 
 
 								<div class="col-md-6 col-lg-4">
@@ -214,18 +101,12 @@
 										<label for="descInput">설명</label>
 										<textarea class="form-control" id="descInput" rows="5"></textarea>
 									</div>
-
-									<div class="form-group">
-										<label for="historyInput">유래</label>
-										<textarea class="form-control" id="historyInput" rows="5"></textarea>
-									</div>
 								</div>
 								
 							</div>
 						</div>
 						<div class="card-action">
-							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
-							<button class="btn btn-success" onclick="javascript:sendLiquorData()">등록</button>
+							<button class="btn btn-success" onclick="javascript:sendData()">등록</button>
 							<button class="btn btn-danger">취소</button>
 						</div>
 					</div>
@@ -250,8 +131,6 @@
 
 		$(document).ready(function(){
 
-			loadCategTree();
-			loadCountryData();
 			setEvent();		
 			previewFile();
     
@@ -287,7 +166,6 @@
 				
 			});
 
-
 			$('#enNameInput').change(function(){
 				// 영어만
 				if( englishRegex.test($("#enNameInput").val()) ) {
@@ -305,94 +183,16 @@
 				}
 			});
 
-
-			$('#regionInput').change(function(){
-
-				// 영어만
-				if( englishRegex.test($("#regionInput").val()) ) {
-					setSuccessOrError($(this), false)
-					alert("영어만 입력해주세요");
-					$("#regionInput").val('')
-					return;
-				}
-
-				if($("#regionInput").val() != null && $("#regionInput").val().length > 0) {
-					setSuccessOrError($(this), true)
-				}
-
-			});
-
-			$('#abvInput').change(function(){
-
-				// 숫자만
-				if( !numberRegex.test($("#abvInput").val()) ) {
-					alert("숫자만 입력해주세요");
-					abvReward = 0;
-					$("#abvInput").val('')
-					setSuccessOrError($(this), false)
-					return;
-				}
-
-				if($("#abvInput").val() != null && $("#abvInput").val().length > 0) {
-					setSuccessOrError($(this), true)
-				}
-
-			});
-
-			$('#vintageInput').change(function(){
-
-				// 숫자만
-				if( !numberRegex.test($("#vintageInput").val()) ) {
-					alert("숫자만 입력해주세요");
-					abvReward = 0;
-					$("#vintageInput").val('')
-					setSuccessOrError($(this), false)
-					return;
-				}
-
-				if($("#vintageInput").val() != null && $("#vintageInput").val().length > 0) {
-					setSuccessOrError($(this), true)
-				}
-
-			});
-
-
-			$('#priceInput').change(function(){
-
-				// 숫자만
-				if( !numberRegex.test($("#priceInput").val()) ) {
-					alert("숫자만 입력해주세요");
-					abvReward = 0;
-					$("#priceInput").val('')
-					setSuccessOrError($(this), false)
-					return;
-				}
-
-				if($("#priceInput").val() != null && $("#priceInput").val().length > 0) {
-					setSuccessOrError($(this), true)
-				}
-
-			});
-
 			$("#descInput").change(function() {
 
-				if($("#descInput").val() != null && $("#descInput").val().length > 20) {
-					setSuccessOrError($(this), true)
-				} else {
-					alert('20자 이상 입력해주세요');
-					setSuccessOrError($(this), false)
-				}			
+				setSuccessOrError($(this), true);
 
-			});
-
-			$("#historyInput").change(function() {
-
-				if($("#historyInput").val() != null && $("#historyInput").val().length > 20) {
-					setSuccessOrError($(this), true)
-				} else {
-					alert('20자 이상 입력해주세요');
-					setSuccessOrError($(this), false)
-				}
+				// if($("#descInput").val() != null && $("#descInput").val().length > 20) {
+				// 	setSuccessOrError($(this), true)
+				// } else {
+				// 	alert('20자 이상 입력해주세요');
+				// 	setSuccessOrError($(this), false)
+				// }			
 
 			});
 
@@ -403,7 +203,7 @@
 			var nameKr = $('#korNameInput').val();
 			var nameEn = $('#enNameInput').val();
 
-			var url = "/raw_data_manager/api/liquor_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
+			var url = "/raw_data_manager/api/ingredient_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
 
 			$.ajax({
 				url: url,
@@ -425,7 +225,7 @@
 						for(var i=0; i<data.length; i++) {
 							dupList += "중복: " + data[i]['name_kr'] + " / " + data[i]['name_en'] + "\n";
 						}
-						printWarningPanel("주류 데이터 중복!", dupList);		
+						printWarningPanel("재료 데이터 중복!", dupList);		
 					} else {
 						isDupliCheck = true;
 					}
@@ -434,9 +234,6 @@
 			});
 
 		}
-
-	
-
 
 		function previewFile() {
 			
@@ -463,7 +260,7 @@
 		}
 
 
-		function sendLiquorData() {
+		function sendData() {
 			
 			let formData = new FormData;
 
@@ -483,78 +280,16 @@
 			if(korName != null && korName.length > 0){
 				formData.append('name_kr', korName);
 			} else {
-				alert('술의 한국 이름을 입력해주세요.')
+				alert('재료의 한국 이름을 입력해주세요.')
 				return 0;
 			}
-			
-			
 
 			let enName = $('#enNameInput').val();
 			if(enName != null && enName.length > 0){
 				formData.append('name_en', enName);
 			} else {
-				alert('술의 영어 이름을 입력해주세요.')
+				alert('재료의 영어 이름을 입력해주세요.')
 				return 0;
-			}
-
-			// TODO: 이름 중복 확인
-
-			let abv = $('#abvInput').val();
-			if(abv != null && abv.length > 0){
-				formData.append('abv', parseFloat(abv));
-			} else {
-				alert('술의 도수를 입력해주세요.')
-				return 0;
-			}
-
-
-			if(selCountry != null && selCountry != 0){
-				formData.append('country_id', selCountry);
-			} else {
-				alert('술의 원산지를 선택해주세요.')
-				return 0;
-			}
-
-			categ1 = $('#categ1Select').val();
-			categ2 = $('#categ2Select').val();
-			categ3 = $('#categ3Select').val();
-			categ4 = $('#categ4Select').val();
-
-			// categ1, categ2에 대한 선택만 확인
-			if(categ1 != null && categ1 != "0"
-				&& categ2 != null && categ2 != "0") {
-				
-				formData.append("category1_id", parseInt(categ1));
-				formData.append("category2_id", parseInt(categ2));
-
-				if(categ3 != null && categ3 != "0") {
-					formData.append("category3_id", parseInt(categ3));
-				}
-
-				if(categ4 != null && categ4 != "0") {
-					formData.append("category4_id", parseInt(categ4));
-				}
-
-			} else {
-				alert('카테고리를 선택해주세요!')
-				return 0;
-			}
-
-			// 선택 입력 데이터 확인
-			// 지역, 가격, 설명, 유래
-			let region = $('#regionInput').val();
-			if(region != null && region.length > 0){
-				formData.append("region", region);
-			}
-
-			let vintage = $('#vintageInput').val();
-			if(vintage != null && vintage.length > 0){
-				formData.append("vintage", parseInt(vintage));
-			}
-
-			let price = $('#priceInput').val();
-			if(price != null && price.length > 0){
-				formData.append("price", parseFloat(price));
 			}
 
 			let desc = $('#descInput').val();
@@ -562,18 +297,14 @@
 				formData.append("description", desc);
 			}
 
-			let history = $('#historyInput').val();
-			if(history != null && history.length > 0){
-				formData.append("history", history);
-			}
-			
+			formData.append("category1_id", 32);
 
 			console.log("보내는 데이터 확인")
 			console.log(formData)
 
-			var url = "/raw_data_manager/api/liquor";
+			var url = "/raw_data_manager/api/ingredient";
 
-			console.log("술 등록 API URL : " + url)
+			console.log("재료 등록 API URL : " + url)
 			
 			$.ajax({
 				url:url,
@@ -585,10 +316,10 @@
 				processData:false,
 				data:formData,
 				success:function(data){
-					console.log("insert liquor result")
+					console.log("insert ingredient result")
 					console.log(data)
-					alert("주류 정보 등록 완료.")
-					location.replace("/liquor_list.html")
+					alert("재료 정보 등록 완료.")
+					location.replace("/ingredient_list.html")
 				},
 				error:function(request, status, error){
 				}
@@ -798,69 +529,7 @@
 			}
 		}
 
-
-
-
-
-
-		// 국가 데이터 load
-		var countryList = []
-		function loadCountryData() {
-			
-			var url = "/raw_data_manager/api/country"
-			
-			$.ajax({
-				url: url,
-				type:'get',
-				success:function(data){
-					//console.log(data);
-					if(data.length > 0) {
-						printCountry(data)						
-					}
-					//  else{
-					// 	alert(getErrorMsg(data['state']));
-					// }
-				},
-				error:function(request, status, error){
-					
-				}
-	    	});
-		}
-
-		function printCountry(data) {
-
-			countryList = data
-
-			$('#country').empty();
-			var defaultOption = '<a class="dropdown-item" href="javascript:selectCountry(0)">국가 선택</a>';
-			$('#country').append(defaultOption);
-			
-			for(var i=0; i<countryList.length; i++) {   
-				var country = countryList[i];             
-				var option = '<a class="dropdown-item" href="javascript:selectCountry('+country['country_id']+')"><img src="'+country['image']+'" style="margin: 0px 9px 0px 0px;">'+country['name']+'</a>';
-				
-				$('#country').append(option);
-			}
-		}
-
-		function selectCountry(id) {
-
-			if(id == 0) {
-				$("#countrySelectButton").html('국가 선택');
-				// 선택된 아이디 설정
-				selCountry = id;
-				return;
-			}
-
-			for(var i=0; i<countryList.length; i++) {
-				if(countryList[i]['country_id'] == id) {
-					// 텍스트 설정
-					$("#countrySelectButton").html('<img src="'+countryList[i]['image']+'" style="margin: 0px 9px 0px 0px;">' + countryList[i]['name']);
-					// 선택된 아이디 설정
-					selCountry = id;
-				}
-			}
-		}	
+	
 	</script>
 {% endblock content %}
 

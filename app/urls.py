@@ -11,6 +11,8 @@ urlpatterns = [
     # The home page
     path('', views.index, name='home'),
     path('liquor_list.html', views.liquorList, name='liquorList'),
+    path('ingredient_list.html', views.ingredientList, name='ingredientList'),
+    path('equipment_list.html', views.equipmentList, name='equipmentList'),
     path('modify_liquor.html', views.liquorModify, name='liquorModify'),
 
     # Matches any html file
