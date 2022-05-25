@@ -7,6 +7,27 @@
 
 {% block content %}
 
+	<!-- Modal -->
+	<div class="modal fade" id="ingredientModal" tabindex="-1" role="dialog" aria-labelledby="ingdModalTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="ingdModalTitle">재료 선택</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					...
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">추가</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="content">
 		<div class="page-inner">
 			<div class="page-header">
@@ -238,7 +259,7 @@
 									<div class="form-group">
 										<label for="descInput">재료</label>
 										<br>
-										<button id="addIngredientBtn" class="btn btn-secondary" onclick="" disabled>재료 추가</button>										
+										<button id="addIngredientBtn" class="btn btn-secondary" onclick="" data-toggle="modal" data-target="#ingredientModal">재료 추가</button>										
 									</div>
 									<div class="form-group">
 										<label for="descInput">도구</label>										
