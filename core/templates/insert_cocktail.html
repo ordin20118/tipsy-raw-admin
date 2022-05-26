@@ -7,7 +7,7 @@
 
 {% block content %}
 
-	<!-- Modal -->
+	<!-- Select Ingredient Modal -->
 	<div class="modal fade" id="ingredientModal" tabindex="-1" role="dialog" aria-labelledby="ingdModalTitle" aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
@@ -18,7 +18,45 @@
 					</button>
 				</div>
 				<div class="modal-body">
-					...
+					<table>
+						<thead>
+							<tr>
+								<th scope="col" style="width: 90%"></th>
+								<th scope="col" style="width: 10%"></th>
+							</tr>
+						</thead>				
+						<tbody id="categoryTbody" class="table">
+							<tr>
+								<td>발효주</td>
+								<td>></td>
+							</tr>
+							<tr>
+								<td>증류주</td>
+								<td>></td>
+							</tr>
+						</tbody>						
+					</table>
+					<table class="table" style="display: block;">
+						<thead>
+							<tr>
+								<th scope="col" style="width: 30%"></th>
+								<th scope="col" style="width: 60%"></th>
+								<th scope="col" style="width: 10%"></th>
+							</tr>
+						</thead>
+						<tbody id="ingredientTbody">
+							<tr> 
+								<td>IMG</td>
+								<td>레몬</td>								
+								<td>></td>
+							</tr>
+							<tr>
+								<td>IMG</td>
+								<td>얼음</td>								
+								<td>></td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
