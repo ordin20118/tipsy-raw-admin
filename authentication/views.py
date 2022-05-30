@@ -37,6 +37,8 @@ def login_view(request):
 
 def register_user(request):
 
+    print("하이요")
+
     msg     = None
     success = False
 
