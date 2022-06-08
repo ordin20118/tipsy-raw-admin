@@ -35,8 +35,6 @@ def index(request):
 #@login_required(login_url="/login/")
 def pages(request):
 
-    print("어허 여기가 어디라고")
-
     context = {}
     context['prefix'] = 'http://tipsy.co.kr:8000'
     context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
