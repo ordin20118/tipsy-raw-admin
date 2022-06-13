@@ -716,9 +716,9 @@
 
 						// 변수 설정
 						for (var categ of data) {
-							//console.log(categ)
+							console.log(categ)
 							// '^'을 기준으로 split
-							// 깊이에 따라서 부모 설정
+							// 단계에 따라서 부모 설정
 							var treeStr = categ['categ_tree_key'];
 							splitedArr = treeStr.split('^');
 
@@ -813,16 +813,78 @@
 	    	});
 		}
 
-		function printCategSelect(selLv) {
-  		
-			let noneItem = '<option value=0>선택 없음</option>';
+
+		var selCategList = []	// 선택된 카테고리 리스트
+		function selectIngdCateg(selLv, categId) {
+
+			console.log("[selectIngdCateg]"+selLv+"/"+categId);
+
+			// 리스트에 선택된 ID 추가
+			selCategList.push(categId);
+
+			// 하위 카테고리 유무 확인
+			let parentId = selCategList[selCategList.length-1];
+
 			
-			if(selLv == 0) {		
-				initCategSelect(1);
+			let hasChild = false;
+			if(selLv == 1){
+				if(categLv2Parent.get(parentId) != null){
+					hasChild = true;
+				}
+			} else if(selLv == 2){
+				if(categLv3Parent.get(parentId) != null){
+					hasChild = true;
+				}
+			} else if(selLv == 3){
+				if(categLv4Parent.get(parentId) != null){
+					hasChild = true;
+				}
+			} else if(selLv == 4){				
+			}
+
+			if(hasChild){
+				printCategSelect(selLv, categId);
+			} else {
+				// 해당 카테고리로 데이터 조회
+				// url: http://localhost:8080/raw_data_manager/api/search?keyword=%EB%A0%88%EB%AA%AC&target=ingredient&categId=32&categLv=1
+
+				var url = "http://localhost:8000/raw_data_manager/api/search?keyword=jack&target=all&categId=13&categLv=2";
+					
+				$.ajax({
+					url: url,
+					type:'get',
+					success:function(data){
+						
+						if(data != null) {
+							json = JSON.parse(data);
+							console.log(json);
+						} else {
+							console.log("응답없음...")
+						}
+						
+					},
+					error:function(request, status, error){
+						
+					}
+				});
+			}
+		}
+
+		/*
+			선택된 카테고리에 대한 하위 카테고리 또는 데이터 리스트를 출력한다.
+		*/		
+		function printCategSelect(selLv, categId) {
+
+			if(selLv == 0) {
+
+				$('#categoryTbody').empty();
+
+				console.log(categLv1)
+
 				categLv1.forEach(function(value, key) {
 					let categ = value;
-					let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
-					$('#categ1Select').append(item);
+					let item = makeCategRow(selLv+1, categ['id'], categ['name']);
+					$('#categoryTbody').append(item);
 				});
 			} else if(selLv == 4) {
 				return;
@@ -832,73 +894,59 @@
 			// 카테고리 레벨1 선택되었을 때
 			if(selLv == 1) {
 
-				initCategSelect(2);
+				$('#categoryTbody').empty();			
+				let parentId = selCategList[selCategList.length-1];			
 
-				if($('#categ1Select').val() != '0'){
-					let parentId = Number($('#categ1Select').val());
-
-					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
-					if(categLv2Parent.get(parentId) != null){
-						let childList = categLv2Parent.get(parentId);
-						childList.forEach(function(categ) {
-							let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
-							$('#categ2Select').append(item);
-						})
-					}
+				if(categLv2Parent.get(parentId) != null){
+					let childList = categLv2Parent.get(parentId);
+					childList.forEach(function(categ) {
+						let item = makeCategRow(selLv+1, categ['id'], categ['name']);
+						$('#categoryTbody').append(item);						
+					})
 				}
-				
+								
 			}
 			
 			// 카테고리 레벨2 선택되었을 때
 			if(selLv == 2) {
-				initCategSelect(3);
 
-				if($('#categ2Select').val() != '0'){
+				$('#categoryTbody').empty();
+				let parentId = selCategList[selCategList.length-1];
 
-					let parentId = Number($('#categ2Select').val());
-
-					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
-					if(categLv3Parent.get(parentId) != null){
-						let childList = categLv3Parent.get(parentId);
-						childList.forEach(function(categ) {
-							let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
-							$('#categ3Select').append(item);
-						})
-					}
+				if(categLv3Parent.get(parentId) != null){
+					let childList = categLv3Parent.get(parentId);
+					childList.forEach(function(categ) {
+						let item = makeCategRow(selLv+1, categ['id'], categ['name']);
+						$('#categoryTbody').append(item);				
+					})
 				}
+					
 			}
 			
 			// 카테고리 레벨3 선택되었을 때
 			if(selLv == 3) {
-				initCategSelect(4);
 
-				if($('#categ3Select').val() != '0'){
+				$('#categoryTbody').empty();
+				let parentId = selCategList[selCategList.length-1];
 
-					let parentId = Number($('#categ3Select').val());
-
-					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
-					if(categLv4Parent.get(parentId) != null){
-						let childList = categLv4Parent.get(parentId);
-						childList.forEach(function(categ) {
-							let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
-							$('#categ4Select').append(item);
-						})
-					}
+				if(categLv4Parent.get(parentId) != null){
+					let childList = categLv4Parent.get(parentId);
+					childList.forEach(function(categ) {
+						let item = makeCategRow(selLv+1, categ['id'], categ['name']);
+						$('#categoryTbody').append(item);		
+					})
 				}
 			}
 		}
 
-		function initCategSelect(level){	
-			let noneItem = '<option value=0>선택 없음</option>';	
-			let count = 0;
-			for(var i=level; count<=(5-level); i++,count++) {
-				$('#categ'+i+'Select').empty();
-				$('#categ'+i+'Select').append(noneItem);
-			}
+	
+		function makeCategRow(level, categId, name) {
+			var row = '<tr categ_id="'+categId+'" onclick="selectIngdCateg('+level+','+categId+')">' +
+					  '	<td>' + name + '</td>' +
+					  '	<td>></td>' +
+					  '</tr>';
+			return row;
 		}
-
-
-
 
 
 

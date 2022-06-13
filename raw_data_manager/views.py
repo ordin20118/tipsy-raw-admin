@@ -1,6 +1,7 @@
 from email.contentmanager import raw_data_manager
+from re import L
 from django.utils import timezone
-from core.settings import DATA_ROOT, IMAGE_PATH
+from core.settings import DATA_ROOT, IMAGE_PATH, SVC_MGR_URL
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import render
@@ -17,8 +18,48 @@ from django.core.paginator import Paginator
 import mimetypes
 import PIL.Image as pilimg
 import os
-
+import requests
 from utils.ImagePathUtil import imageIdToPath
+
+
+
+@api_view(['GET'])
+def search(request):
+    if request.method == 'GET':
+
+        search_url = SVC_MGR_URL + "/api/search?t=tipsy"
+
+        keyword = request.GET.get('keyword')
+        if keyword != None:
+            search_url += '&keyword=%s'%keyword
+        
+        target = request.GET.get('target')
+        if target != None:
+            search_url += '&target=%s'%target
+
+        categId = request.GET.get('categId')
+        if categId != None:
+            search_url += '&categId=%s'%categId       
+
+        categLv = request.GET.get('categLv')
+        if categLv != None:
+            search_url += '&categLv=%s'%categLv
+
+        try:
+            search_request = requests.get(search_url)
+            #print("\n[text]:%s"%search_request.text)
+            #print("\n[status]:%s"%search_request.status_code)
+            #print("\n[url]:%s"%search_request.url)
+            if search_request.status_code == 200:
+                return Response(search_request.text)
+            else:
+                return Response("ERROR!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except:
+            return Response("ERROR!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    elif request.method == 'POST':
+        return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['GET', 'POST'])
 def image(request):
