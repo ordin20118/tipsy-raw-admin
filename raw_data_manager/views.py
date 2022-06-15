@@ -27,7 +27,7 @@ from utils.ImagePathUtil import imageIdToPath
 def search(request):
     if request.method == 'GET':
 
-        search_url = SVC_MGR_URL + "/api/search?t=tipsy"
+        search_url = SVC_MGR_URL + "/api/search.tipsy?t=tipsy"
 
         keyword = request.GET.get('keyword')
         if keyword != None:
@@ -70,7 +70,7 @@ def image(request):
         pathStr = request.path_info
 
         # /raw_data_manager/image/ 까지 제거
-        pathStr = pathStr.replace('/raw_data_manager/image/', '')
+        pathStr = pathStr.replace('/admin/raw_data_manager/image/', '')
 
         filename = pathStr.split('/')[-1]
         fl_path = DATA_ROOT + IMAGE_PATH + '/{}'.format(pathStr)

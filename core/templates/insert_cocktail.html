@@ -733,7 +733,7 @@
 			console.log("보내는 데이터 확인")
 			console.log(formData)
 
-			var url = "/raw_data_manager/api/liquor";
+			var url = "/admin/raw_data_manager/api/liquor";
 
 			console.log("술 등록 API URL : " + url)
 			
@@ -766,7 +766,7 @@
 		var categLv4Parent = new Map()
 		function loadCategTree() {
 
-			var url = "/raw_data_manager/api/categ_tree"
+			var url = prefix + "/raw_data_manager/api/categ_tree"
 			
 			$.ajax({
 				url: url,
@@ -911,7 +911,7 @@
 				// 해당 카테고리로 데이터 조회
 				// url: http://localhost:8080/raw_data_manager/api/search?keyword=%EB%A0%88%EB%AA%AC&target=ingredient&categId=32&categLv=1
 
-				var url = "http://localhost:8000/raw_data_manager/api/search?keyword=jack&target=all&categId=13&categLv=2";
+				var url = "/admin/raw_data_manager/api/search?keyword=jack&target=all&categId=13&categLv=2";
 					
 				$.ajax({
 					url: url,
@@ -1017,7 +1017,7 @@
 		var countryList = []
 		function loadCountryData() {
 			
-			var url = "/raw_data_manager/api/country"
+			var url = "/admin/raw_data_manager/api/country"
 			
 			$.ajax({
 				url: url,

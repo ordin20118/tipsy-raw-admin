@@ -27,7 +27,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 #ALLOWED_HOSTS = ['localhost', '127.0.0.1', config('SERVER', default='127.0.0.1'), '172.30.1.32', '', '192.168.25.11', '172.20.10.3']
 ALLOWED_HOSTS = ['*', '192.168.219.106']
 
-SVC_MGR_URL = "http://localhost:8080/svcmgr/svcmgr"
+SVC_MGR_URL = "http://localhost:8080/svcmgr"
 
 # Application definition
 

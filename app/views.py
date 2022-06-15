@@ -20,14 +20,14 @@ from raw_data_manager.forms import *
 from raw_data_manager.models import *
 from raw_data_manager.serializers import *
 
-@login_required(login_url="/login/")
+@login_required(login_url="/admin/login/")
 def index(request):
     
     context = {}
     context['segment'] = 'index'
     # context['prefix'] = 'http://211.37.150.105:8000'
-    context['prefix'] = 'http://tipsy.co.kr:8000'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
 
     html_template = loader.get_template( 'index.html' )
     return HttpResponse(html_template.render(context, request))
@@ -36,8 +36,8 @@ def index(request):
 def pages(request):
 
     context = {}
-    context['prefix'] = 'http://tipsy.co.kr:8000'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:
@@ -58,13 +58,13 @@ def pages(request):
         html_template = loader.get_template( 'page-500.html' )
         return HttpResponse(html_template.render(context, request))
 
-@login_required(login_url="/login/")
+@login_required(login_url="/admin/login/")
 def liquorList(request):
     
     context = {}
     context['segment'] = 'liquorList'
-    context['prefix'] = 'http://tipsy.co.kr:8000'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
 
     # load data
     page = int(request.GET.get('page', 1))
@@ -104,15 +104,15 @@ def liquorList(request):
 
 
 
-@login_required(login_url="/login/")
+@login_required(login_url="/admin/login/")
 def liquorModify(request):
     
     print("This is liquorModify View ... ")
 
     context = {}
     context['segment'] = 'liquorModify'
-    context['prefix'] = 'http://tipsy.co.kr:8000'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
 
     # load data
     liquorId = request.GET.get('liquorId')
@@ -165,13 +165,13 @@ def liquorModify(request):
 
 
 
-@login_required(login_url="/login/")
+@login_required(login_url="/admin/login/")
 def ingredientList(request):
     
     context = {}
     context['segment'] = 'ingredientList'
-    context['prefix'] = 'http://tipsy.co.kr:8000'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
 
     # load data
     page = int(request.GET.get('page', 1))
@@ -207,13 +207,13 @@ def ingredientList(request):
     return HttpResponse(html_template.render(context, request))
 
 
-@login_required(login_url="/login/")
+@login_required(login_url="/admin/login/")
 def equipmentList(request):
     
     context = {}
     context['segment'] = 'equipList'
-    context['prefix'] = 'http://tipsy.co.kr:8000'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
 
     # load data
     page = int(request.GET.get('page', 1))
