@@ -180,6 +180,26 @@ class JoinedEquipment(models.Model):
         db_table = 'equipment'
 
 
+class Cocktail(models.Model):
+    cocktail_id = models.IntegerField(primary_key=True)
+    name_kr = models.CharField(max_length=150, blank=True, null=True)
+    name_en = models.CharField(max_length=150, blank=True, null=True)
+    state = models.IntegerField(blank=True, null=True)
+    strength = models.IntegerField(blank=True, null=True)
+    description = models.CharField(max_length=45, blank=True, null=True)
+    json_data = models.TextField(blank=True, null=True)
+    source = models.IntegerField(blank=True, null=True)
+    reg_admin = models.IntegerField(blank=True, null=True)
+    update_admin = models.IntegerField(blank=True, null=True)
+    reg_date = models.DateTimeField(blank=True, null=True)
+    update_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'cocktail'
+
+
+
 class RawCategory(models.Model):
     id = models.IntegerField(primary_key=True)
     parent = models.IntegerField(blank=True, null=True)

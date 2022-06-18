@@ -695,6 +695,45 @@ def equipment_dup_chck(request):
     
     return Response(serialized_dup_list.data)
 
+@api_view(['GET'])
+def cocktail_dup_chck(request):
+
+    # name_kr, name_en 수신
+    name_kr = request.GET.get('nameKr')
+    name_en = request.GET.get('nameEn')
+
+    # null and '' check
+    # lowercase, remove whitespace
+    if name_kr != None and len(name_kr) > 0:
+        name_kr = name_kr.lower()
+        name_kr = name_kr.replace(" ", "")
+    else:
+        name_kr = ""
+
+    if name_en != None and len(name_en) > 0:
+        name_en = name_en.lower()
+        name_en = name_en.replace(" ", "")
+    else:
+        name_en = ""
+
+    q = '''
+        SELECT 
+            cocktail_id,
+            name_kr,
+            name_en
+        FROM tipsy_raw.cocktail
+        WHERE lower(replace(name_kr, ' ', '')) = '%s'
+        OR lower(replace(name_en, ' ', '')) = '%s'        
+    ''' % (name_kr, name_en)
+
+    # db query
+    dup_list = Cocktail.objects.raw(q)
+    serialized_dup_list = CocktailSerializer(dup_list, many=True) 
+    
+    # TODO: 이름 리스트만 반환 할 수 있도록 변경
+    
+    return Response(serialized_dup_list.data)
+
 
 # 국가 데이터 API
 @api_view(['GET'])
