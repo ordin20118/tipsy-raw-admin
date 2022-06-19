@@ -37,14 +37,14 @@
 							</tr>
 						</thead>				
 						<tbody id="categoryTbody" class="table">
-							<tr>
+							<!-- <tr>
 								<td>발효주</td>
 								<td>></td>
 							</tr>
 							<tr>
 								<td>증류주</td>
 								<td>></td>
-							</tr>
+							</tr> -->
 						</tbody>						
 					</table>
 					<table id="ingdDataTable" class="table" style="display: none;">
@@ -56,7 +56,7 @@
 							</tr>
 						</thead>
 						<tbody id="ingredientTbody">
-							<tr> 
+							<!-- <tr> 
 								<td>IMG</td>
 								<td>레몬</td>								
 								<td>></td>
@@ -65,7 +65,7 @@
 								<td>IMG</td>
 								<td>얼음</td>								
 								<td>></td>
-							</tr>
+							</tr> -->
 						</tbody>
 					</table>
 				</div>
@@ -366,7 +366,7 @@
 									</div>
 
 									<div id="selectedIngdDiv" style="height: 140px; border: 1px solid grey; padding: 5px; overflow: auto; white-space: nowrap;">
-										<div style="width: 70px; display: inline-block;">
+										<!-- <div style="width: 70px; display: inline-block;">
 											<div style="padding: 0px 5px 0px 0px; text-align: right;">
 												<span onclick="">x</span>
 											</div>
@@ -376,7 +376,8 @@
 											<div style="text-align: center; padding: 3px;">
 												<span><b>이름</b></span>
 											</div>
-										</div>						
+										</div>						 
+										-->
 									</div>
 
 									<div class="form-group">
@@ -906,28 +907,28 @@
 
 			console.log("[selectIngdCateg]selLv:"+selLv+"/categId:"+categId);
 
+			if(selLv > 0) {
+				$('#backCategBtn').attr("disabled", false);
+			}
+
 			// 리스트에 선택된 ID 추가
+			lastLevel = selLv;
 			selCategList.push(categId);
 			printSelCategText();
-			lastLevel = selLv;
-
-			// 하위 카테고리 유무 확인
-			let parentId = selCategList[selCategList.length-1];
-
-			console.log("[parentId]:"+parentId)
-
 			
+
+			// 하위 카테고리 유무 확인			
 			let hasChild = false;
 			if(selLv == 1){
-				if(categLv2Parent.get(parentId) != null){
+				if(categLv2Parent.get(categId) != null){
 					hasChild = true;
 				}
 			} else if(selLv == 2){
-				if(categLv3Parent.get(parentId) != null){
+				if(categLv3Parent.get(categId) != null){
 					hasChild = true;
 				}
 			} else if(selLv == 3){
-				if(categLv4Parent.get(parentId) != null){
+				if(categLv4Parent.get(categId) != null){
 					hasChild = true;
 				}
 			} else if(selLv == 4){				
@@ -969,7 +970,7 @@
 			}
 
 			if ( $('#ingdDataTable').css('display') != 'none' ) {
-				console.log(">> 지금 데이터 테블이 보여지고 있음")
+				$('#ingredientTbody').empty();
 				$('#ingdDataTable').hide();
 				$('#ingdCategoryTable').show();
 			}
@@ -981,15 +982,17 @@
 		var ingdMap = new Map();
 		var equipMap = new Map();
 		function loadIngdData() {
-			// 페이징 처리
-			// 
+			
+			$('#ingdCategoryTable').hide();
+			$('#ingdDataTable').show();
+			
 			// 해당 카테고리로 데이터 조회
 			// url: http://localhost:8080/raw_data_manager/api/search?keyword=%EB%A0%88%EB%AA%AC&target=ingredient&categId=32&categLv=1
 
 			let lastCateg = selCategList[selCategList.length-1];
 			var url = "/admin/raw_data_manager/api/search?target=all&categId="+lastCateg+"&categLv="+lastLevel;
 			
-			console.log("[Get ingredient list URL]:"+url);
+			//console.log("[Get ingredient list URL]:"+url);
 		
 			$.ajax({
 				url: url,
@@ -1043,9 +1046,34 @@
 				}
 			}
 
-			$('#ingdDataTable').show();
-			$('#ingdCategoryTable').hide();
-			
+			if(ingdList != null) {
+				for(var i=0; i<ingdList.length; i++) {
+					let ingd = ingdList[i];
+					ingdMap.set(ingd['ingd_id'], ingd);
+					let imgUrl = imgprefix + '/' + ingd['rep_img'] + '_300.png';
+					let item = '<tr>' +
+							   '	<td><img src="'+imgUrl+'" style="width: 70px;"/></td>' +
+							   '	<td>'+ingd['name_kr']+'<br>'+ingd['name_en']+'</td>' +
+							   '	<td><button type="button" class="btn btn-default" onclick="addIngd('+ingd['ingd_id']+')">선택</button></td>' +
+							   '</tr>';
+					$('#ingredientTbody').append(item);
+				}
+			}
+
+			if(equipList != null) {
+				for(var i=0; i<equipList.length; i++) {
+					let equip = equipList[i];
+					equipMap.set(equip['equip_id'], equip);
+					let imgUrl = imgprefix + '/' + equip['rep_img'] + '_300.png';
+					let item = '<tr>' +
+							   '	<td><img src="'+imgUrl+'" style="width: 70px;"/></td>' +
+							   '	<td>'+equip['name_kr']+'<br>'+equip['name_en']+'</td>' +
+							   '	<td><button type="button" class="btn btn-default" onclick="addEquip('+ingd['equip_id']+')">선택</button></td>' +
+							   '</tr>';
+					$('#ingredientTbody').append(item);
+				}
+			}
+
 		}
 
 
@@ -1054,9 +1082,20 @@
 		var selectedIngdList = [];
 		var selectedEquipList = [];
 		function addLiquor(liquorId) {
-			console.log("주류 추가");
-			console.log(liquorId);
-			console.log(liquorMap.get(liquorId));
+
+			for(var i=0; i<selectedLiquorList.length; i++) {
+				if(selectedLiquorList[i]['liquor_id'] == liquorId) {
+					swal("이미 추가한 재료입니다.", {
+						icon: "error",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+					return;
+				}
+			}
 
 			// 선택 컨펌 받기
 			swal({
@@ -1081,9 +1120,64 @@
 					selectedIngredientList.push(liquor);
 					selectedLiquorList.push(liquor);
 
-					console.log("주류 재료 추가 확인");
+					// print selected ingredient list
+					printSelectedIngredient();
+
+					swal("재료가 추가 되었습니다.", {
+						icon: "success",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+				}				
+			});
+		}
+
+		function addIngd(ingdId) {
+			
+			for(var i=0; i<selectedIngdList.length; i++) {
+				if(selectedIngdList[i]['ingd_id'] == ingdId) {
+					swal("이미 추가한 재료입니다.", {
+						icon: "error",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+					return;
+				}
+			}
+
+
+			// 선택 컨펌 받기
+			swal({
+				title: '정말로 해당 재료를 선택하시겠습니까?',
+				text: "",
+				type: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						text : '취소',
+						className: 'btn btn-danger'
+					},        			
+					confirm: {
+						text : '재료 추가',
+						className : 'btn btn-success'
+					}
+				}
+			}).then((willAdd) => {
+				if (willAdd) {
+					var ingd = ingdMap.get(ingdId);
+					ingd['content_type'] = CONTENT_TYPE_INGD;
+					selectedIngredientList.push(ingd);
+					selectedIngdList.push(ingd);
+
+					console.log("재료 추가 확인");
 					console.log(selectedIngredientList);
-					console.log(selectedLiquorList);
+					console.log(selectedIngdList);
 
 					// print selected ingredient list
 					printSelectedIngredient();
@@ -1098,16 +1192,65 @@
 					});
 				}				
 			});
-
-
-		}
-
-		function addIngd(ingdId) {
-			console.log("재료 추가:"+ingdId);
 		}
 
 		function addEquip(equipId) {
-			console.log("장비 추가:"+equipId);
+		
+
+			for(var i=0; i<selectedEquipList.length; i++) {
+				if(selectedEquipList[i]['equip_id'] == equipId) {
+					swal("이미 추가한 재료입니다.", {
+						icon: "error",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+					return;
+				}
+			}
+
+			// 선택 컨펌 받기
+			swal({
+				title: '정말로 해당 재료를 선택하시겠습니까?',
+				text: "",
+				type: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						text : '취소',
+						className: 'btn btn-danger'
+					},        			
+					confirm: {
+						text : '재료 추가',
+						className : 'btn btn-success'
+					}
+				}
+			}).then((willAdd) => {
+				if (willAdd) {
+					var equip = equipMap.get(equipId);
+					equip['content_type'] = CONTENT_TYPE_EQUIP;
+					selectedIngredientList.push(equip);
+					selectedEquipList.push(equip);
+
+					console.log("장비 추가 확인");
+					console.log(selectedIngredientList);
+					console.log(selectedEquipList);
+
+					// print selected ingredient list
+					printSelectedIngredient();
+
+					swal("재료가 추가 되었습니다.", {
+						icon: "success",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+				}				
+			});
 		}
 
 
@@ -1137,9 +1280,18 @@
 					repImgUrl = imgprefix + "/" + ingredient['rep_img'] + "_300.png";
 				}
 
-				var item = '<div style="width: 70px; display: inline-block;">' +
-						   '	<div style="padding: 0px 5px 0px 0px; text-align: right;">' +
-						   '		<span onclick="">x</span>' +
+				var itemId = null;
+				if(ingredient['liquor_id'] != null) {
+					itemId = ingredient['liquor_id'];
+				} else if(ingredient['ingd_id'] != null) {
+					itemId = ingredient['ingd_id'];
+				} else if(ingredient['equip_id'] != null) {
+					itemId = ingredient['equip_id'];
+				}
+
+				var item = '<div style="width: auto; margin: 0px 5px 0px 0px;display: inline-block;">' +
+						   '	<div style="padding: 0px 10px 0px 0px; text-align: right;">' +
+						   '		<span onclick="removeIngredient('+ingredient['content_type']+', '+itemId+')">x</span>' +
 						   '	</div>' +
 						   '	<div style="text-align: center;">' +
 						   '		<img src="'+repImgUrl+'" style="width: 50px;">' +
@@ -1151,21 +1303,23 @@
 				$('#selectedIngdDiv').append(item);
 			}
 
-		}
-
-
-		function searchAll() {
+			$("#ingredientModal").modal("hide");
 
 		}
+
+		// 선택된 재료를 취소
+		function removeIngredient(contentType, id) {
+
+			console.log("========= [removeIngredient] =========");
+			console.log("content-type:["+contentType+"] / id:["+id+"]")
+
+		}
+
 
 		/*
 			선택된 카테고리에 대한 하위 카테고리 또는 데이터 리스트를 출력한다.
 		*/		
 		function printCategSelect(selLv, categId) {
-
-			if(selLv > 0) {
-				$('#backCategBtn').attr("disabled", false);
-			}
 
 			if(selLv == 0) {
 
