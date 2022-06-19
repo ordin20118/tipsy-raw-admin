@@ -354,21 +354,7 @@
 										<label for="descInput">설명</label>
 										<textarea class="form-control" id="descInput" rows="5"></textarea>
 									</div>
-
-									<!-- 
-									<div class="form-group">
-										<label for="">가격</label>
-										<div class="input-group mb-3">
-											<div class="input-group-prepend">
-												<span class="input-group-text">$</span>
-											</div>
-											<input id="priceInput" type="text" class="form-control" aria-label="Amount (to the nearest dollar)">
-											<div class="input-group-append">
-												<span class="input-group-text">.00</span>
-											</div> 
-										</div>
-									</div>
-									-->
+									
 								</div>
 
 
@@ -378,6 +364,21 @@
 										<br>
 										<button id="addIngredientBtn" class="btn btn-secondary" onclick="" data-toggle="modal" data-target="#ingredientModal">재료 추가</button>										
 									</div>
+
+									<div id="selectedIngdDiv" style="height: 140px; border: 1px solid grey; padding: 5px; overflow: auto; white-space: nowrap;">
+										<div style="width: 70px; display: inline-block;">
+											<div style="padding: 0px 5px 0px 0px; text-align: right;">
+												<span onclick="">x</span>
+											</div>
+											<div style="text-align: center;">
+												<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg" style="width: 60px;">
+											</div>
+											<div style="text-align: center; padding: 3px;">
+												<span><b>이름</b></span>
+											</div>
+										</div>						
+									</div>
+
 									<div class="form-group">
 										<label for="descInput">도구</label>										
 									</div>
@@ -647,7 +648,7 @@
 		}
 
 
-		function sendLiquorData() {
+		function sendCocktailData() {
 			
 			let formData = new FormData;
 
@@ -780,12 +781,12 @@
 
 		}
 
-		var categTree = []
-		var categMap = new Map()
-		var categLv1 = new Map()
-		var categLv2Parent = new Map()
-		var categLv3Parent = new Map()
-		var categLv4Parent = new Map()
+		var categTree = [];
+		var categMap = new Map();
+		var categLv1 = new Map();
+		var categLv2Parent = new Map();
+		var categLv3Parent = new Map();
+		var categLv4Parent = new Map();
 		function loadCategTree() {
 
 			var url = "/admin/raw_data_manager/api/categ_tree"
@@ -935,15 +936,12 @@
 			if(hasChild){
 				printCategSelect(selLv, categId);
 			} else {
-				loadingdData();
+				loadIngdData();
 			}
 		}
 
 		// 현재까지 선택된 카테고리를 텍스트로 출력 (ex: 증류주 > 위스키 > 스카치위스키)
 		function printSelCategText(){
-			console.log(">>>>> 선택된 카테고리 출력 <<<<<")
-			console.log(selCategList)
-
 			$('#selectedCategText').empty();			
 			for(var i=0; i<selCategList.length; i++) {
 				//console.log(categMap.get(selCategList[i])['name']);
@@ -955,14 +953,10 @@
 		}
 
 		// 선택된 카테고리 뒤로가기
-		function backToCategory() {		
-			console.log(">>>>> 뒤로가기 <<<<<");
+		function backToCategory() {
 			
 			selCategList = selCategList.slice(0, selCategList.length-1);
 			lastLevel = lastLevel - 1;
-
-			console.log("last level:"+lastLevel);
-			
 			
 			if(lastLevel == 0) {
 				$('#backCategBtn').attr("disabled", true);				
@@ -974,8 +968,6 @@
 				selectIngdCateg(lastLevel, categId);
 			}
 
-			// TODO:이
-			console.log("ingdDataTable display value: " + $('#ingdDataTable').css('display'));
 			if ( $('#ingdDataTable').css('display') != 'none' ) {
 				console.log(">> 지금 데이터 테블이 보여지고 있음")
 				$('#ingdDataTable').hide();
@@ -983,8 +975,12 @@
 			}
 		}
 
+		// 선택된 카테고리에 대한 재료 데이터 가져오기
 		var nextIngdPage = 1;
-		function loadingdData() {
+		var liquorMap = new Map();
+		var ingdMap = new Map();
+		var equipMap = new Map();
+		function loadIngdData() {
 			// 페이징 처리
 			// 
 			// 해당 카테고리로 데이터 조회
@@ -1002,10 +998,7 @@
 					
 					if(data != null) {
 						json = JSON.parse(data);
-						console.log(json);
 						printIngdData(json, true);
-					} else {
-						console.log("응답없음...")
 					}
 					
 				},
@@ -1027,7 +1020,7 @@
 				<tr> 
 					<td>IMG</td>
 					<td>레몬</td>								
-					<td>></td>
+					<td>선택</td>
 				</tr>
 			*/
 
@@ -1039,6 +1032,7 @@
 			if(liquorList != null) {
 				for(var i=0; i<liquorList.length; i++) {
 					let liquor = liquorList[i];
+					liquorMap.set(liquor['liquor_id'], liquor);
 					let imgUrl = imgprefix + '/' + liquor['rep_img'] + '_300.png';
 					let item = '<tr>' +
 							   '	<td><img src="'+imgUrl+'" style="width: 70px;"/></td>' +
@@ -1054,8 +1048,58 @@
 			
 		}
 
+
+		var selectedIngredientList = [];
+		var selectedLiquorList = [];
+		var selectedIngdList = [];
+		var selectedEquipList = [];
 		function addLiquor(liquorId) {
-			console.log("주류 추가:"+liquorId);
+			console.log("주류 추가");
+			console.log(liquorId);
+			console.log(liquorMap.get(liquorId));
+
+			// 선택 컨펌 받기
+			swal({
+				title: '정말로 해당 재료를 선택하시겠습니까?',
+				text: "",
+				type: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						text : '취소',
+						className: 'btn btn-danger'
+					},        			
+					confirm: {
+						text : '재료 추가',
+						className : 'btn btn-success'
+					}
+				}
+			}).then((willAdd) => {
+				if (willAdd) {
+					var liquor = liquorMap.get(liquorId);
+					liquor['content_type'] = CONTENT_TYPE_LIQUOR;
+					selectedIngredientList.push(liquor);
+					selectedLiquorList.push(liquor);
+
+					console.log("주류 재료 추가 확인");
+					console.log(selectedIngredientList);
+					console.log(selectedLiquorList);
+
+					// print selected ingredient list
+					printSelectedIngredient();
+
+					swal("재료가 추가 되었습니다.", {
+						icon: "success",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+				}				
+			});
+
+
 		}
 
 		function addIngd(ingdId) {
@@ -1065,6 +1109,50 @@
 		function addEquip(equipId) {
 			console.log("장비 추가:"+equipId);
 		}
+
+
+		// 선택된 모든 재료들을 화면에 출력한다.
+		function printSelectedIngredient() {
+
+			$('#selectedIngdDiv').empty();
+
+			for(var i=0; i<selectedIngredientList.length; i++) {
+				var ingredient = selectedIngredientList[i];
+				console.log(ingredient);
+				/*
+				<div style="width: 70px; display: inline-block;">
+					<div style="padding: 0px 5px 0px 0px; text-align: right;">
+						<span onclick="">x</span>
+					</div>
+					<div style="text-align: center;">
+						<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg" style="width: 60px;">
+					</div>
+					<div style="text-align: center; padding: 3px;">
+						<span><b>이름</b></span>
+					</div>
+				</div>
+				*/
+				var repImgUrl = "http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg";
+				if(ingredient['rep_img'] != null && ingredient['rep_img'].length > 0) {
+					repImgUrl = imgprefix + "/" + ingredient['rep_img'] + "_300.png";
+				}
+
+				var item = '<div style="width: 70px; display: inline-block;">' +
+						   '	<div style="padding: 0px 5px 0px 0px; text-align: right;">' +
+						   '		<span onclick="">x</span>' +
+						   '	</div>' +
+						   '	<div style="text-align: center;">' +
+						   '		<img src="'+repImgUrl+'" style="width: 50px;">' +
+						   '	</div>' +
+						   '	<div style="text-align: center; padding: 3px;">' +
+						   '		<span><b>'+ingredient['name_kr']+'</b></span>' +
+						   '	</div>' +
+						   '</div>';
+				$('#selectedIngdDiv').append(item);
+			}
+
+		}
+
 
 		function searchAll() {
 
