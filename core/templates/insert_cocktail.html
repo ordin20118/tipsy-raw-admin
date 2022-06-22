@@ -244,105 +244,105 @@
 										<div class="row gutters-xs">											
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#FAED7D" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #FAED7D;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#584B00" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #584B00;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#FF0000" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #FF0000;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#FF5E00" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #FF5E00;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#662500" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #662500;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
-													<span class="colorinput-color" style="background-color: #FFFFFF;"></span>
+													<input name="color" type="checkbox" value="#F6F6F8" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #F6F6F8;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#86E57F" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #86E57F;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#2F9D27" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #2F9D27;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#FFE400" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #FFE400;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#1E0000" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #1E0000;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#008299" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #008299;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#FFB2D9" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #FFB2D9;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#FAF4C0" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #FAF4C0;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#80F2CA" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #80F2CA;"></span>
 												</label>
 											</div>
 
 											<div class="col-auto">
 												<label class="colorinput">
-													<input name="color" type="checkbox" value="warning" class="colorinput-input">
+													<input name="color" type="checkbox" value="#DFE182" class="colorinput-input">
 													<span class="colorinput-color" style="background-color: #DFE182;"></span>
 												</label>
 											</div>
@@ -385,8 +385,10 @@
 									</div>
 									<div class="form-group">
 										<label for="recipe1">레시피</label>
-										<input type="text" id="recipe1" placeholder="칵테일 레시피를 입력해주세요." class="form-control">
-										<div class="col-md-12" style="text-align: center;">
+										<div id="recipeDiv">
+											<input type="text" name="recipe" placeholder="칵테일 레시피를 입력해주세요." class="form-control" style="margin-bottom: 5px;">
+										</div>
+										<div class="col-md-12" style="text-align: center;" onclick="addInputRecipe()">
 											<br>
 											<i class="fa fas fa-plus"></i>
 										</div>										
@@ -397,7 +399,7 @@
 						</div>
 						<div class="card-action">
 							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
-							<button class="btn btn-success" onclick="javascript:sendLiquorData()">등록</button>
+							<button class="btn btn-success" onclick="javascript:sendCocktailData()">등록</button>
 							<button class="btn btn-danger">취소</button>
 						</div>
 					</div>
@@ -407,6 +409,8 @@
 	</div>
 
 	<script type="text/javascript">
+
+		var COCTAIL_CATEGORY_NUM = 32;
 
 		var isDupliCheck = false;
 
@@ -420,9 +424,9 @@
 		var koreanRegex = /[^ㄱ-ㅎ가-힣\s0-9]/g;
 		var englishRegex = /[^a-zA-Z\s0-9]/g;
 
-		$(document).ready(function(){
+		var recipeList = [""];
 
-			console.log(imgprefix);
+		$(document).ready(function(){
 
 			loadCategTree();
 			loadCountryData();
@@ -492,74 +496,6 @@
 			});
 
 
-			$('#regionInput').change(function(){
-
-				// 영어만
-				if( englishRegex.test($("#regionInput").val()) ) {
-					setSuccessOrError($(this), false)
-					alert("영어만 입력해주세요");
-					$("#regionInput").val('')
-					return;
-				}
-
-				if($("#regionInput").val() != null && $("#regionInput").val().length > 0) {
-					setSuccessOrError($(this), true)
-				}
-
-			});
-
-			$('#abvInput').change(function(){
-
-				// 숫자만
-				if( !numberRegex.test($("#abvInput").val()) ) {
-					alert("숫자만 입력해주세요");
-					abvReward = 0;
-					$("#abvInput").val('')
-					setSuccessOrError($(this), false)
-					return;
-				}
-
-				if($("#abvInput").val() != null && $("#abvInput").val().length > 0) {
-					setSuccessOrError($(this), true)
-				}
-
-			});
-
-			$('#vintageInput').change(function(){
-
-				// 숫자만
-				if( !numberRegex.test($("#vintageInput").val()) ) {
-					alert("숫자만 입력해주세요");
-					abvReward = 0;
-					$("#vintageInput").val('')
-					setSuccessOrError($(this), false)
-					return;
-				}
-
-				if($("#vintageInput").val() != null && $("#vintageInput").val().length > 0) {
-					setSuccessOrError($(this), true)
-				}
-
-			});
-
-
-			$('#priceInput').change(function(){
-
-				// 숫자만
-				if( !numberRegex.test($("#priceInput").val()) ) {
-					alert("숫자만 입력해주세요");
-					abvReward = 0;
-					$("#priceInput").val('')
-					setSuccessOrError($(this), false)
-					return;
-				}
-
-				if($("#priceInput").val() != null && $("#priceInput").val().length > 0) {
-					setSuccessOrError($(this), true)
-				}
-
-			});
-
 			$("#descInput").change(function() {
 
 				if($("#descInput").val() != null && $("#descInput").val().length > 20) {
@@ -568,17 +504,6 @@
 					alert('20자 이상 입력해주세요');
 					setSuccessOrError($(this), false)
 				}			
-
-			});
-
-			$("#historyInput").change(function() {
-
-				if($("#historyInput").val() != null && $("#historyInput").val().length > 20) {
-					setSuccessOrError($(this), true)
-				} else {
-					alert('20자 이상 입력해주세요');
-					setSuccessOrError($(this), false)
-				}
 
 			});
 
@@ -648,11 +573,35 @@
 			}			
 		}
 
+		// 새로운 레시피 입력란을 추가
+		function addInputRecipe() {
+			
+			var hasEmpty = false;
+			$('input:text[name="recipe"]').each(function() {
+				console.log($(this).val());
+				var text = $(this).val();
+				if(text != null && text.length > 0) {
+				} else {
+					console.log("레시피 내용을 입력해주세요.");
+					hasEmpty = true;
+					return;
+				}
+			});
 
+			if(!hasEmpty) {
+				console.log("[새로운 레시피 입력란 추가]");
+				var item = '<input type="text" name="recipe" placeholder="칵테일 레시피를 입력해주세요." class="form-control" style="margin-bottom: 5px;">';
+				$('#recipeDiv').append(item);
+			} else {
+				alert('레시피 입력란을 모두 채워주세요.');
+			}
+		}
+
+
+		// 최종 칵테일 데이터 저장 요청
 		function sendCocktailData() {
 			
 			let formData = new FormData;
-
 
 			// 필수 데이터 확인
 			let imageData = $("#imageFileInput")[0].files[0];
@@ -674,7 +623,6 @@
 			}
 			
 			
-
 			let enName = $('#enNameInput').val();
 			if(enName != null && enName.length > 0){
 				formData.append('name_en', enName);
@@ -683,13 +631,21 @@
 				return 0;
 			}
 
-			// TODO: 이름 중복 확인
+			if(!isDupliCheck){
+				alert('이름 중복 확인을 해주세요.')
+				return 0;
+			}
 
-			let abv = $('#abvInput').val();
-			if(abv != null && abv.length > 0){
-				formData.append('abv', parseFloat(abv));
+			// TODO: 선택된 도수 레벨 넣어주기
+			let strengthLevel = $("input[name='strengthLevel']:checked").val();
+			strengthLevel = parseInt(strengthLevel);
+			console.log("[Strength Level]")
+			console.log(strengthLevel)
+
+			if(isNaN(strengthLevel) != true && strengthLevel != null && strengthLevel.length < 0){
+				formData.append('strength_level', strengthLevel);
 			} else {
-				alert('술의 도수를 입력해주세요.')
+				alert('칵테일의 알코올 등급을 입력해주세요.')
 				return 0;
 			}
 
@@ -701,61 +657,51 @@
 				return 0;
 			}
 
-			categ1 = $('#categ1Select').val();
-			categ2 = $('#categ2Select').val();
-			categ3 = $('#categ3Select').val();
-			categ4 = $('#categ4Select').val();
-
-			// categ1, categ2에 대한 선택만 확인
-			if(categ1 != null && categ1 != "0"
-				&& categ2 != null && categ2 != "0") {
-				
-				formData.append("category1_id", parseInt(categ1));
-				formData.append("category2_id", parseInt(categ2));
-
-				if(categ3 != null && categ3 != "0") {
-					formData.append("category3_id", parseInt(categ3));
-				}
-
-				if(categ4 != null && categ4 != "0") {
-					formData.append("category4_id", parseInt(categ4));
-				}
-
-			} else {
-				alert('카테고리를 선택해주세요!')
-				return 0;
-			}
-
+			formData.append("category1_id", COCTAIL_CATEGORY_NUM);
+		
 			// 선택 입력 데이터 확인
-			// 지역, 가격, 설명, 유래
-			let region = $('#regionInput').val();
-			if(region != null && region.length > 0){
-				formData.append("region", region);
-			}
-
-			let vintage = $('#vintageInput').val();
-			if(vintage != null && vintage.length > 0){
-				formData.append("vintage", parseInt(vintage));
-			}
-
-			let price = $('#priceInput').val();
-			if(price != null && price.length > 0){
-				formData.append("price", parseFloat(price));
-			}
-
+			// 가격, 설명, 유래
 			let desc = $('#descInput').val();
 			if(desc != null && desc.length > 0){
 				formData.append("description", desc);
 			}
 
-			let history = $('#historyInput').val();
-			if(history != null && history.length > 0){
-				formData.append("history", history);
+
+			// detail_json
+			var detailJson = {};
+			// 색상
+			$("input:checkbox[name='color']").each(function(){
+				if($(this).is(":checked") == true) {
+					console.log($(this).val());
+				}
+			});
+
+			// 재료
+			
+			
+			// 레시피
+			var recipeCnt = 0;
+			$('input:text[name="recipe"]').each(function() {
+				var text = $(this).val();
+				if(text != null && text.length > 0) {
+					recipeCnt++;
+					$(this).parent().removeClass('has-error')
+				} else {					
+					$(this).parent().addClass('has-error')
+				}
+			});
+
+			if(recipeCnt <= 2) {
+				alert('레시피의 개수가 너무 적습니다.');
 			}
 			
 
+
+
 			console.log("보내는 데이터 확인")
 			console.log(formData)
+
+			return 0;
 
 			var url = "/admin/raw_data_manager/api/liquor";
 
