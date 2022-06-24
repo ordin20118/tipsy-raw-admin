@@ -1,8 +1,4 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
 from django.urls import path, re_path
 from raw_data_manager import views
 
@@ -19,6 +15,7 @@ urlpatterns = [
     path('api/equipment_dup_chck', views.equipment_dup_chck, name='equipmentDupChck'),
     path('api/cocktail_dup_chck', views.cocktail_dup_chck, name='cocktailDupChck'),
     path('api/search', views.search, name='search'),
+    #path('api/dashboard/count', views.dashboardCount, name='dashboardCount'),
     re_path(r'^image/.*\.*', views.image, name='image'),
 
 ]
