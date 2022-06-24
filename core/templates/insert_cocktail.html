@@ -410,14 +410,12 @@
 
 	<script type="text/javascript">
 
-		var COCTAIL_CATEGORY_NUM = 32;
+		var COCTAIL_CATEGORY_NUM = 31;
 
 		var isDupliCheck = false;
 
-		var selCountry = 0;
 		var selCategory;
 		
-		var countryList = null;
 		var categoryList = null;
 
 		var numberRegex = /^[0-9|'.']*$/;
@@ -429,7 +427,6 @@
 		$(document).ready(function(){
 
 			loadCategTree();
-			loadCountryData();
 			setEvent();		
 			previewFile();
 
@@ -498,10 +495,10 @@
 
 			$("#descInput").change(function() {
 
-				if($("#descInput").val() != null && $("#descInput").val().length > 20) {
+				if($("#descInput").val() != null && $("#descInput").val().length > 10) {
 					setSuccessOrError($(this), true)
 				} else {
-					alert('20자 이상 입력해주세요');
+					alert('10자 이상 입력해주세요');
 					setSuccessOrError($(this), false)
 				}			
 
@@ -593,7 +590,7 @@
 				var item = '<input type="text" name="recipe" placeholder="칵테일 레시피를 입력해주세요." class="form-control" style="margin-bottom: 5px;">';
 				$('#recipeDiv').append(item);
 			} else {
-				alert('레시피 입력란을 모두 채워주세요.');
+				printWarningPanel('데이터 입력 오류', '레시피 입력란을 모두 채워주세요.');
 			}
 		}
 
@@ -618,16 +615,15 @@
 			if(korName != null && korName.length > 0){
 				formData.append('name_kr', korName);
 			} else {
-				alert('술의 한국 이름을 입력해주세요.')
+				alert('칵테일의 한국 이름을 입력해주세요.')
 				return 0;
 			}
-			
 			
 			let enName = $('#enNameInput').val();
 			if(enName != null && enName.length > 0){
 				formData.append('name_en', enName);
 			} else {
-				alert('술의 영어 이름을 입력해주세요.')
+				alert('칵테일의 영어 이름을 입력해주세요.')
 				return 0;
 			}
 
@@ -642,22 +638,14 @@
 			console.log("[Strength Level]")
 			console.log(strengthLevel)
 
-			if(isNaN(strengthLevel) != true && strengthLevel != null && strengthLevel.length < 0){
-				formData.append('strength_level', strengthLevel);
+			if(isNaN(strengthLevel) != true && strengthLevel != null){
+				formData.append('strength', strengthLevel);
 			} else {
 				alert('칵테일의 알코올 등급을 입력해주세요.')
 				return 0;
 			}
 
-
-			if(selCountry != null && selCountry != 0){
-				formData.append('country_id', selCountry);
-			} else {
-				alert('술의 원산지를 선택해주세요.')
-				return 0;
-			}
-
-			formData.append("category1_id", COCTAIL_CATEGORY_NUM);
+			//formData.append("category1_id", COCTAIL_CATEGORY_NUM);
 		
 			// 선택 입력 데이터 확인
 			// 가격, 설명, 유래
@@ -670,40 +658,79 @@
 			// detail_json
 			var detailJson = {};
 			// 색상
+			var selectedColors = [];
 			$("input:checkbox[name='color']").each(function(){
 				if($(this).is(":checked") == true) {
 					console.log($(this).val());
+					selectedColors.push($(this).val());
 				}
 			});
+			
+			console.log("[selectedColors]")
+			console.log(selectedColors)
+
+			if(selectedColors.length <= 0) {
+				printWarningPanel('데이터 입력 오류', '칵테일 색상을 1개 이상 선택해주세요.');
+			} else {
+				detailJson['color'] = selectedColors;
+			}
+
 
 			// 재료
+			// 재료가 1개이하이면x
+			if(selectedIngredientList.length > 1) {
+				var ingredientJson = makeIngredientData();				
+
+				console.log("[Make Ingredient JSON]");
+				console.log(ingredientJson);
+				
+				detailJson['ingredient'] 	= ingredientJson;
+			} else {
+				printWarningPanel('데이터 입력 오류', '재료를 2개 이상 선택해주세요.');
+				return 0;
+			}
+
+			// 장비 - 최소 1개
+			if(selectedEquipList.length <= 0) {
+				printWarningPanel('데이터 입력 오류', '장비를 선택해주세요.');
+				return 0;
+			}
 			
 			
 			// 레시피
 			var recipeCnt = 0;
+			var recipeList = [];
 			$('input:text[name="recipe"]').each(function() {
 				var text = $(this).val();
 				if(text != null && text.length > 0) {
 					recipeCnt++;
-					$(this).parent().removeClass('has-error')
+					recipeList.push(recipeCnt + ". " + $(this).val());
+					$(this).removeClass('has-error')
 				} else {					
-					$(this).parent().addClass('has-error')
+					$(this).addClass('has-error')
 				}
 			});
 
 			if(recipeCnt <= 2) {
-				alert('레시피의 개수가 너무 적습니다.');
+				printWarningPanel('데이터 입력 오류', '레시피를 3개 이상 입력해주세요.');
+				return 0;
+			} else {
+				var recipeJson = {};
+				detailJson['recipe'] 	= recipeList;
 			}
-			
 
-			console.log("보내는 데이터 확인")
+			formData.append("detail_json", JSON.stringify(detailJson));
+			
+			console.log("[Detail JSON]")
+			console.log(detailJson)
+
+			console.log("[FORM DATA]")
 			console.log(formData)
 
-			return;
 
-			var url = "/admin/raw_data_manager/api/liquor";
+			var url = "/admin/raw_data_manager/api/cocktail";
 
-			console.log("술 등록 API URL : " + url)
+			console.log("칵테일 등록 API URL : " + url)
 			
 			$.ajax({
 				url:url,
@@ -715,15 +742,40 @@
 				processData:false,
 				data:formData,
 				success:function(data){
-					console.log("insert liquor result")
+					console.log("insert cocktail result")
 					console.log(data)
-					alert("주류 정보 등록 완료.")
-					location.replace("/liquor_list.html")
+					alert("칵테일 정보 등록 완료.")
+					location.replace("/admin/cocktail_list.html")
 				},
 				error:function(request, status, error){
 				}
 			})
 
+		}
+
+		// 선택된 재료들의 id만 detail_json에 포함시킴
+		function makeIngredientData() {
+			var res = {};
+			
+			var tmpLiquorList = [];
+			for(var i=0; i<selectedLiquorList.length; i++) {
+				tmpLiquorList.push(selectedLiquorList[i]['liquor_id']);
+			}
+			res['liquor'] = tmpLiquorList;
+
+			var tmpIngdList = [];
+			for(var i=0; i<selectedIngdList.length; i++) {
+				tmpIngdList.push(selectedIngdList[i]['ingd_id']);
+			}
+			res['ingd'] = tmpIngdList;
+
+			var tmpEquipList = [];
+			for(var i=0; i<selectedEquipList.length; i++) {
+				tmpEquipList.push(selectedEquipList[i]['equip_id']);
+			}
+			res['equip'] = tmpEquipList;
+
+			return res;
 		}
 
 		var categTree = [];
@@ -756,7 +808,7 @@
 							if(splitedArr.length > 0) {
 								
 								for(var i=1; i<=splitedArr.length; i++){
-									if(i == 1) {
+									if(i == 1 && categ['category1_id'] != COCTAIL_CATEGORY_NUM) {
 										var info = {
 											'id': categ['category1_id'],
 											'parent': -1,
@@ -1012,7 +1064,7 @@
 					let item = '<tr>' +
 							   '	<td><img src="'+imgUrl+'" style="width: 70px;"/></td>' +
 							   '	<td>'+equip['name_kr']+'<br>'+equip['name_en']+'</td>' +
-							   '	<td><button type="button" class="btn btn-default" onclick="addEquip('+ingd['equip_id']+')">선택</button></td>' +
+							   '	<td><button type="button" class="btn btn-default" onclick="addEquip('+equip['equip_id']+')">선택</button></td>' +
 							   '</tr>';
 					$('#ingredientTbody').append(item);
 				}
@@ -1337,67 +1389,7 @@
 					  '</tr>';
 			return row;
 		}
-
-
-
-		// 국가 데이터 load
-		var countryList = []
-		function loadCountryData() {
-			
-			var url = "/admin/raw_data_manager/api/country"
-			
-			$.ajax({
-				url: url,
-				type:'get',
-				success:function(data){
-					//console.log(data);
-					if(data.length > 0) {
-						printCountry(data)						
-					}
-					//  else{
-					// 	alert(getErrorMsg(data['state']));
-					// }
-				},
-				error:function(request, status, error){
-					
-				}
-	    	});
-		}
-
-		function printCountry(data) {
-
-			countryList = data
-
-			$('#country').empty();
-			var defaultOption = '<a class="dropdown-item" href="javascript:selectCountry(0)">국가 선택</a>';
-			$('#country').append(defaultOption);
-			
-			for(var i=0; i<countryList.length; i++) {   
-				var country = countryList[i];             
-				var option = '<a class="dropdown-item" href="javascript:selectCountry('+country['country_id']+')"><img src="'+country['image']+'" style="margin: 0px 9px 0px 0px;">'+country['name']+'</a>';
-				
-				$('#country').append(option);
-			}
-		}
-
-		function selectCountry(id) {
-
-			if(id == 0) {
-				$("#countrySelectButton").html('국가 선택');
-				// 선택된 아이디 설정
-				selCountry = id;
-				return;
-			}
-
-			for(var i=0; i<countryList.length; i++) {
-				if(countryList[i]['country_id'] == id) {
-					// 텍스트 설정
-					$("#countrySelectButton").html('<img src="'+countryList[i]['image']+'" style="margin: 0px 9px 0px 0px;">' + countryList[i]['name']);
-					// 선택된 아이디 설정
-					selCountry = id;
-				}
-			}
-		}	
+	
 	</script>
 {% endblock content %}
 

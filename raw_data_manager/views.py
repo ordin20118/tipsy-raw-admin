@@ -391,6 +391,136 @@ def liquor(request):
         return Response(respone)
 
 
+@api_view(['GET', 'POST'])
+def cocktail(request):
+    
+    if request.method == 'GET':
+
+        page = int(request.GET.get('page', 1))
+        perPage = int(request.GET.get('perPage', 10))        
+    
+        # TODO: join에 대한 내용을 model에 반영해서 조회하기
+        cocktailList = JoinedCocktail.objects.order_by('-cocktail_id').raw('''
+            SELECT 
+                raw_liquor.*,
+                31 as category1_name,
+                null as category2_name,
+                null as category3_name,
+                null as category4_name,
+                reg_user.username as reg_admin_name,
+                update_user.username as update_admin_name,
+                if(image.path is null, 'default', image.path) as rep_img
+            FROM tipsy_raw.cocktail
+            LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = cocktail.reg_admin
+            LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = cocktail.update_admin
+            LEFT OUTER JOIN image ON image.content_id = cocktail.cocktail_id AND image.content_type = 200 AND image.image_type = 0
+        ''')
+
+
+        paginator = Paginator(cocktailList, perPage)  # 페이지당 10개씩 보여주기
+        page_obj = paginator.get_page(page)
+
+        serializer = JoinedCocktailSerializer(page_obj, many=True)       
+        
+        return Response(serializer.data)
+        
+
+    elif request.method == 'POST':
+        respone = 'Success Save Cocktail Data'
+        
+        print(request.POST)
+        print("\n\n")
+
+        # 칵테일 데이터 저장 + 이미지 저장 트랜잭션 처리
+        with transaction.atomic():
+
+            # validate data
+            form = CocktailForm(request.POST, request.FILES)
+            
+            if form.is_valid():
+                print("Valid!!")
+                # save cocktail data in DB
+                cocktail = form.save(commit=False)
+                cocktail.upload_state = 0
+                cocktail.update_state = 0
+                cocktail.reg_admin = request.user.id
+                cocktail.reg_date = timezone.now()
+                cocktail.save()
+
+                cocktailId = cocktail.cocktail_id
+
+                logInfo = ManageLog()
+                logInfo.admin_id = request.user.id
+                logInfo.job_code = JobInfo.JOB_ADD_COCKTAIL
+                logInfo.job_name = JobInfo.JOBN_ADD_COCKTAIL
+                logInfo.content_id = cocktailId
+                logInfo.content_type = ContentInfo.CONTENT_TYPE_COCTAIL
+                logInfo.save()
+                
+                # save img data
+                imageFile = request.FILES.get('image_file', False)
+
+                if imageFile == False:
+                    raise Exception("No Image File")
+                else:          
+                    
+                    # 1. 이미지 데이터 DB 저장
+                    imgData = Image()
+                    imgData.image_type = Image.IMG_TYPE_REP
+                    imgData.content_id = cocktailId
+                    imgData.content_type = ContentInfo.CONTENT_TYPE_COCTAIL
+                    imgData.is_open = Image.IMG_STATUS_PUB
+                    imgData.save()
+
+                    # 2. 이미지 ID를 이용한 경로 생성
+                    imgPath = imageIdToPath(imgData.image_id)
+
+                    # 3. 원본, 300, 600 3가지로 저장          
+                    # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
+                    # 업로드할 이미지 데이터 pillow로 객체화
+                    img = pilimg.open(imageFile)
+
+                    # 저장할 경로 폴더 존재 확인
+                    imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
+
+                    if os.path.isdir(imgDir) == False:
+                        os.makedirs(imgDir)
+                    
+                    imgOrgPath = imgDir + str(imgData.image_id) + '.' + 'png'
+                    
+                    img.save(imgOrgPath)
+
+                    # resize 300
+                    img300Path = imgDir + str(imgData.image_id) + '_300.' + 'png'
+                    height_300 = getScaledHeight(img.width, img.height, 300)
+
+                    img300 = img.resize((300, height_300))
+                    img300.save(img300Path)
+
+                    # resize 600
+                    img600Path = imgDir + str(imgData.image_id) + '_600.' + 'png'
+                    height_600 = getScaledHeight(img.width, img.height, 600)
+                    
+                    img600 = img.resize((600, height_600))
+                    img600.save(img600Path)
+
+                    # DB에 이미지 경로 업데이트
+                    imgData.path = imgPath + "/" + str(imgData.image_id)
+                    imgData.save(update_fields=['path'])
+
+                    # 임시 파일 저장 이름
+                    #length_of_string = 8
+                    #tmpName = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length_of_string))
+
+                return Response(respone, status=status.HTTP_200_OK)
+            else:
+                print("No Validated")
+                # TODO: return error response
+                return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+      
+        return Response(respone)
+
+
 
 
 @api_view(['GET', 'POST'])
@@ -423,6 +553,9 @@ def ingredient(request):
                 ingredient.save()
 
                 ingdId = ingredient.ingd_id
+
+                print("[INGD ID]")
+                print(ingdId)
 
                 logInfo = ManageLog()
                 logInfo.admin_id = request.user.id

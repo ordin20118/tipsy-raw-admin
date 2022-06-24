@@ -37,6 +37,11 @@ class CocktailSerializer(serializers.ModelSerializer):
         model = Cocktail
         fields = '__all__'
 
+class JoinedCocktailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JoinedCocktail
+        fields = '__all__'
+
 
 class RawCategorySerializer(serializers.ModelSerializer):
     class Meta:

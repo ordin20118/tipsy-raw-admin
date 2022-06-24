@@ -1,6 +1,6 @@
 from importlib.metadata import requires
 from django import forms
-from raw_data_manager.models import Equipment, Ingredient, RawLiquor
+from raw_data_manager.models import Equipment, Ingredient, RawLiquor, Cocktail
 from .validators import *
 
 class LiquorForm(forms.Form):
@@ -31,6 +31,22 @@ class LiquorForm(forms.Form):
 			liquor.save()
 		return liquor
 
+class CocktailForm(forms.Form):
+	name_kr = forms.CharField(max_length=100, validators=[blank_validate])
+	name_en = forms.CharField(max_length=200, validators=[blank_validate])
+	strength = forms.IntegerField(validators=[int_zero_validate])
+	description = forms.CharField(required=False, validators=[blank_validate])
+	detail_json = forms.CharField(required=True, validators=[blank_validate])
+
+	def save(self, commit=True):
+		
+		# validate data
+		cocktail = Cocktail(**self.cleaned_data)
+
+		if commit:
+			cocktail.save()
+		return cocktail
+
 
 
 class IngredientForm(forms.Form):
@@ -40,7 +56,7 @@ class IngredientForm(forms.Form):
 	category2_id = forms.IntegerField(required=False, validators=[int_zero_validate])
 	category3_id = forms.IntegerField(required=False, validators=[int_zero_validate])
 	category4_id = forms.IntegerField(required=False, validators=[int_zero_validate])
-	description = forms.CharField(required=False)
+	description = forms.CharField(required=False)	
     
 	def save(self, commit=True):
 		
