@@ -397,7 +397,7 @@
 						</div>
 						<div class="card-action">
 							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
-							<button class="btn btn-success" onclick="javascript:sendLiquorData()">등록</button>
+							<button class="btn btn-success" onclick="javascript:sendCocktailData()">등록</button>
 							<button class="btn btn-danger">취소</button>
 						</div>
 					</div>
@@ -756,6 +756,8 @@
 
 			console.log("보내는 데이터 확인")
 			console.log(formData)
+
+			return;
 
 			var url = "/admin/raw_data_manager/api/liquor";
 
