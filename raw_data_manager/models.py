@@ -181,7 +181,7 @@ class JoinedEquipment(models.Model):
 
 
 class Cocktail(models.Model):
-    cocktail_id = models.IntegerField(primary_key=True)
+    cocktail_id = models.AutoField(primary_key=True)
     name_kr = models.CharField(max_length=150, blank=True, null=True)
     name_en = models.CharField(max_length=150, blank=True, null=True)
     upload_state = models.IntegerField(blank=True, null=True)
@@ -201,7 +201,7 @@ class Cocktail(models.Model):
 
 
 class JoinedCocktail(models.Model):
-    cocktail_id = models.IntegerField(primary_key=True)
+    cocktail_id = models.AutoField(primary_key=True)
     name_kr = models.CharField(max_length=150, blank=True, null=True)
     name_en = models.CharField(max_length=150, blank=True, null=True)
     upload_state = models.IntegerField(blank=True, null=True)

@@ -289,9 +289,6 @@ def liquor(request):
 
     elif request.method == 'POST':
         respone = 'Success Save Liquor Data'
-        
-        print(request.POST)
-        print("\n\n")
 
         # 술 데이터 저장 + 이미지 저장 트랜잭션 처리
         with transaction.atomic():
@@ -300,7 +297,6 @@ def liquor(request):
             form = LiquorForm(request.POST, request.FILES)
             
             if form.is_valid():
-                print("Valid!!")
                 # save liquor data in DB
                 liquor = form.save(commit=False)
                 liquor.upload_state = 0
@@ -427,9 +423,6 @@ def cocktail(request):
 
     elif request.method == 'POST':
         respone = 'Success Save Cocktail Data'
-        
-        print(request.POST)
-        print("\n\n")
 
         # 칵테일 데이터 저장 + 이미지 저장 트랜잭션 처리
         with transaction.atomic():
@@ -438,7 +431,6 @@ def cocktail(request):
             form = CocktailForm(request.POST, request.FILES)
             
             if form.is_valid():
-                print("Valid!!")
                 # save cocktail data in DB
                 cocktail = form.save(commit=False)
                 cocktail.upload_state = 0
@@ -533,9 +525,6 @@ def ingredient(request):
         
         respone = 'Success Save Ingredient Data'
 
-        print(request.POST)
-        print("\n\n")
-
         # 재료 데이터 저장 + 이미지 저장 트랜잭션 처리
         with transaction.atomic():
 
@@ -543,7 +532,7 @@ def ingredient(request):
             form = IngredientForm(request.POST, request.FILES)
             
             if form.is_valid():
-                print("Valid!!")
+                
                 # save ingredient data in DB
                 ingredient = form.save(commit=False)
                 ingredient.upload_state = 0
@@ -553,9 +542,6 @@ def ingredient(request):
                 ingredient.save()
 
                 ingdId = ingredient.ingd_id
-
-                print("[INGD ID]")
-                print(ingdId)
 
                 logInfo = ManageLog()
                 logInfo.admin_id = request.user.id
@@ -638,8 +624,6 @@ def equipment(request):
     elif request.method == 'POST':
         respone = 'this is test response'
         
-        print(request.POST)
-        print("\n\n")
 
         # 도구 데이터 저장 + 이미지 저장 트랜잭션 처리
         with transaction.atomic():
@@ -648,7 +632,7 @@ def equipment(request):
             form = EquipmentForm(request.POST, request.FILES)
             
             if form.is_valid():
-                print("Valid!!")
+                
                 # save equipment data in DB
                 equipment = form.save(commit=False)
                 equipment.upload_state = 0
