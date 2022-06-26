@@ -75,11 +75,7 @@
 										<label>술 이름(영어)</label>
 										<input id="enNameInput" type="text" class="form-control" placeholder="술의 영어 이름을 입력하세요.">
 									</div>
-
-									<div class="form-group">
-										<button id="chckDuplicateBtn" class="btn btn-secondary" disabled>중복 확인</button>
-									</div>
-									
+	
 									<br>
 
 									<div class="form-group form-group-default">
@@ -224,8 +220,8 @@
 						</div>
 						<div class="card-action">
 							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
-							<button class="btn btn-success" onclick="javascript:sendLiquorData()">등록</button>
-							<button class="btn btn-danger">취소</button>
+							<button class="btn btn-success" onclick="javascript:sendLiquorData()">수정</button>
+							<button class="btn btn-danger" onclick="javascript:cancelModify()">취소</button>
 						</div>
 					</div>
 				</div>
@@ -247,25 +243,120 @@
 
 		var liquor = null;
 
+		var isModified = false;
+		var isLoadedCateg = false;
+		var isLoadedCountry = false;
+
 		$(document).ready(function(){
 			
 			// |escapejs
 			liquor = JSON.parse('{{liquor|safe}}');
 
 			console.log(liquor)
-			console.log(liquor['name_kr'])
 			
-			setLiquorData(liquor);
+			loadCategTree();
+			loadCountryData();
+			setEvent();	
+			previewFile();
 
-			// loadCategTree();
-			// loadCountryData();
-			// setEvent();	
-			// previewFile();
+			setLiquorData(liquor);
     
     	});
-		
-		function setLiquorData(data){
 
+		function cancelModify() {
+			if(isModified) {
+				swal({
+					title: '페이지를 나가시겠습니까?<br>수정 사항은 적용되지 않습니다.',
+					text: "",
+					type: 'warning',
+					buttons:{
+						cancel: {
+							visible: true,
+							text : '취소',
+							className: 'btn btn-danger'
+						},        			
+						confirm: {
+							text : '확인',
+							className : 'btn btn-success'
+						}
+					}
+				}).then((isOk) => {
+					if (isOk) {
+						history.back();	
+					}
+				});
+			} else {
+				history.back();
+			}
+		}
+		
+		function setLiquorData(liquor){
+
+			console.log("[setLiquorData]:"+liquor['liquor_id']);
+
+
+			// set image => 이미지는 따로 리스트 형태로 받음
+			if(liquor['rep_img'] != null && liquor['rep_img'].lenght > 0) {
+
+			}
+
+			// 한글 이름 korNameInput
+			$('#korNameInput').val(liquor['name_kr']);
+			// 영어 이름
+			$('#enNameInput').val(liquor['name_en']);
+
+			// 카테고리
+			var setCategInterval = setInterval(function() {				
+				console.log("wait load category...");
+				if(isLoadedCateg){
+					// set categ					
+					$('#categ1Select').val(liquor['category1_id']);
+					printCategSelect(1);
+					$('#categ2Select').val(liquor['category2_id']);
+					printCategSelect(2);			
+					if(liquor['category3_id'] != null) {
+						$('#categ3Select').val(liquor['category3_id']);
+						printCategSelect(3);
+					}
+
+					if(liquor['category4_id'] != null) {
+						$('#categ4Select').val(liquor['category4_id']);
+						printCategSelect(4);
+					}
+					clearInterval(setCategInterval);
+				}
+			}, 300);
+			
+			
+			// 국가			
+			var setCountryInterval = setInterval(function() {				
+				console.log("wait load country...");
+				if(isLoadedCountry){
+					// set country
+					selectCountry(liquor['country_id']);
+					clearInterval(setCountryInterval);
+				}
+			}, 300);
+
+			
+
+			// 년산
+			if(liquor['vintage'] != null){
+				$('#vintageInput').val(liquor['vintage']);	
+			}
+			
+			// 도수
+			$('#abvInput').val(liquor['abv']);
+
+			// 설명
+			if(liquor['description'] != null && liquor['description'].length > 0){
+				$('#descInput').val(liquor['description']);	
+			}
+
+			// 히스토리
+			if(liquor['history'] != null && liquor['history'].length > 0){
+				$('#historyInput').val(liquor['history']);	
+			}
 
 		}
 	
@@ -471,7 +562,6 @@
 				return 0;
 			}
 
-			// TODO: 이름 중복 확인
 
 			let abv = $('#abvInput').val();
 			if(abv != null && abv.length > 0){
@@ -545,13 +635,13 @@
 			console.log("보내는 데이터 확인")
 			console.log(formData)
 
-			var url = "/raw_data_manager/api/liquor";
+			var url = "/admin/raw_data_manager/api/liquor";
 
 			console.log("술 등록 API URL : " + url)
 			
 			$.ajax({
 				url:url,
-				type:"post",
+				type:"put",
 				headers: {
 					'X-CSRFTOKEN' : '{{ csrf_token }}'
 				},
@@ -561,7 +651,7 @@
 				success:function(data){
 					console.log("insert liquor result")
 					console.log(data)
-					alert("주류 정보 등록 완료.")
+					alert("주류 정보 수정 완료.")
 					location.replace("/liquor_list.html")
 				},
 				error:function(request, status, error){
@@ -578,7 +668,7 @@
 		var categLv4Parent = new Map()
 		function loadCategTree() {
 
-			var url = "/raw_data_manager/api/categ_tree"
+			var url = "/admin/raw_data_manager/api/categ_tree"
 			
 			$.ajax({
 				url: url,
@@ -761,6 +851,7 @@
 					}
 				}
 			}
+			isLoadedCateg = true;
 		}
 
 		function initCategSelect(level){	
@@ -781,7 +872,7 @@
 		var countryList = []
 		function loadCountryData() {
 			
-			var url = "/raw_data_manager/api/country"
+			var url = "/admin/raw_data_manager/api/country"
 			
 			$.ajax({
 				url: url,
@@ -815,6 +906,7 @@
 				
 				$('#country').append(option);
 			}
+			isLoadedCountry = true;
 		}
 
 		function selectCountry(id) {
@@ -843,7 +935,5 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
-	<!-- Atlantis DEMO methods, don't include it in your project! -->
-	<script src="/static/assets/js/setting-demo2.js"></script>
 
 {% endblock javascripts %}	

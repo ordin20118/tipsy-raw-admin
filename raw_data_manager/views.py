@@ -229,8 +229,12 @@ def page_info(request, name):
         return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT'])
 def liquor(request):
+
+    print("[liquor API");
+    print(request.method);
+
     
     if request.method == 'GET':
 
@@ -288,6 +292,7 @@ def liquor(request):
         
 
     elif request.method == 'POST':
+        return;
         respone = 'Success Save Liquor Data'
 
         # 술 데이터 저장 + 이미지 저장 트랜잭션 처리
