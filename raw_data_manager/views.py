@@ -19,7 +19,7 @@ import mimetypes
 import PIL.Image as pilimg
 import os
 import requests
-from utils.ImagePathUtil import imageIdToPath
+from utils.ImageUtil import imageIdToPath, saveImgToPath, getScaledHeight
 
 
 
@@ -36,13 +36,9 @@ def dashboardCount(request):
             # return 500
             pass
 
-        
-
     else:
         pass
     
-
-
 
 @api_view(['GET'])
 def search(request):
@@ -82,7 +78,7 @@ def search(request):
         return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def image(request):
 
     if request.method == 'GET':
@@ -103,7 +99,92 @@ def image(request):
         return response
 
     elif request.method == 'POST':
-        return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
+        
+        image_form = ImageForm(request.POST, request.FILES)        
+
+        if image_form.is_valid():
+
+            image = image_form.save(False)
+            imageFile = request.FILES.get('image_file', False)
+
+            if imageFile == False:
+                raise Exception("No Image File")
+            else:
+
+                # image_type
+                if image.image_type == Image.IMG_TYPE_REP:
+                    # 기존에 존재하는 이미지들을 모두 일반으로 변경
+                    pass         
+
+                # check
+                # content_type
+                print(image.content_type)
+                # cnotent_id
+                print(image.content_id)
+                # is_open
+                print(image.is_open)
+
+                # save image to DB
+                # image.save()
+
+                # save image file
+                #img_path = saveImgToPath(imageFile, image.image_id, DATA_ROOT+ IMAGE_PATH + "/" + imgPath + "/")
+   
+                # update image's path to DB
+                #image.path = img_path + "/" + str(image.image_id)
+                #image.save(update_fields=['path'])
+        else:
+            return Response("No Validated Request", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            
+        
+    
+    elif request.method == 'PUT':
+
+        # 트랜잭션
+        # 대표로 지정된 경우 해당 컨텐츠의 다른 이미지를 불러와서
+        # 일반 이미지로 변경한다.
+
+        # 수정 완료
+
+
+        return Response("This is image PUT return")
+
+    elif request.method == 'DELETE':
+        req_data = ImageForm(request.POST)
+        
+        if req_data.is_valid():
+
+            print("%d 이미지" % req_data.cleaned_data['image_id'])
+
+            # is_delete 확인
+            if req_data.cleaned_data['is_delete'] != 1:
+                return Response("No Validated Request", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+            # 트랜잭션
+            with transaction.atomic():
+
+                image_id = req_data.cleaned_data['image_id']
+
+                if image_id is None and image_id <= 0:
+                    return Response("No Validated Image ID", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    pass
+
+                # DB 데이터 제거
+                img_data = Image.objects.get(pk=image_id)
+                img_data.delete()
+
+                # 이미지 파일 제거
+                imgPath = imageIdToPath(image_id)
+                imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
+                os.remove(imgDir + str(image_id) + '.' + 'png')
+                os.remove(imgDir + str(image_id) + '_300.' + 'png')
+                os.remove(imgDir + str(image_id) + '_600.' + 'png')
+
+
+
+
+        return Response("This is image DELETE return")
 
 
 def make_categ_tree(parentId, treeKey, childDic, treeList):
@@ -292,7 +373,6 @@ def liquor(request):
         
 
     elif request.method == 'POST':
-        return;
         respone = 'Success Save Liquor Data'
 
         # 술 데이터 저장 + 이미지 저장 트랜잭션 처리

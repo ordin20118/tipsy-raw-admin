@@ -1,0 +1,82 @@
+import PIL.Image as pilimg
+import os
+
+def imageIdToPath(id):
+
+    idStr = str(id)
+    idLen = len(idStr)
+
+    # 빈자리 '0'으로 채움
+    zeroStr = '0'
+    if idLen < 9:   # 길이가 9보다 작은 경우
+        zeroStr = '0' * (9 - idLen)
+    else:           # 길이가 9이상인 경우
+        zeroStr = '0' * (3 - (idLen%3))
+
+    # 천의 자리까지 자름
+    idStr = zeroStr + idStr
+    idStr = idStr[0:-3] 
+
+    # 3자리 단위로 '/' 추가
+    path = ''
+    for i in range(1, len(idStr)+1):
+        path += idStr[i-1]
+        if i%3 == 0 and i<len(idStr):
+            path += '/'
+
+    return path
+
+
+def getScaledHeight(org_width, org_height, scaled_width):
+    
+    ratio = float(org_height)/float(org_width)
+    scaled_height = int(scaled_width * ratio)
+
+    if scaled_height == 0:
+        scaled_height = 1
+        
+    return scaled_height
+
+
+# 이미지 ID를 이용해 경로를 생성하고 지정된 디렉토리로 저장
+# 지정된 디렉토리 이후의 경로를 반환
+# param -image_file : 이미지 파일 객체
+# param -image_id : 이미지의 DB ID
+# param -dir_path : 이미지를 저장할 로컬 디렉토리 경로
+# return: 로컬 디렉토리 경로 이후의 이미지 경로
+def saveImgToPath(image_file, image_id, dir_path):
+
+    imgPath = imageIdToPath(image_id)
+
+    # 3. 원본, 300, 600 3가지로 저장          
+    # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
+    # 업로드할 이미지 데이터 pillow로 객체화
+    img = pilimg.open(image_file)
+
+    # 저장할 경로 폴더 존재 확인
+    #imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
+
+    if os.path.isdir(dir_path) == False:
+        os.makedirs(dir_path)
+    
+    imgOrgPath = dir_path + str(image_id) + '.' + 'png'
+    
+    img.save(imgOrgPath)
+
+    # resize 300
+    img300Path = dir_path + str(image_id) + '_300.' + 'png'
+    height_300 = getScaledHeight(img.width, img.height, 300)
+
+    img300 = img.resize((300, height_300))
+    img300.save(img300Path)
+
+    # resize 600
+    img600Path = dir_path + str(image_id) + '_600.' + 'png'
+    height_600 = getScaledHeight(img.width, img.height, 600)
+    
+    img600 = img.resize((600, height_600))
+    img600.save(img600Path)
+
+    return imgPath + "/" + str(image_id)
+
+

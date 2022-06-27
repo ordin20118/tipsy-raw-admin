@@ -151,14 +151,22 @@ def liquorModify(request):
         html_template = loader.get_template( 'page-404.html' )
         return HttpResponse(html_template.render(context, request))
 
-    serialize_liquor = JoinedLiquorSerializer(liquor[0]) 
     
+    serialize_liquor = JoinedLiquorSerializer(liquor[0]) 
     liquor_bjson = JSONRenderer().render(serialize_liquor.data)    
     stream = io.BytesIO(liquor_bjson)
     liquor_dict = JSONParser().parse(stream)    
     liquor_json = json.dumps(liquor_dict, ensure_ascii=False)
-
     context['liquor'] = liquor_json
+
+    # get images
+    images = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_LIQUOR, content_id=liquor[0].liquor_id)   
+    serialize_images = ImageSerializer(images, many=True)     
+    images_bjson = JSONRenderer().render(serialize_images.data)    
+    images_stream = io.BytesIO(images_bjson)
+    images_dict = JSONParser().parse(images_stream)    
+    images_json = json.dumps(images_dict, ensure_ascii=False)
+    context['images'] = images_json
 
     html_template = loader.get_template( 'modify_liquor.html' )   
     return HttpResponse(html_template.render(context, request))

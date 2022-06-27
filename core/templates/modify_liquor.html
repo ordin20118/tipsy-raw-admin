@@ -7,6 +7,103 @@
 
 {% block content %}
 
+	<!-- Image Modify Modal -->
+	<div id="imgModifyModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="imgModifyTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="imgModifyTitle">이미지 관리</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="form-group">
+					<label for="exampleFormControlFile1">이미지</label>
+					<img id="thumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
+				</div>
+
+				<div class="form-group">
+					<div class="selectgroup w-100">
+						<label class="selectgroup-item">
+							<input type="radio" name="isOpen" value="0" class="selectgroup-input">
+							<span class="selectgroup-button">활성화</span>
+						</label>
+						<label class="selectgroup-item">
+							<input type="radio" name="isOpen" value="1" class="selectgroup-input">
+							<span class="selectgroup-button">비활성화</span>
+						</label>
+					</div>					
+				</div>
+
+				<div class="form-group">
+					<label for="exampleFormControlSelect1">대표 설정</label>
+					<select class="form-control" id="exampleFormControlSelect1">
+						<option value="0">대표 이미지</option>
+						<option value="1">일반 이미지</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<button type="button" class="btn btn-danger">영구 제거</button>
+				</div>
+				
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-primary">수정</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+	<!-- Image Add Modal -->
+	<div id="imgAddModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="imgAddTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="imgAddTitle">이미지 추가</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="form-group">
+					<label for="newImageInput">이미지</label>
+					<input id="newImageInput" accept="image/*" type="file" class="form-control-file" onchange="previewNewImage()">
+					<img id="newImgThumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
+				</div>
+
+				<div class="form-group">
+					<div class="selectgroup w-100">
+						<label class="selectgroup-item">
+							<input type="radio" name="isOpen" value="0" class="selectgroup-input" checked="">
+							<span class="selectgroup-button">활성화</span>
+						</label>
+						<label class="selectgroup-item">
+							<input type="radio" name="isOpen" value="1" class="selectgroup-input">
+							<span class="selectgroup-button">비활성화</span>
+						</label>
+					</div>					
+				</div>
+
+				<div class="form-group">
+					<label for="exampleFormControlSelect1">대표 설정</label>
+					<select class="form-control" id="exampleFormControlSelect1">
+						<option value="0">대표 이미지</option>
+						<option value="1" selected>일반 이미지</option>
+					</select>
+				</div>				
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-primary">추가</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div class="content">
 		<div class="page-inner">
 			<div class="page-header">
@@ -62,7 +159,18 @@
 									<div class="form-group">
 										<label for="exampleFormControlFile1">이미지</label>
 										<input id="imageFileInput" accept="image/*" type="file" class="form-control-file" onchange="previewFile()">
-										<img id="thumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
+										<!-- <img id="thumb" class="" height="50%" width="50%" alt="이미지 미리보기..."> -->
+									</div>
+
+									<div id="imgListDiv" style="height: 120px; border: 1px solid grey; padding: 5px; overflow: auto; white-space: nowrap;">
+										<div style="width: 80px; display: inline-block;">
+											<div style="padding: 0px 5px 0px 0px; text-align: right;">
+												<span onclick="">x</span>
+											</div>
+											<div style="text-align: center;">
+												<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg" style="width: 60px;">
+											</div>
+										</div>	
 									</div>
 
 									<div class="form-group form-group-default">
@@ -251,8 +359,10 @@
 			
 			// |escapejs
 			liquor = JSON.parse('{{liquor|safe}}');
+			images = JSON.parse('{{images|safe}}');
 
 			console.log(liquor)
+			console.log(images)
 			
 			loadCategTree();
 			loadCountryData();
@@ -260,8 +370,31 @@
 			previewFile();
 
 			setLiquorData(liquor);
+
+			//openImgModifyModal();
+			openImgAddModal();
     
     	});
+
+		function openImgModifyModal(imgId) {
+			$("#imgModifyModal").modal("show");
+		}
+
+		function openImgAddModal() {
+			previewNewImage();
+			$("#imgAddModal").modal("show");
+		}
+
+		function clearImgAddModal() {
+			// 이미지 제거
+			// 활성, 비활성
+			// 대표 설정 => 일반 이미지			
+			
+		}
+
+		function addImage() {
+			console.log("addImage")
+		}
 
 		function cancelModify() {
 			if(isModified) {
@@ -524,6 +657,26 @@
 
 				$("#thumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
 
+			}			
+		}
+
+		function previewNewImage() {
+			
+			console.log("previewNewImage()")
+
+			//var preview = document.querySelector('img');
+			var preview = document.getElementById('newImgThumb');
+			var file	= document.querySelector('#newImageInput').files[0];
+			var reader	= new FileReader();
+
+			reader.addEventListener("load", function() {
+				preview.src = reader.result;
+			}, false);
+
+			if(file) {
+				reader.readAsDataURL(file);
+			} else {
+				$("#newImgThumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
 			}			
 		}
 
