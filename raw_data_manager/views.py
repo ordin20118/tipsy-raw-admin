@@ -9,7 +9,7 @@ from raw_data_manager.forms import *
 from raw_data_manager.models import *
 from raw_data_manager.classes import *
 from raw_data_manager.serializers import *
-from utils.ImagePathUtil import *
+from utils.ImageUtil import *
 from django.template import loader
 from django.http import HttpResponse
 from rest_framework import status
@@ -19,7 +19,6 @@ import mimetypes
 import PIL.Image as pilimg
 import os
 import requests
-from utils.ImageUtil import imageIdToPath, saveImgToPath, getScaledHeight
 
 
 
@@ -103,7 +102,6 @@ def image(request):
         image_form = ImageForm(request.POST, request.FILES)        
 
         if image_form.is_valid():
-
             image = image_form.save(False)
             imageFile = request.FILES.get('image_file', False)
 
@@ -111,34 +109,39 @@ def image(request):
                 raise Exception("No Image File")
             else:
 
-                # image_type
-                if image.image_type == Image.IMG_TYPE_REP:
-                    # 기존에 존재하는 이미지들을 모두 일반으로 변경
-                    pass         
+                print("[image type]:%s" % image.image_type)
+                print("[image content type]:%s" % image.content_id)
+                print("[image content id]:%s" % image.content_type)
 
-                # check
-                # content_type
-                print(image.content_type)
-                # cnotent_id
-                print(image.content_id)
-                # is_open
-                print(image.is_open)
+                try:
+                    with transaction.atomic():
 
-                # save image to DB
-                # image.save()
+                        if image.image_type == Image.IMG_TYPE_REP:
+                            # 기존에 존재하는 이미지중에 대표 이미지 조회 후 수정
+                            rep_img = Image.objects.get(image_type=Image.IMG_TYPE_REP, 
+                                                        content_type=image.content_type,
+                                                        content_id=image.content_id)
+                            rep_img.image_type = Image.IMG_TYPE_NORMAL
+                            rep_img.save(update_fields=['image_type'])
 
-                # save image file
-                #img_path = saveImgToPath(imageFile, image.image_id, DATA_ROOT+ IMAGE_PATH + "/" + imgPath + "/")
-   
-                # update image's path to DB
-                #image.path = img_path + "/" + str(image.image_id)
-                #image.save(update_fields=['path'])
+                            # save image to DB
+                            image.save()
+
+                            # save image file
+                            img_path = imageIdToPath(image.image_id)
+                            saveImgToPath(imageFile, image.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
+            
+                            # update image's path to DB
+                            image.path = img_path + "/" + str(image.image_id)
+                            image.save(update_fields=['path'])
+
+                except Image.DoesNotExist as e:
+                    print("There is no rep_img.")   # change to log...
+                except Image.MultipleObjectsReturned as e:
+                    print("There is multiple rep_img. content_id:%s, content_type:%s" % (image.content_id, image.content_type)) # change to log...
         else:
             return Response("No Validated Request", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            
-        
-    
     elif request.method == 'PUT':
 
         # 트랜잭션
@@ -152,6 +155,8 @@ def image(request):
 
     elif request.method == 'DELETE':
         req_data = ImageForm(request.POST)
+
+        print(request.POST.get("is_delete"))
         
         if req_data.is_valid():
 
@@ -168,7 +173,6 @@ def image(request):
 
                 if image_id is None and image_id <= 0:
                     return Response("No Validated Image ID", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-                    pass
 
                 # DB 데이터 제거
                 img_data = Image.objects.get(pk=image_id)

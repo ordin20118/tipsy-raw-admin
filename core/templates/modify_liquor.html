@@ -78,19 +78,19 @@
 				<div class="form-group">
 					<div class="selectgroup w-100">
 						<label class="selectgroup-item">
-							<input type="radio" name="isOpen" value="0" class="selectgroup-input" checked="">
+							<input type="radio" name="newIsOpen" value="0" class="selectgroup-input" onclick="newImgChangeActive(0)" checked="">
 							<span class="selectgroup-button">활성화</span>
 						</label>
 						<label class="selectgroup-item">
-							<input type="radio" name="isOpen" value="1" class="selectgroup-input">
+							<input type="radio" name="newIsOpen" value="1" class="selectgroup-input" onclick="newImgChangeActive(1)">
 							<span class="selectgroup-button">비활성화</span>
 						</label>
 					</div>					
 				</div>
 
 				<div class="form-group">
-					<label for="exampleFormControlSelect1">대표 설정</label>
-					<select class="form-control" id="exampleFormControlSelect1">
+					<label for="newImgType">대표 설정</label>
+					<select class="form-control" id="newImgType">
 						<option value="0">대표 이미지</option>
 						<option value="1" selected>일반 이미지</option>
 					</select>
@@ -98,7 +98,7 @@
 
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
-					<button type="button" class="btn btn-primary">추가</button>
+					<button type="button" class="btn btn-primary" onclick="sendNewImage()">추가</button>
 				</div>
 			</div>
 		</div>
@@ -138,27 +138,12 @@
 						<div class="card-body">
 							<div class="row">
 								<div class="col-md-6 col-lg-4">
-									
 								
-									<!-- Success class sample
-									<div class="form-group has-success">
-										<label for="korNameInput">술 이름(한국어)</label>
-										<input type="text" id="korNameInput" placeholder="" class="form-control">
-									</div>
-									-->
-
-									<!-- Error class sample
-									<div class="form-group has-error has-feedback">
-										<label for="errorInput">Error Input</label>
-										<input type="text" id="errorInput" value="Error" class="form-control">
-										<small id="emailHelp" class="form-text text-muted">Please provide a valid informations.</small>
-									</div>
-									-->
-
-
 									<div class="form-group">
-										<label for="exampleFormControlFile1">이미지</label>
-										<input id="imageFileInput" accept="image/*" type="file" class="form-control-file" onchange="previewFile()">
+										<label for="addImgBtn">이미지</label>
+										<br>
+										<!-- <input id="imageFileInput" accept="image/*" type="file" class="form-control-file" onchange="previewFile()"> -->
+										<button id="addImgBtn" class="btn btn-secondary" onclick="openImgAddModal()">이미지 추가</button>
 										<!-- <img id="thumb" class="" height="50%" width="50%" alt="이미지 미리보기..."> -->
 									</div>
 
@@ -350,6 +335,7 @@
 		var englishRegex = /[^a-zA-Z\s0-9]/g;
 
 		var liquor = null;
+		var images = null;
 
 		var isModified = false;
 		var isLoadedCateg = false;
@@ -361,6 +347,9 @@
 			liquor = JSON.parse('{{liquor|safe}}');
 			images = JSON.parse('{{images|safe}}');
 
+			// set images
+			printImages(images);
+
 			console.log(liquor)
 			console.log(images)
 			
@@ -370,9 +359,6 @@
 			previewFile();
 
 			setLiquorData(liquor);
-
-			//openImgModifyModal();
-			openImgAddModal();
     
     	});
 
@@ -385,16 +371,88 @@
 			$("#imgAddModal").modal("show");
 		}
 
+		function printImages(images) {
+
+			$('#imgListDiv').empty();
+			for(var i=0; i<images.length; i++) {
+				var imageId = images[i]['image_id'];
+				var path = images[i]['path'];
+				var item = '<div style="width: 80px; display: inline-block; border: dashed 1px gray;">' +
+						   '	<div style="padding: 0px 5px 0px 0px; text-align: right;">' +
+						   '		<span onclick="openImgModifyModal('+imageId+')">수정</span>' +
+						   '	</div>' +
+						   '	<div style="text-align: center;">' +
+						   '		<img src="http://tipsy.co.kr/admin/raw_data_manager/image/'+path+'_300.png" style="width: 60px;">' +
+						   '	</div>' +
+						   '</div>';						   
+				$('#imgListDiv').append(item);
+			}
+			
+		}
+
+
 		function clearImgAddModal() {
 			// 이미지 제거
+			$('#newImageInput').val('');
+			previewNewImage();
 			// 활성, 비활성
 			// 대표 설정 => 일반 이미지			
 			
 		}
-
-		function addImage() {
-			console.log("addImage")
+		
+		var newImgActive = 0;
+		function newImgChangeActive(value) {
+			newImgActive = value;
 		}
+
+		function sendNewImage() {
+			console.log("sendNewImage")
+
+			let formData = new FormData;
+
+			let imageData = $("#newImageInput")[0].files[0];
+			
+			if(imageData == null){
+				alert("이미지를 선택해주세요!")
+				return 0;
+			} else {
+				formData.append("image_file", imageData)
+			}
+
+			formData.append("is_open", newImgActive);
+			var imgType = $('#newImgType').val();
+			formData.append("image_type", imgType);
+			formData.append("content_id", liquor['liquor_id']);
+			formData.append("content_type", CONTENT_TYPE_LIQUOR);
+
+
+			var url = "/admin/raw_data_manager/api/image";
+
+			// send
+			$.ajax({
+				url:url,
+				type:"post",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("Add new liquor image result")
+					console.log(data)
+					alert("이미지 추가 완료.");
+					location.reload();
+				},
+				error:function(request, status, error){
+				}
+			});
+			
+
+			//clearImgAddModal();
+		}
+
+
 
 		function cancelModify() {
 			if(isModified) {
@@ -809,7 +867,7 @@
 				},
 				error:function(request, status, error){
 				}
-			})
+			});
 
 		}
 

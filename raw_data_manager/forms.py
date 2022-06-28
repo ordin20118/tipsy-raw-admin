@@ -85,8 +85,10 @@ class EquipmentForm(forms.Form):
 class ImageForm(forms.Form):
 	image_id = forms.IntegerField(required=False)
 	image_type = forms.IntegerField(required=False)
+	content_id = forms.IntegerField(required=False)
+	content_type = forms.IntegerField(required=False)
 	is_open = forms.IntegerField(required=False)
-	is_delete = forms.IntegerField(required=False)
+	#is_delete = forms.IntegerField(required=False)
 
 	def save(self, commit=True):
 		image = Image(**self.cleaned_data)

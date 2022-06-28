@@ -43,40 +43,38 @@ def getScaledHeight(org_width, org_height, scaled_width):
 # param -image_file : 이미지 파일 객체
 # param -image_id : 이미지의 DB ID
 # param -dir_path : 이미지를 저장할 로컬 디렉토리 경로
-# return: 로컬 디렉토리 경로 이후의 이미지 경로
-def saveImgToPath(image_file, image_id, dir_path):
+def saveImgToPath(image_file, image_id, img_dir):
 
-    imgPath = imageIdToPath(image_id)
+    try:
+        # 3. 원본, 300, 600 3가지로 저장          
+        # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
+        # 업로드할 이미지 데이터 pillow로 객체화
+        img = pilimg.open(image_file)
 
-    # 3. 원본, 300, 600 3가지로 저장          
-    # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
-    # 업로드할 이미지 데이터 pillow로 객체화
-    img = pilimg.open(image_file)
+        # 저장할 경로 폴더 존재 확인
+        if os.path.isdir(img_dir) == False:
+            os.makedirs(img_dir)
+        
+        imgOrgPath = img_dir + str(image_id) + '.' + 'png'
+        
+        img.save(imgOrgPath)
 
-    # 저장할 경로 폴더 존재 확인
-    #imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
+        # resize 300
+        img300Path = img_dir + str(image_id) + '_300.' + 'png'
+        height_300 = getScaledHeight(img.width, img.height, 300)
 
-    if os.path.isdir(dir_path) == False:
-        os.makedirs(dir_path)
-    
-    imgOrgPath = dir_path + str(image_id) + '.' + 'png'
-    
-    img.save(imgOrgPath)
+        img300 = img.resize((300, height_300))
+        img300.save(img300Path)
 
-    # resize 300
-    img300Path = dir_path + str(image_id) + '_300.' + 'png'
-    height_300 = getScaledHeight(img.width, img.height, 300)
+        # resize 600
+        img600Path = img_dir + str(image_id) + '_600.' + 'png'
+        height_600 = getScaledHeight(img.width, img.height, 600)
+        
+        img600 = img.resize((600, height_600))
+        img600.save(img600Path)
+    except Exception as e: 
+         print('[save image to path error]', e)
+         raise
 
-    img300 = img.resize((300, height_300))
-    img300.save(img300Path)
-
-    # resize 600
-    img600Path = dir_path + str(image_id) + '_600.' + 'png'
-    height_600 = getScaledHeight(img.width, img.height, 600)
-    
-    img600 = img.resize((600, height_600))
-    img600.save(img600Path)
-
-    return imgPath + "/" + str(image_id)
 
 
