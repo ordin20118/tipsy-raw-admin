@@ -156,15 +156,11 @@ def image(request):
     elif request.method == 'DELETE':
         req_data = ImageForm(request.POST)
 
-        print(request.POST.get("is_delete"))
+        #print(request.POST.get("is_delete"))
         
         if req_data.is_valid():
 
-            print("%d 이미지" % req_data.cleaned_data['image_id'])
-
-            # is_delete 확인
-            if req_data.cleaned_data['is_delete'] != 1:
-                return Response("No Validated Request", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            print("%d 이미지 제거" % req_data.cleaned_data['image_id'])
 
             # 트랜잭션
             with transaction.atomic():
@@ -184,9 +180,6 @@ def image(request):
                 os.remove(imgDir + str(image_id) + '.' + 'png')
                 os.remove(imgDir + str(image_id) + '_300.' + 'png')
                 os.remove(imgDir + str(image_id) + '_600.' + 'png')
-
-
-
 
         return Response("This is image DELETE return")
 
@@ -317,9 +310,8 @@ def page_info(request, name):
 @api_view(['GET', 'POST', 'PUT'])
 def liquor(request):
 
-    print("[liquor API");
+    print("[liquor API]");
     print(request.method);
-
     
     if request.method == 'GET':
 
@@ -388,8 +380,8 @@ def liquor(request):
             if form.is_valid():
                 # save liquor data in DB
                 liquor = form.save(commit=False)
-                liquor.upload_state = 0
-                liquor.update_state = 0
+                liquor.upload_state = RawLiquor.UPLOAD_STATE_NOT_YET
+                liquor.update_state = RawLiquor.UPDATE_STATE_NORMAL
                 liquor.site = 0
                 liquor.reg_admin = request.user.id
                 liquor.reg_date = timezone.now()
@@ -472,8 +464,44 @@ def liquor(request):
                 print("No Validated")
                 # TODO: return error response
                 return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-      
-        return Response(respone)
+    elif request.method == 'PUT':
+
+        print(request.POST)
+
+        form = LiquorForm(request.POST)
+        
+        if form.is_valid():
+            liquor = form.save(commit=False)            
+            
+            
+            # 수정된 사항들을 info에 json 형태로 남겨야 한다.
+            # 기존의 값 => 변경된 값
+            
+            
+            
+            
+            liquor.update_admin = request.user.id
+            liquor.update_date = timezone.now()
+            #liquor.save()
+            #liquor.save(update_fields=['name_kr', 'name_en', 'vintage', 'abv', 'country_id', 'description'
+            #                            'upload_state', 'update_state', 'price', 'history', 'update_admin'
+            #                            'update_date', 'category1_id', 'category2_id,' 'category3_id', 'category4_id'])
+
+            liquorId = liquor.liquor_id
+
+            logInfo = ManageLog()
+            logInfo.admin_id = request.user.id
+            logInfo.job_code = JobInfo.JOB_MODIFY_SPIRITS
+            logInfo.job_name = JobInfo.JOBN_MODIFY_SPIRITS
+            logInfo.content_id = liquorId
+            logInfo.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
+            #logInfo.save()
+            return Response("success", status=status.HTTP_200_OK)
+        else:
+            print("No Validated")
+            # TODO: return error response
+            return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
 
 @api_view(['GET', 'POST'])

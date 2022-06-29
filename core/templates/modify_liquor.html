@@ -19,39 +19,39 @@
 				</div>
 
 				<div class="form-group">
-					<label for="exampleFormControlFile1">이미지</label>
-					<img id="thumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
+					<label for="modifyThumb">이미지</label>
+					<img id="modifyThumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
 				</div>
 
 				<div class="form-group">
 					<div class="selectgroup w-100">
 						<label class="selectgroup-item">
-							<input type="radio" name="isOpen" value="0" class="selectgroup-input">
+							<input type="radio" name="modifyIsOpen" value="0" id="open1" class="selectgroup-input" onclick="modifyImgChangeActive(0)">
 							<span class="selectgroup-button">활성화</span>
 						</label>
 						<label class="selectgroup-item">
-							<input type="radio" name="isOpen" value="1" class="selectgroup-input">
+							<input type="radio" name="modifyIsOpen" value="1" id="open2" class="selectgroup-input" onclick="modifyImgChangeActive(1)">
 							<span class="selectgroup-button">비활성화</span>
 						</label>
 					</div>					
 				</div>
 
 				<div class="form-group">
-					<label for="exampleFormControlSelect1">대표 설정</label>
-					<select class="form-control" id="exampleFormControlSelect1">
+					<label for="modifyImageType">대표 설정</label>
+					<select class="form-control" id="modifyImageType">
 						<option value="0">대표 이미지</option>
 						<option value="1">일반 이미지</option>
 					</select>
 				</div>
 
 				<div class="form-group">
-					<button type="button" class="btn btn-danger">영구 제거</button>
+					<button type="button" class="btn btn-danger" onclick="deleteImage()">영구 제거</button>
 				</div>
 				
 
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
-					<button type="button" class="btn btn-primary">수정</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal" onclick="initModifyImgModal()">취소</button>
+					<button type="button" class="btn btn-primary" onclick="TODO">수정</button>
 				</div>
 			</div>
 		</div>
@@ -141,10 +141,8 @@
 								
 									<div class="form-group">
 										<label for="addImgBtn">이미지</label>
-										<br>
-										<!-- <input id="imageFileInput" accept="image/*" type="file" class="form-control-file" onchange="previewFile()"> -->
-										<button id="addImgBtn" class="btn btn-secondary" onclick="openImgAddModal()">이미지 추가</button>
-										<!-- <img id="thumb" class="" height="50%" width="50%" alt="이미지 미리보기..."> -->
+										<br>										
+										<button id="addImgBtn" class="btn btn-secondary" onclick="openImgAddModal()">이미지 추가</button>										
 									</div>
 
 									<div id="imgListDiv" style="height: 120px; border: 1px solid grey; padding: 5px; overflow: auto; white-space: nowrap;">
@@ -204,53 +202,6 @@
 										<label>지역</label>
 										<input id="regionInput" type="text" class="form-control" placeholder="ex) Napa Valley">
 									</div>
-
-								
-									
-									<!--
-									<div class="form-group">
-										<label class="form-label">형태</label>
-										<div class="selectgroup w-100">
-											<label class="selectgroup-item">
-												<input type="checkbox" name="transportation" value="2" class="selectgroup-input">
-												<span class="selectgroup-button selectgroup-button-icon">
-													<i class="icon-screen-smartphone"></i>
-													<div>
-														<input type="text" name="bottleVolume" style="width: 25px;height:20px;font-size: 8px;">
-														<span style="font-size: 8px;">mL</span>
-													</div>
- 												</span>
-											</label>
-											<label class="selectgroup-item">
-												<input type="checkbox" name="transportation" value="1" class="selectgroup-input" checked="">
-												<span class="selectgroup-button selectgroup-button-icon">
-													<i class="icon-screen-tablet"></i>
-													<div>
-														<input type="text" name="bottleVolume" style="width: 25px;height:20px;font-size: 8px;">
-														<span style="font-size: 8px;">mL</span>
-													</div>
-												</span>
-											</label>
-											<label class="selectgroup-item">
-												<input type="checkbox" name="transportation" value="6" class="selectgroup-input">
-												<span class="selectgroup-button selectgroup-button-icon">
-													<i class="icon-screen-desktop"></i>
-													<div>
-														<input type="text" name="bottleVolume" style="width: 25px;height:20px;font-size: 8px;">
-														<span style="font-size: 8px;">mL</span>
-													</div>
-												</span>
-											</label>
-										</div>
-									</div>
-									-->
-								
-									<!-- <div class="form-check">
-										<label class="form-check-label">
-											<input class="form-check-input" type="checkbox" value="">
-											<span class="form-check-sign">Agree with terms and conditions</span>
-										</label>
-									</div> -->
 								</div>
 
 
@@ -294,6 +245,26 @@
 												<span class="input-group-text">.00</span>
 											</div> -->
 										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="selUploadState">업로드 상태</label>
+										<select class="form-control" id="selUploadState">
+											<option value="0">업로드 안됨</option>
+											<option value="1">업로드됨</option>
+											<option value="2">업로드 금지</option>
+											<option value="3">에러</option>
+										</select>
+									</div>
+
+									<div class="form-group">
+										<label for="selUpdateState">업데이트 상태</label>
+										<select class="form-control" id="selUpdateState">
+											<option value="0">정상</option>
+											<option value="1">수정 불가능</option>
+											<option value="2">컨펌 필요</option>
+											<option value="3">에러</option>
+										</select>
 									</div>
 								</div>
 
@@ -341,6 +312,8 @@
 		var isLoadedCateg = false;
 		var isLoadedCountry = false;
 
+		var nowModifyImgId = null;
+
 		$(document).ready(function(){
 			
 			// |escapejs
@@ -356,14 +329,30 @@
 			loadCategTree();
 			loadCountryData();
 			setEvent();	
-			previewFile();
-
 			setLiquorData(liquor);
     
     	});
 
-		function openImgModifyModal(imgId) {
+		function openImgModifyModal(imageId) {
+			nowModifyImgId = imageId;
 			$("#imgModifyModal").modal("show");
+			for(var i=0; i<images.length; i++) {
+				var item = images[i];
+				if(item['image_id'] == imageId) {
+					console.log(item);
+					// set modify modal					
+					$('#modifyImageType').val(item['image_type']);					
+					modifyImgChangeActive(item['is_open']);
+					var imgPath = imgprefix + "/" + item['path'] + '_300.png';
+					$('#modifyThumb').attr("src", imgPath);
+				}
+			}
+		}
+
+		// 이미지 수정 모달 초기화
+		function initModifyImgModal() {
+			// 썸네일 default 이미졸 변경			
+			modifyImgActive = null;
 		}
 
 		function openImgAddModal() {
@@ -399,12 +388,26 @@
 			// 대표 설정 => 일반 이미지			
 			
 		}
-		
+	
+		var modifyImgActive = null;
+		function modifyImgChangeActive(value) {
+			modifyImgActive = value;
+			var selectList = $('input[name=modifyIsOpen]');			
+			for (var input of selectList) {				
+				if(value == input.value) {
+					input.checked = true;
+				} else {
+					input.checked = false;
+				}
+			}
+		}
+
 		var newImgActive = 0;
 		function newImgChangeActive(value) {
 			newImgActive = value;
 		}
 
+		// 신규 이미지 추가 요청
 		function sendNewImage() {
 			console.log("sendNewImage")
 
@@ -452,12 +455,59 @@
 			//clearImgAddModal();
 		}
 
+		// 이미지 제거 요청
+		function deleteImage() {
 
+			console.log("[deleteImage] image_id:" + nowModifyImgId);
 
+			swal({
+				title: '이미지를 삭제하시겠습니까?',
+				text: "삭제된 이미지는 복구되지 않습니다.",
+				type: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						text : '취소',
+						className: 'btn btn-danger'
+					},        			
+					confirm: {
+						text : '확인',
+						className : 'btn btn-success'
+					}
+				}
+			}).then((isOk) => {
+				if (isOk) {
+					var url = "/admin/raw_data_manager/api/image";
+					let formData = new FormData;
+					formData.append("image_id", nowModifyImgId);		
+
+					$.ajax({
+						url:url,
+						type:"delete",
+						headers: {
+							'X-CSRFTOKEN' : '{{ csrf_token }}'
+						},
+						contentType:false,
+						processData:false,
+						data:formData,
+						success:function(data){
+							console.log("Delete image("+nowModifyImgId+") result")
+							console.log(data)
+							alert("이미지 제거 완료.");
+							location.reload();
+						},
+						error:function(request, status, error){
+						}
+					});
+				}
+			});
+		}
+
+		// 주류 수정 페이지 나가기
 		function cancelModify() {
 			if(isModified) {
 				swal({
-					title: '페이지를 나가시겠습니까?<br>수정 사항은 적용되지 않습니다.',
+					title: '페이지를 나가시겠습니까?수정 사항은 적용되지 않습니다.',
 					text: "",
 					type: 'warning',
 					buttons:{
@@ -481,6 +531,7 @@
 			}
 		}
 		
+		// 주류 데이터 설정
 		function setLiquorData(liquor){
 
 			console.log("[setLiquorData]:"+liquor['liquor_id']);
@@ -517,7 +568,12 @@
 					clearInterval(setCategInterval);
 				}
 			}, 300);
-			
+
+			// 업로드 상태
+			$("#selUploadState").val(liquor['upload_state']).prop("selected", true);
+
+			// 업데이트 상태
+			$("#selUpdateState").val(liquor['update_state']).prop("selected", true);
 			
 			// 국가			
 			var setCountryInterval = setInterval(function() {				
@@ -528,7 +584,6 @@
 					clearInterval(setCountryInterval);
 				}
 			}, 300);
-
 			
 
 			// 년산
@@ -566,6 +621,7 @@
 		function setEvent() {
 			
 			$('#korNameInput').change(function(){
+				isModified = true;
 				// 한국어만
 				if( koreanRegex.test($("#korNameInput").val()) ) {
 					alert("한글만 입력해주세요");
@@ -578,12 +634,12 @@
 					setSuccessOrError($(this), true)
 					$("#chckDuplicateBtn").attr("disabled",false); 
 					isDupliCheck = false;
-				}
-				
+				}				
 			});
 
 
 			$('#enNameInput').change(function(){
+				isModified = true;
 				// 영어만
 				if( englishRegex.test($("#enNameInput").val()) ) {
 					alert("영어만 입력해주세요");
@@ -602,7 +658,7 @@
 
 
 			$('#regionInput').change(function(){
-
+				isModified = true;
 				// 영어만
 				if( englishRegex.test($("#regionInput").val()) ) {
 					setSuccessOrError($(this), false)
@@ -618,7 +674,7 @@
 			});
 
 			$('#abvInput').change(function(){
-
+				isModified = true;
 				// 숫자만
 				if( !numberRegex.test($("#abvInput").val()) ) {
 					alert("숫자만 입력해주세요");
@@ -635,7 +691,7 @@
 			});
 
 			$('#vintageInput').change(function(){
-
+				isModified = true;
 				// 숫자만
 				if( !numberRegex.test($("#vintageInput").val()) ) {
 					alert("숫자만 입력해주세요");
@@ -653,7 +709,7 @@
 
 
 			$('#priceInput').change(function(){
-
+				isModified = true;
 				// 숫자만
 				if( !numberRegex.test($("#priceInput").val()) ) {
 					alert("숫자만 입력해주세요");
@@ -670,7 +726,7 @@
 			});
 
 			$("#descInput").change(function() {
-
+				isModified = true;
 				if($("#descInput").val() != null && $("#descInput").val().length > 20) {
 					setSuccessOrError($(this), true)
 				} else {
@@ -681,7 +737,7 @@
 			});
 
 			$("#historyInput").change(function() {
-
+				isModified = true;
 				if($("#historyInput").val() != null && $("#historyInput").val().length > 20) {
 					setSuccessOrError($(this), true)
 				} else {
@@ -691,33 +747,17 @@
 
 			});
 
+			$('#selUploadState').change(function() {
+				isModified = true;
+			});
+
+			$('#selUpdateState').change(function() {
+				isModified = true;
+			});
+
 		}
 
-
-		function previewFile() {
-			
-			console.log("previewFile()")
-
-			//var preview = document.querySelector('img');
-			var preview = document.getElementById('thumb');
-			var file	= document.querySelector('input[type=file]').files[0];
-			var reader	= new FileReader();
-
-			reader.addEventListener("load", function() {
-				preview.src = reader.result;
-			}, false);
-
-			if(file) {
-				reader.readAsDataURL(file);
-			} else {
-
-				console.log(prefix + "/raw_data_manager/image/default_image.jpg")
-
-				$("#thumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
-
-			}			
-		}
-
+		// 신규 이미지 썸네일 설정
 		function previewNewImage() {
 			
 			console.log("previewNewImage()")
@@ -738,23 +778,14 @@
 			}			
 		}
 
-
+		// 주류 수정 요청
 		function sendLiquorData() {
 			
 			let formData = new FormData;
 
+			formData.append('liquor_id', liquor['liquor_id']);
 
 			// 필수 데이터 확인
-			let imageData = $("#imageFileInput")[0].files[0];
-
-			
-			if(imageData == null){
-				alert("이미지를 선택해주세요!")
-				return 0;
-			} else {
-				formData.append("image_file", imageData)
-			}
-
 			let korName = $('#korNameInput').val();
 			if(korName != null && korName.length > 0){
 				formData.append('name_kr', korName);
@@ -763,8 +794,6 @@
 				return 0;
 			}
 			
-			
-
 			let enName = $('#enNameInput').val();
 			if(enName != null && enName.length > 0){
 				formData.append('name_en', enName);
@@ -772,7 +801,6 @@
 				alert('술의 영어 이름을 입력해주세요.')
 				return 0;
 			}
-
 
 			let abv = $('#abvInput').val();
 			if(abv != null && abv.length > 0){
@@ -841,7 +869,15 @@
 			if(history != null && history.length > 0){
 				formData.append("history", history);
 			}
+
 			
+			// 업로드 상태
+			var updateState = $("#selUploadState").val();
+			formData.append("upload_state", updateState);
+
+			// 업데이트 상태
+			var updateState = $("#selUpdateState").val();
+			formData.append("update_state", updateState);
 
 			console.log("보내는 데이터 확인")
 			console.log(formData)
@@ -860,10 +896,11 @@
 				processData:false,
 				data:formData,
 				success:function(data){
-					console.log("insert liquor result")
+					console.log("update liquor result")
 					console.log(data)
 					alert("주류 정보 수정 완료.")
-					location.replace("/liquor_list.html")
+					//location.replace("/liquor_list.html");
+					location.realod();
 				},
 				error:function(request, status, error){
 				}
@@ -1013,7 +1050,6 @@
 				if($('#categ1Select').val() != '0'){
 					let parentId = Number($('#categ1Select').val());
 
-					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
 					if(categLv2Parent.get(parentId) != null){
 						let childList = categLv2Parent.get(parentId);
 						childList.forEach(function(categ) {
@@ -1033,7 +1069,6 @@
 
 					let parentId = Number($('#categ2Select').val());
 
-					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
 					if(categLv3Parent.get(parentId) != null){
 						let childList = categLv3Parent.get(parentId);
 						childList.forEach(function(categ) {
@@ -1052,7 +1087,6 @@
 
 					let parentId = Number($('#categ3Select').val());
 
-					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
 					if(categLv4Parent.get(parentId) != null){
 						let childList = categLv4Parent.get(parentId);
 						childList.forEach(function(categ) {

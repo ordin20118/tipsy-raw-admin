@@ -2,6 +2,17 @@ from django.db import models
 from .validators import *
 
 class RawLiquor(models.Model):
+
+    UPLOAD_STATE_NOT_YET = 0
+    UPLOAD_STATE_NOT_UPLOADED = 1
+    UPLOAD_STATE_NOT_INACTIVE = 2
+    UPLOAD_STATE_NOT_ERROR = 3
+    
+    UPDATE_STATE_NORMAL = 0
+    UPDATE_STATE_DISABLE = 1
+    UPDATE_STATE_NEED_CONFIRM = 2
+    UPDATE_STATE_ERROR = 3
+
     liquor_id = models.AutoField(primary_key=True)
     name_kr = models.CharField(max_length=200, blank=False, null=False, validators=[blank_validate,])
     name_en = models.CharField(max_length=200, blank=False, null=False, validators=[blank_validate,])
