@@ -275,6 +275,10 @@ class CategoryTreeWithName(models.Model):
     category2_name = models.CharField(max_length=45, blank=True, null=True)
     category3_name = models.CharField(max_length=45, blank=True, null=True)
     category4_name = models.CharField(max_length=45, blank=True, null=True)
+    category1_name_en = models.CharField(max_length=45, blank=True, null=True)
+    category2_name_en = models.CharField(max_length=45, blank=True, null=True)
+    category3_name_en = models.CharField(max_length=45, blank=True, null=True)
+    category4_name_en = models.CharField(max_length=45, blank=True, null=True)
     reg_date = models.DateTimeField(blank=True, null=True)
 
     class Meta:

@@ -239,7 +239,11 @@ def categ_tree(request):
                 categ1.name as category1_name,
                 categ2.name as category2_name,
                 categ3.name as category3_name,
-                categ4.name as category4_name
+                categ4.name as category4_name,
+                categ1.name_en as category1_name_en,
+                categ2.name_en as category2_name_en,
+                categ3.name_en as category3_name_en,
+                categ4.name_en as category4_name_en
             FROM tipsy_raw.category_tree tree
             LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON tree.category1_id = categ1.id
             LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON tree.category2_id = categ2.id
