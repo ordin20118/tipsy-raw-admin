@@ -61,6 +61,15 @@ def search(request):
         if categLv != None:
             search_url += '&categLv=%s'%categLv
 
+        nowPage = request.GET.get('nowPage')
+        if nowPage != None:
+            search_url += '&nowPage=%s'%nowPage
+
+        pergPage = request.GET.get('pergPage')
+        if pergPage != None:
+            search_url += '&pergPage=%s'%pergPage
+
+
         try:
             search_request = requests.get(search_url)
             #print("\n[text]:%s"%search_request.text)

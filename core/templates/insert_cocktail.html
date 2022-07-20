@@ -56,7 +56,7 @@
 								<th scope="col" style="width: 20%"></th>
 							</tr>
 						</thead>
-						<tbody id="ingredientTbody">
+						<tbody id="ingredientTbody" style="width: 100%; height: 180px; overflow:auto;">
 							<!-- <tr> 
 								<td>IMG</td>
 								<td>레몬</td>								
@@ -82,8 +82,8 @@
 	
 	<!-- liquor detail setting modal -->
 	<div id="liquorSettingModal" class="modal fade" tabindex="0" role="dialog" aria-labelledby="liquorModalTitle" aria-hidden="true" style="z-index: 1080;">
-		<div class="modal-dialog modal-sm" role="document">
-			<div class="modal-content"  style="box-shadow: 5px 5px 3px 3px grey; background-color: #FFFFE4;">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
 				<div class="modal-header">
 					<h5 class="modal-title" id="liquorModalTitle">주류 상세 설정</h5>
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -93,14 +93,29 @@
 				<div class="modal-body" style="padding: 0px;">					
 
 					<!-- 이미지, 상세 설정 버튼 -->
+					<!--
 					<div class="form-group form-group-default">
-						<button class="btn btn-secondary" onclick="" data-toggle="modal" data-target="#liquorSelectModal">주류 선택</button>
+						<img id="dLiquorThumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
+						<label id="dLiquorName">)</label>
 					</div>
-					
+
+					<div class="form-group form-group-default">
+						<button class="btn btn-secondary" onclick="showLiquorSelectModal()">주류 선택</button>
+					</div>
+					-->
 
 					<!-- 용량 설정 -->
 					<div class="form-group form-group-default">
-						<label>용량(단위: oz)</label>
+						<label for="unitInput">단위</label>
+						<select class="form-control" id="unitInput">
+							<option value="">선택 없음</option>
+							<option value="oz">oz</option>
+							<option value="g">g</option>
+							<option value="ea">ea</option>							
+						</select>
+					</div>
+					<div class="form-group form-group-default">
+						<label>용량</label>
 						<input id="volumeInput" type="text" class="form-control" placeholder="해당 재료의 용량을 입력해주세요.">
 						<!-- <small id="emailHelp" class="form-text text-muted">Please provide a valid informations.</small> -->
 					</div>
@@ -109,13 +124,14 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
-					<button type="button" class="btn btn-primary" onclick="">확인</button>
+					<button type="button" class="btn btn-primary" onclick="setIngdDetail()">확인</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
 	<!-- liquor detail select modal -->
+	<!--
 	<div id="liquorSelectModal" class="modal fade" tabindex="0" role="dialog" aria-labelledby="liquorSelectTitle" aria-hidden="true" style="z-index: 1090;">
 		<div class="modal-dialog modal-sm" role="document">
 			<div class="modal-content"  style="box-shadow: 5px 5px 3px 3px grey; background-color: #FFFFE4;">
@@ -137,7 +153,7 @@
 							</span>
 						</div>
 					</div>
-					<table id="liquorSelectTable" class="table" style="display: none;">
+					<table id="liquorSelectTable" class="table">
 						<thead>
 							<tr>
 								<th scope="col" style="width: 20%"></th>
@@ -145,8 +161,8 @@
 								<th scope="col" style="width: 20%"></th>
 							</tr>
 						</thead>
-						<tbody id="liquorTbody">
-							<!-- <tr> 
+						<tbody id="liquorTbody" style="width: 100%; height: 180px; overflow:auto; display: none;">
+							<tr> 
 								<td>IMG</td>
 								<td>레몬</td>								
 								<td>></td>
@@ -155,7 +171,7 @@
 								<td>IMG</td>
 								<td>얼음</td>								
 								<td>></td>
-							</tr> -->
+							</tr>
 						</tbody>
 					</table>
 				</div>
@@ -165,6 +181,7 @@
 			</div>
 		</div>
 	</div>
+	-->
 
 	<div class="content">
 		<div class="page-inner">
@@ -453,7 +470,7 @@
 										<button id="addIngredientBtn" class="btn btn-secondary" onclick="" data-toggle="modal" data-target="#ingredientModal">재료 추가</button>										
 									</div>
 
-									<div id="selectedIngdDiv" style="height: 140px; border: 1px solid grey; padding: 5px; overflow: auto; white-space: nowrap;">
+									<div id="selectedIngdDiv" style="height: 190px; border: 1px solid grey; padding: 5px; overflow: auto; white-space: nowrap;">
 										<!-- <div style="width: 70px; display: inline-block;">
 											<div style="padding: 0px 5px 0px 0px; text-align: right;">
 												<span onclick="">x</span>
@@ -595,6 +612,58 @@
 					setSuccessOrError($(this), false)
 				}			
 
+			});
+
+		}
+
+
+		// 상세 주류를 검색
+		function searchDetailLiquor(keyword, categLv, categId) {
+
+
+			var searchUrl = "/admin/raw_data_manager/api/search?keyword="+keyword+"&target=liquor";
+
+			if(categLv != null) {
+				searchUrl += "&categLv=" + categLv;	
+			}
+
+			if(categId != null) {
+				searchUrl += "&categId=" + categId;	
+			}
+
+			// request
+			$.ajax({
+				url: url,
+				type:'get',
+				success:function(data){
+
+					console.log(data);
+
+					// 주류 출력
+					// #liquorTbody
+
+					if(data.length > 0) {
+
+						isDupliCheck = false;
+
+						// UI에 빨갛게 표시
+						setSuccessOrError($('#korNameInput'), false);
+						setSuccessOrError($('#enNameInput'), false);
+
+						// 경고 알림 띄우기
+						var dupList = "";
+						for(var i=0; i<data.length; i++) {
+							dupList += "중복: " + data[i]['name_kr'] + " / " + data[i]['name_en'] + "\n";
+						}
+						printWarningPanel("칵테일 데이터 중복!", dupList);		
+					} else {
+						printSuccessPanel("칵테일 데이터 중복 없음", "")
+						setSuccessOrError($('#korNameInput'), true);
+						setSuccessOrError($('#enNameInput'), true);	
+						isDupliCheck = true;
+					}
+				
+				}
 			});
 
 		}
@@ -772,6 +841,18 @@
 			// 재료
 			// 재료가 1개이하이면x
 			if(selectedIngredientList.length > 1) {
+				
+				// 재료중에서 상세 용량 입력 안한 재료가 있다면 실패
+				for(var i=0; i<selectedIngredientList.length; i++) {
+					var item = selectedIngredientList[i];
+					if(item['content_type'] != CONTENT_TYPE_EQUIP) {
+						if(item['unit'] == null || item['volume'] == null) {						
+							printWarningPanel('데이터 입력 오류', '재료의 상세 용량을 설정해주세요.');
+							return 0;
+						}	
+					}					
+				}
+				
 				var ingredientJson = makeIngredientData();				
 
 				console.log("[Make Ingredient JSON]");
@@ -846,25 +927,59 @@
 
 		}
 
+		// TODO: json 형태 변경에 따른 로직 변경
 		// 선택된 재료들의 id만 detail_json에 포함시킴
 		function makeIngredientData() {
 			var res = {};
 			
 			var tmpLiquorList = [];
 			for(var i=0; i<selectedLiquorList.length; i++) {
-				tmpLiquorList.push(selectedLiquorList[i]['liquor_id']);
+				var item = selectedLiquorList[i];
+				var obj = {
+					categ_id: item['categ_id'],
+					categ_name_kr: item['categ_name_kr'],
+					categ_name_en: item['categ_name_en'],
+					items: []
+				};
+				tmpLiquorList.push(obj);
 			}
 			res['liquor'] = tmpLiquorList;
 
 			var tmpIngdList = [];
 			for(var i=0; i<selectedIngdList.length; i++) {
-				tmpIngdList.push(selectedIngdList[i]['ingd_id']);
+				var item = selectedIngdList[i];
+				var items = [];
+				var itemObj = {
+					item_id: item['item_id'],
+					item_name_kr: item['item_name_kr'],
+					item_name_en: item['item_name_en'],
+				};
+				items.push(itemObj);
+				var obj = {
+					categ_id: item['categ_id'],
+					categ_name_kr: item['categ_name_kr'],
+					categ_name_en: item['categ_name_en'],
+					item_id: item['item_id'],
+					item_name_kr: item['item_name_kr'],
+					item_name_en: item['item_name_en'],
+					items: items
+				}
+				tmpIngdList.push(obj);
 			}
 			res['ingd'] = tmpIngdList;
 
 			var tmpEquipList = [];
 			for(var i=0; i<selectedEquipList.length; i++) {
-				tmpEquipList.push(selectedEquipList[i]['equip_id']);
+				var item = selectedEquipList[i];
+				var obj = {
+					categ_id: item['categ_id'],
+					categ_name_kr: item['categ_name_kr'],
+					categ_name_en: item['categ_name_en'],
+					item_id: item['item_id'],
+					item_name_kr: item['item_name_kr'],
+					item_name_en: item['item_name_en']
+				}
+				tmpEquipList.push(obj);
 			}
 			res['equip'] = tmpEquipList;
 
@@ -1285,6 +1400,8 @@
 				if (willAdd) {
 					var liquor = liquorMap.get(liquorId);
 					liquor['content_type'] = CONTENT_TYPE_LIQUOR;
+					liquor['volume'] = null;
+					liquor['unit'] = "oz";
 					selectedIngredientList.push(liquor);
 					selectedLiquorList.push(liquor);
 
@@ -1343,6 +1460,7 @@
 
 					console.log(ingd)
 
+
 					var item = {
 						categ_id: ingd['category1_id'],
 						categ_name_kr: "재료",
@@ -1351,6 +1469,8 @@
 						item_id: ingd['ingd_id'],
 						item_name_kr: ingd['name_kr'],
 						item_name_en: ingd['name_en'],
+						volume: null,
+						unit: null,
 						rep_img: ingd['rep_img']
 					};
 
@@ -1453,12 +1573,84 @@
 		}
 
 
+		// 재료 상세 설정 모달 열기
+		// id - liquor의 경우 tmpId임
+		// TODO		
+		var nowDetailSetType = null;	// 현재 설정중인 재료의 유형
+		var nowDetailSetId = null;	// 현재 설정중인 재료 id => default: null		
+		function showIngredientSettingModal(contentType ,id) {
 
-		function showLiquorSettingModal(index) {			
+			console.log("[showIngredientSettingModal] contentType: " + contentType + " / id:" + id);
+
+			nowDetailSetType = contentType;
+			nowDetailSetId = id;
+
+			$('#unitInput').val("");
+			$('#volumeInput').val("");
+
+			for(var i=0; i<selectedLiquorList.length; i++) {
+				var item = selectedLiquorList[i];
+				console.log(item);
+
+				// 데이터 가져오기
+				if((item['content_type'] == CONTENT_TYPE_LIQUOR && item['tmp_id'] == id) 
+					|| (item['content_type'] == CONTENT_TYPE_INGD && item['item_id'] == id)) {
+
+					// 상세 재료 데이터 설정 확인	
+					// 데이터가 있다면 모달에 설정
+					// -단위: unitInput
+					// -용량: volumeInput
+					console.log("[item]");
+					console.log(item);
+
+					$('#unitInput').val(item['unit']);
+					$('#volumeInput').val(item['volume']);
+
+					break;
+				}
+			}
+			
 			$('#liquorSettingModal').modal('show');
-
 		}
 
+		// 재료 상세 설정
+		function setIngdDetail() {			
+			for(var i=0; i<selectedIngredientList.length; i++) {
+				var item = selectedIngredientList[i];
+				if(item['content_type'] == nowDetailSetType && item['item_id'] != null && item['item_id'] == nowDetailSetId){
+					item['unit'] = $('#unitInput').val();
+					item['volume'] = $('#volumeInput').val();
+					selectedIngredientList[i] = item;					
+					break;
+				} else if(item['content_type'] == nowDetailSetType && item['tmp_id'] != null && item['tmp_id'] == nowDetailSetId) {
+					item['unit'] = $('#unitInput').val();
+					item['volume'] = $('#volumeInput').val();
+					selectedIngredientList[i] = item;
+					break;
+				}	
+			}
+			if(nowDetailSetType == CONTENT_TYPE_LIQUOR) {
+				for(var i=0; i<selectedLiquorList.length; i++) {
+					var item = selectedLiquorList[i];
+					if(item['tmp_id'] == nowDetailSetId){
+						item['unit'] = $('#unitInput').val();
+						item['volume'] = $('#volumeInput').val();
+						selectedLiquorList[i] = item;						
+						break;
+					} 
+				}
+			} else if(nowDetailSetType == CONTENT_TYPE_INGD) {
+				for(var i=0; i<selectedIngdList.length; i++) {
+					var item = selectedIngdList[i];
+					if(item['item_id'] == nowDetailSetId){
+						item['unit'] = $('#unitInput').val();
+						item['volume'] = $('#volumeInput').val();
+						selectedIngdList[i] = item;
+						break;
+					} 
+				}
+			}
+		}
 
 		// 선택된 모든 재료들을 화면에 출력한다.
 		function printSelectedIngredient() {
@@ -1488,12 +1680,10 @@
 
 				// TODO: item이 지정되지 않은 경우 처리 필요
 				var itemId = null;
-				if(ingredient['content_type'] != CONTENT_TYPE_LIQUOR) {
+				if(ingredient['content_type'] == CONTENT_TYPE_LIQUOR) {
 					itemId = ingredient['tmp_id'];
-				} else if(ingredient['ingd_id'] != null) {
-					itemId = ingredient['ingd_id'];
-				} else if(ingredient['equip_id'] != null) {
-					itemId = ingredient['equip_id'];
+				} else if(ingredient['item_id'] != null) {
+					itemId = ingredient['item_id'];
 				}
 
 				var name = "";
@@ -1507,28 +1697,30 @@
 
 				
 				// 상세 재료가 없다면 경고표시 해주고 경고 표시 누르면 상세 설정으로...
-
 				var item = '<div style="width: auto; margin: 0px 5px 0px 0px;display: inline-block;">' +
 						   '	<div style="padding: 0px 10px 0px 0px; text-align: right;">' +
 						   '		<span onclick="removeIngredient('+ingredient['content_type']+', '+itemId+')">x</span>' +
 						   '	</div>';
-					if(ingredient['content_type'] == CONTENT_TYPE_LIQUOR) {
-						item +=  '	<div style="text-align: center;" onclick="showLiquorSettingModal('+itemId+')">' +
-						   		'		<img src="'+repImgUrl+'" style="width: 50px;">' +
-						   		'	</div>';
-					} else {
+
+					if(ingredient['content_type'] == CONTENT_TYPE_EQUIP) {
 						item +=  '	<div style="text-align: center;">' +
-						   		'		<img src="'+repImgUrl+'" style="width: 50px;">' +
-						   		'	</div>';
-					}						  
+						'		<img src="'+repImgUrl+'" style="width: 50px;">' +
+						'	</div>';
+					} else {
+						item +=  '	<div style="text-align: center;" onclick="showIngredientSettingModal('+ingredient['content_type']+','+itemId+')">' +
+						'		<img src="'+repImgUrl+'" style="width: 50px;">' +
+						'	</div>';
+					}
+					
 					item += '	<div style="text-align: center; padding: 3px;">' +
 						   '		<span><b>'+name+'</b></span>' +
-						   '	</div>' +
-						   '</div>';
+						   '	</div>';
 
-				if(ingredient['content_type'] == CONTENT_TYPE_LIQUOR && ingredient['volume'] == null) {
-					item += '<p><span style="font-size: 7px; color: #C4B73B;">상세 설정 필요</span></p>';
-				}
+					if(ingredient['content_type'] != CONTENT_TYPE_EQUIP && ingredient['volume'] == null) {
+						item += '<p style="text-align: center;"><span style="font-size: 7px; color: #C4B73B;">상세 설정 필요</span></p>';
+					}
+
+					item += '</div>';
 
 				$('#selectedIngdDiv').append(item);
 			}
@@ -1537,7 +1729,7 @@
 
 		}
 
-		// 선택된 재료를 취소
+		// TODO: 선택된 재료를 취소
 		function removeIngredient(contentType, id) {
 
 			console.log("========= [removeIngredient] =========");
