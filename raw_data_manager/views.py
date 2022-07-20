@@ -639,6 +639,30 @@ def cocktail(request):
                 print("No Validated")
                 # TODO: return error response
                 return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    elif request.method == 'PUT':
+
+        # 정보 데이터 수정 
+        # ★★★ 1. 수정된 정보만 받는다.
+        # 2. 기존 데이터 가져와서 수정된 정보로 수정한다.
+        # 3. 로그에는 이전 정보와 수정된 내용을 JSON 형태로 저장한다.
+        
+
+        # 비활성화
+
+
+        pass
+    elif request.method == 'DELETE':
+
+        # 이미지 제거
+        # - 파일이 존재하지 않는 경우 칵테일 상태 에러로 변경 후 관리 로그에 에러 메시지 남기기
+
+        # 이미지 DB 데이터 제거
+
+        # 칵테일 DB 데이터 제거
+        
+        # 영구제거 로그 남기기 - 대충 어떤 데이터였는지 남겨두기
+
+        pass
       
         return Response(respone)
 

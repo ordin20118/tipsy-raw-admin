@@ -255,3 +255,36 @@ def equipmentList(request):
 
     html_template = loader.get_template( 'equipment_list.html' )
     return HttpResponse(html_template.render(context, request))
+
+@login_required(login_url="/admin/login/")
+def cocktailList(request):
+    
+    context = {}
+    context['segment'] = 'cocktailList'
+    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
+
+    # load data
+    page = int(request.GET.get('page', 1))
+    perPage = int(request.GET.get('perPage', 10))
+
+    # TODO: join에 대한 내용을 model에 반영해서 조회하기
+    cocktailList = JoinedCocktail.objects.order_by('-cocktail_id').raw('''
+        SELECT 
+            cocktail.*,
+            reg_user.username as reg_admin_name,
+            update_user.username as update_admin_name,
+            if(image.path is null, 'default', image.path) as rep_img
+        FROM tipsy_raw.cocktail
+        LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = cocktail.reg_admin
+        LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = cocktail.update_admin
+        LEFT OUTER JOIN image ON image.content_id = cocktail.cocktail_id AND image.content_type = 200 AND image.image_type = 0
+    ''')
+
+    paginator = Paginator(cocktailList, perPage)  # 페이지당 10개씩 보여주기
+    page_obj = paginator.get_page(page)
+
+    context['cocktail_list'] = page_obj
+
+    html_template = loader.get_template( 'cocktail_list.html' )
+    return HttpResponse(html_template.render(context, request))

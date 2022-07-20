@@ -11,6 +11,7 @@ urlpatterns = [
     # The home page
     path('', views.index, name='home'),
     path('liquor_list.html', views.liquorList, name='liquorList'),
+    path('cocktail_list.html', views.cocktailList, name='cocktailList'),
     path('ingredient_list.html', views.ingredientList, name='ingredientList'),
     path('equipment_list.html', views.equipmentList, name='equipmentList'),
     path('modify_liquor.html', views.liquorModify, name='liquorModify'),

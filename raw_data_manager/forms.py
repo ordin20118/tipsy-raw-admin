@@ -58,6 +58,7 @@ class IngredientForm(forms.Form):
 	category2_id = forms.IntegerField(required=False, validators=[int_zero_validate])
 	category3_id = forms.IntegerField(required=False, validators=[int_zero_validate])
 	category4_id = forms.IntegerField(required=False, validators=[int_zero_validate])
+	unit = forms.CharField(max_length=10, validators=[blank_validate])
 	description = forms.CharField(required=False)	
     
 	def save(self, commit=True):		
