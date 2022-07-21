@@ -105,12 +105,12 @@ def liquorList(request):
 
 
 @login_required(login_url="/admin/login/")
-def liquorModify(request):
+def modifyLiquor(request):
     
-    print("This is liquorModify View ... ")
+    print("This is modifyLiquor View ... ")
 
     context = {}
-    context['segment'] = 'liquorModify'
+    context['segment'] = 'modifyLiquor'
     context['prefix'] = 'http://tipsy.co.kr:8000/admin'
     context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
 
@@ -287,4 +287,64 @@ def cocktailList(request):
     context['cocktail_list'] = page_obj
 
     html_template = loader.get_template( 'cocktail_list.html' )
+    return HttpResponse(html_template.render(context, request))
+
+@login_required(login_url="/admin/login/")
+def modifyCocktail(request):   
+
+    context = {}
+    context['segment'] = 'modifyCocktail'
+    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
+
+    # load data
+    cocktailId = request.GET.get('cocktailId')
+
+    if cocktailId == None or cocktailId == 0:
+        html_template = loader.get_template( 'page-404.html' )
+        return HttpResponse(html_template.render(context, request))
+    else:
+        cocktailId = int(cocktailId)
+
+    # TODO: join에 대한 내용을 model에 반영해서 조회하기
+    cocktail = JoinedCocktail.objects.order_by('-cocktail_id').raw('''
+        SELECT 
+            cocktail.*,
+            reg_user.username as reg_admin_name,
+            update_user.username as update_admin_name,
+            if(image.path is null, 'default', image.path) as rep_img
+        FROM tipsy_raw.cocktail
+        LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = cocktail.reg_admin
+        LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = cocktail.update_admin
+        LEFT OUTER JOIN image ON image.content_id = cocktail.cocktail_id AND image.content_type = 200 AND image.image_type = 0
+        WHERE cocktail.cocktail_id = %d
+    ''' % cocktailId)
+
+    if cocktail == None:
+        html_template = loader.get_template( 'page-404.html' )
+        return HttpResponse(html_template.render(context, request))
+
+    
+    # set detail_json data
+    context['detail_json'] = cocktail[0].detail_json
+
+    # set cocktail data
+    cocktail[0].detail_json = ""
+    serialize_cocktail = JoinedCocktailSerializer(cocktail[0]) 
+    cocktail_bjson = JSONRenderer().render(serialize_cocktail.data)    
+    stream = io.BytesIO(cocktail_bjson)
+    cocktail_dict = JSONParser().parse(stream)    
+    cocktail_json = json.dumps(cocktail_dict, ensure_ascii=False)
+    context['cocktail'] = cocktail_json
+
+    # set cocktail images
+    images = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_COCTAIL, content_id=cocktail[0].cocktail_id)   
+    serialize_images = ImageSerializer(images, many=True)     
+    images_bjson = JSONRenderer().render(serialize_images.data)    
+    images_stream = io.BytesIO(images_bjson)
+    images_dict = JSONParser().parse(images_stream)    
+    images_json = json.dumps(images_dict, ensure_ascii=False)
+    context['images'] = images_json
+
+    html_template = loader.get_template( 'modify_cocktail.html' )   
     return HttpResponse(html_template.render(context, request))

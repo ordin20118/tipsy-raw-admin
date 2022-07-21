@@ -34,6 +34,7 @@ class LiquorForm(forms.Form):
 		return liquor
 
 class CocktailForm(forms.Form):
+	cocktail_id = forms.IntegerField(required=False)
 	name_kr = forms.CharField(max_length=100, validators=[blank_validate])
 	name_en = forms.CharField(max_length=200, validators=[blank_validate])
 	strength = forms.IntegerField(validators=[int_zero_validate])
@@ -49,6 +50,13 @@ class CocktailForm(forms.Form):
 			cocktail.save()
 		return cocktail
 
+
+class CocktailDelForm(forms.Form):
+	cocktail_id = forms.IntegerField(required=True)
+
+	def get_obj(self):		
+		cocktail = Cocktail(**self.cleaned_data)
+		return cocktail
 
 
 class IngredientForm(forms.Form):

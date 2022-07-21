@@ -19,6 +19,7 @@ import mimetypes
 import PIL.Image as pilimg
 import os
 import requests
+import json
 
 
 
@@ -517,7 +518,7 @@ def liquor(request):
         
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def cocktail(request):
     
     if request.method == 'GET':
@@ -646,25 +647,84 @@ def cocktail(request):
         # 2. 기존 데이터 가져와서 수정된 정보로 수정한다.
         # 3. 로그에는 이전 정보와 수정된 내용을 JSON 형태로 저장한다.
         
-
         # 비활성화
-
-
         pass
+
     elif request.method == 'DELETE':
 
-        # 이미지 제거
-        # - 파일이 존재하지 않는 경우 칵테일 상태 에러로 변경 후 관리 로그에 에러 메시지 남기기
+        print("[[Enter Cocktail Remove]]")
 
-        # 이미지 DB 데이터 제거
+        form = CocktailDelForm(request.POST)
+    
+        if form.is_valid():
 
-        # 칵테일 DB 데이터 제거
-        
-        # 영구제거 로그 남기기 - 대충 어떤 데이터였는지 남겨두기
+            print("[[It's Valid!]]")
 
-        pass
-      
-        return Response(respone)
+            cocktail_form = form.get_obj()            
+            cocktail_id = cocktail_form.cocktail_id
+
+            # 칵테일 데이터 조회
+            cocktail = Cocktail.objects.get(cocktail_id=cocktail_id)
+
+            logInfo = ManageLog()
+            logInfo.admin_id = request.user.id
+            logInfo.job_code = JobInfo.JOB_REMOVE_COCKTAIL
+            logInfo.job_name = JobInfo.JOBN_REMOVE_COCKTAIL
+            logInfo.content_id = cocktail_id
+            logInfo.content_type = ContentInfo.CONTENT_TYPE_COCTAIL
+
+            # 데이터가 없는 경우 에러 반환 - No Validated Data
+            try:
+                with transaction.atomic():
+
+                    # 이미지 제거
+                    # - 파일이 존재하지 않는 경우 칵테일 상태 에러로 변경 후 관리 로그에 에러 메시지 남기기
+                    # 이미지 DB 데이터 제거
+                    #   - 컨텐츠 타입과 ID를 통해서 모든 이미지 조회 후 객체.delete() 하면 된다.
+                    image_set = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_COCTAIL, content_id=cocktail_id)
+
+                    for image in image_set:
+                        print(image.path)
+                        # 이미지 파일 제거
+                        # 이미지 데이터 제거
+                        imgPath = imageIdToPath(image.image_id)
+                        imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
+                        os.remove(imgDir + str(image.image_id) + '.' + 'png')
+                        os.remove(imgDir + str(image.image_id) + '_300.' + 'png')
+                        os.remove(imgDir + str(image.image_id) + '_600.' + 'png')
+                        image.delete()
+                   
+
+                    # 칵테일 DB 데이터 제거
+                    cocktail_name = cocktail.name_kr
+                    cocktail.delete()
+                    
+                    # 영구제거 로그 남기기 - 칵테일 아이디와 이름을 남긴다.
+                    info_json = {
+                        "id": cocktail_id,
+                        "name": cocktail_name
+                    }
+
+                    logInfo.info = json.dumps(info_json, ensure_ascii=False)
+                    logInfo.save()
+                    return Response("success", status=status.HTTP_200_OK)               
+
+            except FileNotFoundError as fe:
+                cocktail.update_state = ContentInfo.UPDATE_STATE_ERROR
+                cocktail.save(update_fields=['update_state'])
+                logInfo.info = fe
+                logInfo.save()
+            except Exception as ex:
+                cocktail.update_state = ContentInfo.UPDATE_STATE_ERROR
+                cocktail.save(update_fields=['update_state'])
+                logInfo.info = ex
+                logInfo.save()
+            
+        else:
+            print("No Validated")   # TODO: change to log
+            return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 

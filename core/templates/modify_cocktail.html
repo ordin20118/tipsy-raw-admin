@@ -1,0 +1,1831 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Forms {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+
+	<!-- Select Ingredient Modal -->
+	<div id="ingredientModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="ingdModalTitle" aria-hidden="true" style="z-index: 1050;">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="ingdModalTitle">재료 선택</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="form-group">
+					<div class="input-icon">
+						<input type="text" class="form-control" placeholder="Search for..." onclick="searchAll();">
+						<span class="input-icon-addon">
+							<i class="fa fa-search"></i>
+						</span>
+					</div>
+				</div>
+				<div id="ingdBody" class="modal-body" style="padding: 0px;">
+					<div style="padding: 0px 0px 15px 5px;">
+						<p id="selectedCategP"><b>선택된 카테고리: </b><span id="selectedCategText"></span></p>
+					</div>					
+					<table id="ingdCategoryTable" class="table" style="margin: 0px; padding: 0px;">
+						<thead>
+							<tr style="height: 10px;">
+								<th scope="col" style="width: 90%"></th>
+								<th scope="col" style="width: 10%"></th>
+							</tr>
+						</thead>				
+						<tbody id="categoryTbody" class="table">
+							<!-- <tr>
+								<td>발효주</td>
+								<td>></td>
+							</tr>
+							<tr>
+								<td>증류주</td>
+								<td>></td>
+							</tr> -->
+						</tbody>						
+					</table>
+					<table id="ingdDataTable" class="table" style="display: none;">
+						<thead>
+							<tr>
+								<th scope="col" style="width: 20%"></th>
+								<th scope="col" style="width: 60%"></th>
+								<th scope="col" style="width: 20%"></th>
+							</tr>
+						</thead>
+						<tbody id="ingredientTbody" style="width: 100%; height: 180px; overflow:auto;">
+							<!-- <tr> 
+								<td>IMG</td>
+								<td>레몬</td>								
+								<td>></td>
+							</tr>
+							<tr>
+								<td>IMG</td>
+								<td>얼음</td>								
+								<td>></td>
+							</tr> -->
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" id="backCategBtn" class="btn btn-secondary" onclick="backToCategory()" disabled>뒤로가기</button>
+					<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-primary" onclick="selectIngredientCategory()">확인</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+	<!-- liquor detail setting modal -->
+	<div id="liquorSettingModal" class="modal fade" tabindex="0" role="dialog" aria-labelledby="liquorModalTitle" aria-hidden="true" style="z-index: 1080;">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="liquorModalTitle">주류 상세 설정</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body" style="padding: 0px;">					
+
+					<!-- 이미지, 상세 설정 버튼 -->
+					<!--
+					<div class="form-group form-group-default">
+						<img id="dLiquorThumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
+						<label id="dLiquorName">)</label>
+					</div>
+
+					<div class="form-group form-group-default">
+						<button class="btn btn-secondary" onclick="showLiquorSelectModal()">주류 선택</button>
+					</div>
+					-->
+
+					<!-- 용량 설정 -->
+					<div class="form-group form-group-default">
+						<label for="unitInput">단위</label>
+						<select class="form-control" id="unitInput">
+							<option value="">선택 없음</option>
+							<option value="oz">oz</option>
+							<option value="g">g</option>
+							<option value="ea">ea</option>							
+						</select>
+					</div>
+					<div class="form-group form-group-default">
+						<label>용량</label>
+						<input id="volumeInput" type="text" class="form-control" placeholder="해당 재료의 용량을 입력해주세요.">
+						<!-- <small id="emailHelp" class="form-text text-muted">Please provide a valid informations.</small> -->
+					</div>
+
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-primary" onclick="setIngdDetail()">확인</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- liquor detail select modal -->
+	<!--
+	<div id="liquorSelectModal" class="modal fade" tabindex="0" role="dialog" aria-labelledby="liquorSelectTitle" aria-hidden="true" style="z-index: 1090;">
+		<div class="modal-dialog modal-sm" role="document">
+			<div class="modal-content"  style="box-shadow: 5px 5px 3px 3px grey; background-color: #FFFFE4;">
+				<div class="modal-header">
+					<h5 class="modal-title" id="liquorSelectTitle">주류 검색</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>				
+				<div id="ingdBody" class="modal-body" style="padding: 0px;">
+					<div style="padding: 0px 0px 0px 5px;">
+						<p class="liquorCategP"><b>선택된 카테고리: </b><span class="liquorCategText"></span></p>
+					</div>
+					<div class="form-group">
+						<div class="input-icon">
+							<input type="text" class="form-control" placeholder="Search for..." onclick="searchAll();">
+							<span class="input-icon-addon">
+								<i class="fa fa-search"></i>
+							</span>
+						</div>
+					</div>
+					<table id="liquorSelectTable" class="table">
+						<thead>
+							<tr>
+								<th scope="col" style="width: 20%"></th>
+								<th scope="col" style="width: 60%"></th>
+								<th scope="col" style="width: 20%"></th>
+							</tr>
+						</thead>
+						<tbody id="liquorTbody" style="width: 100%; height: 180px; overflow:auto; display: none;">
+							<tr> 
+								<td>IMG</td>
+								<td>레몬</td>								
+								<td>></td>
+							</tr>
+							<tr>
+								<td>IMG</td>
+								<td>얼음</td>								
+								<td>></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	-->
+
+	<div class="content">
+		<div class="page-inner">
+			<div class="page-header">
+				<h4 class="page-title">칵테일</h4>
+				<ul class="breadcrumbs">
+					<li class="nav-home">
+						<a href="#">
+							<i class="flaticon-home"></i>
+						</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">칵테일</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">데이터 추가</a>
+					</li>
+				</ul>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title">칵테일 데이터 추가</div>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-6 col-lg-4">
+									
+									<!-- Success class sample
+									<div class="form-group has-success">
+										<label for="korNameInput">술 이름(한국어)</label>
+										<input type="text" id="korNameInput" placeholder="" class="form-control">
+									</div>
+									-->
+
+									<!-- Error class sample
+									<div class="form-group has-error has-feedback">
+										<label for="errorInput">Error Input</label>
+										<input type="text" id="errorInput" value="Error" class="form-control">
+										<small id="emailHelp" class="form-text text-muted">Please provide a valid informations.</small>
+									</div>
+									-->
+
+									<div class="form-group">
+										<label for="imageFileInput">이미지</label>
+										<input id="imageFileInput" accept="image/*" type="file" class="form-control-file" onchange="previewFile()">
+										<img id="thumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
+									</div>
+
+									<div class="form-group form-group-default">
+										<label>칵테일 이름(한국어)</label>
+										<input id="korNameInput" type="text" class="form-control" placeholder="칵테일의 한국어 이름을 입력하세요.">
+										<!-- <small id="emailHelp" class="form-text text-muted">Please provide a valid informations.</small> -->
+									</div>
+
+									<div class="form-group form-group-default">
+										<label>칵테일 이름(영어)</label>
+										<input id="enNameInput" type="text" class="form-control" placeholder="칵테일의 영어 이름을 입력하세요.">
+									</div>
+
+									<div class="form-group">
+										<button id="chckDuplicateBtn" class="btn btn-secondary" onclick="checkNameDup()" disabled>중복 확인</button>
+									</div>
+
+									<div class="form-group">
+										<button class="btn btn-danger" onclick="permanentRemove()">영구 제거</button>
+									</div>
+									
+									<br>
+
+								</div>
+
+
+								<div class="col-md-6 col-lg-4">	
+									
+									<div class="form-group">
+										<label>알코올 등급</label>
+										<div class="selectgroup w-100">
+											<label class="selectgroup-item">
+												<input type="radio" name="strengthLevel" value="0" class="selectgroup-input">
+												<span class="selectgroup-button">0</span>												
+											</label>
+											<label class="selectgroup-item">
+												<input type="radio" name="strengthLevel" value="1" class="selectgroup-input">
+												<span class="selectgroup-button">1</span>												
+											</label>
+											<label class="selectgroup-item">
+												<input type="radio" name="strengthLevel" value="2" class="selectgroup-input">
+												<span class="selectgroup-button">2</span>												
+											</label>
+											<label class="selectgroup-item">
+												<input type="radio" name="strengthLevel" value="3" class="selectgroup-input">
+												<span class="selectgroup-button">3</span>												
+											</label>
+											<label class="selectgroup-item">
+												<input type="radio" name="strengthLevel" value="4" class="selectgroup-input">
+												<span class="selectgroup-button">4</span>												
+											</label>											
+											<label class="selectgroup-item">
+												<input type="radio" name="strengthLevel" value="5" class="selectgroup-input">
+												<span class="selectgroup-button">5</span>			
+											</label>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="form-label">색상</label>
+										<div class="row gutters-xs">											
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#FAED7D" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #FAED7D;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#584B00" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #584B00;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#FF0000" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #FF0000;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#FF5E00" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #FF5E00;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#662500" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #662500;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#F6F6F8" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #F6F6F8;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#86E57F" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #86E57F;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#2F9D27" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #2F9D27;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#FFE400" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #FFE400;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#1E0000" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #1E0000;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#008299" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #008299;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#FFB2D9" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #FFB2D9;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#FAF4C0" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #FAF4C0;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#80F2CA" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #80F2CA;"></span>
+												</label>
+											</div>
+
+											<div class="col-auto">
+												<label class="colorinput">
+													<input name="color" type="checkbox" value="#DFE182" class="colorinput-input">
+													<span class="colorinput-color" style="background-color: #DFE182;"></span>
+												</label>
+											</div>
+
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label for="descInput">설명</label>
+										<textarea class="form-control" id="descInput" rows="5"></textarea>
+									</div>
+									
+								</div>
+
+
+								<div class="col-md-6 col-lg-4">
+									<div class="form-group">
+										<label for="descInput">재료</label>
+										<br>
+										<button id="addIngredientBtn" class="btn btn-secondary" onclick="" data-toggle="modal" data-target="#ingredientModal">재료 추가</button>										
+									</div>
+
+									<div id="selectedIngdDiv" style="height: 190px; border: 1px solid grey; padding: 5px; overflow: auto; white-space: nowrap;">
+										<!-- <div style="width: 70px; display: inline-block;">
+											<div style="padding: 0px 5px 0px 0px; text-align: right;">
+												<span onclick="">x</span>
+											</div>
+											<div style="text-align: center;">
+												<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg" style="width: 60px;">
+											</div>
+											<div style="text-align: center; padding: 3px;">
+												<span><b>이름</b></span>
+											</div>
+										</div>						 
+										-->
+									</div>
+
+									<div class="form-group">
+										<label for="descInput">도구</label>										
+									</div>
+									<div class="form-group">
+										<label for="recipe1">레시피</label>
+										<div id="recipeDiv">
+											<input type="text" name="recipe" placeholder="칵테일 레시피를 입력해주세요." class="form-control" style="margin-bottom: 5px;">
+										</div>
+										<div class="col-md-12" style="text-align: center;" onclick="addInputRecipe()">
+											<br>
+											<i class="fa fas fa-plus"></i>
+										</div>										
+									</div>
+								</div>
+
+							</div>
+						</div>
+						<div class="card-action">
+							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
+							<button class="btn btn-success" onclick="javascript:sendCocktailData()">등록</button>
+							<button class="btn btn-danger">취소</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+
+		var COCTAIL_CATEGORY_NUM = 31;
+
+		var isDupliCheck = false;
+
+		var selCategory;
+		
+		var categoryList = null;
+
+		var numberRegex = /^[0-9|'.']*$/;
+		var koreanRegex = /[^ㄱ-ㅎ가-힣\s0-9]/g;
+		var englishRegex = /[^a-zA-Z\s0-9]/g;
+
+		var recipeList = [""];
+
+		// 주류 상세 설정 값
+		var volume = 0;
+		var detailLiquorId = null;
+		var detailLiquor = null;
+
+		$(document).ready(function(){
+
+			detailJson = JSON.parse('{{detail_json|safe}}');
+			cocktail = JSON.parse('{{cocktail|safe}}');
+			cocktail['detail_json'] = detailJson;
+
+			loadCategTree();
+			setEvent();		
+			previewFile();
+
+    	});
+
+		function setSuccessOrError(el, isSuccess) {
+			if(isSuccess){
+				$(el).parent().removeClass('has-error')
+				$(el).parent().addClass('has-success')
+			} else {
+				$(el).parent().removeClass('has-success')
+				$(el).parent().addClass('has-error')
+			}
+		}
+
+
+		function setEvent() {
+
+			$('#ingredientModal').on('hidden.bs.modal', function (e) {
+				// 모달 내용 초기화
+				// 선택된 카테고리 목록 초기화				
+				$('#ingdCategoryTable').show();
+				$('#ingdDataTable').hide();
+				$('#ingredientTbody').empty();
+				$('#selectedCategText').empty();
+				selCategList = [];
+				lastLevel = 0;				
+				printCategSelect(0);				
+			})
+			
+			$('#korNameInput').change(function(){
+				// 한국어만
+				if( koreanRegex.test($("#korNameInput").val()) ) {
+					alert("한글만 입력해주세요");
+					$("#korNameInput").val('')
+					setSuccessOrError($(this), false)
+					return;
+				}
+
+				if($("#korNameInput").val() != null && $("#korNameInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+					$("#chckDuplicateBtn").attr("disabled",false); 
+					isDupliCheck = false;
+				}
+				
+			});
+
+
+			$('#enNameInput').change(function(){
+				// 영어만
+				if( englishRegex.test($("#enNameInput").val()) ) {
+					alert("영어만 입력해주세요");
+					nameEnReward = 0;
+					$("#enNameInput").val('')
+					setSuccessOrError($(this), false)
+					return;
+				}
+
+				if($("#enNameInput").val() != null && $("#enNameInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+					$("#chckDuplicateBtn").attr("disabled",false); 
+					isDupliCheck = false;
+				}
+			});
+
+
+			$("#descInput").change(function() {
+
+				if($("#descInput").val() != null && $("#descInput").val().length > 10) {
+					setSuccessOrError($(this), true)
+				} else {
+					alert('10자 이상 입력해주세요');
+					setSuccessOrError($(this), false)
+				}			
+
+			});
+
+		}
+
+		function permanentRemove(cocktailId) {
+			console.log("[[ permanentRemove ]] cocktail ID: " + cocktailId);
+
+			swal({
+				title: '정말로 칵테일을 영구 제거 하시겠습니까?',
+				text: "",
+				type: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						text : '취소',
+						className: 'btn btn-danger'
+					},        			
+					confirm: {
+						text : '제거',
+						className : 'btn btn-success'
+					}
+				}
+			}).then((willDel) => {
+				if (willDel) {
+					
+					var url = "/admin/raw_data_manager/api/cocktail";
+
+					let formData = new FormData;
+					formData.append("cocktail_id", cocktail.cocktail_id);
+
+					$.ajax({
+						url: url,
+						type:'DELETE',
+						headers: {
+							'X-CSRFTOKEN' : '{{ csrf_token }}'
+						},						
+						contentType:false,
+						processData:false,
+						data: formData,
+						success:function(data){
+							console.log(data);
+							printSuccessPanel("칵테일 영구 제거 완료", "");
+							location.replace("/admin/cocktail_list.html");
+						},
+						error:function(request, status, error){
+							console.log(error)
+							printDangerPanel("칵테일 영구 제거 오류", "관리자에게 문의해주세요.");							
+						}
+					});
+				}				
+			});
+
+		}
+
+
+		// 상세 주류를 검색
+		function searchDetailLiquor(keyword, categLv, categId) {
+
+
+			var searchUrl = "/admin/raw_data_manager/api/search?keyword="+keyword+"&target=liquor";
+
+			if(categLv != null) {
+				searchUrl += "&categLv=" + categLv;	
+			}
+
+			if(categId != null) {
+				searchUrl += "&categId=" + categId;	
+			}
+
+			// request
+			$.ajax({
+				url: url,
+				type:'get',
+				success:function(data){
+
+					console.log(data);
+
+					// 주류 출력
+					// #liquorTbody
+
+					if(data.length > 0) {
+
+						isDupliCheck = false;
+
+						// UI에 빨갛게 표시
+						setSuccessOrError($('#korNameInput'), false);
+						setSuccessOrError($('#enNameInput'), false);
+
+						// 경고 알림 띄우기
+						var dupList = "";
+						for(var i=0; i<data.length; i++) {
+							dupList += "중복: " + data[i]['name_kr'] + " / " + data[i]['name_en'] + "\n";
+						}
+						printWarningPanel("칵테일 데이터 중복!", dupList);		
+					} else {
+						printSuccessPanel("칵테일 데이터 중복 없음", "")
+						setSuccessOrError($('#korNameInput'), true);
+						setSuccessOrError($('#enNameInput'), true);	
+						isDupliCheck = true;
+					}
+				
+				}
+			});
+
+		}
+
+		function checkNameDup() {
+
+			var nameKr = $('#korNameInput').val();
+			var nameEn = $('#enNameInput').val();
+
+			var url = "/admin/raw_data_manager/api/cocktail_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
+
+			$.ajax({
+				url: url,
+				type:'get',
+				success:function(data){
+
+					console.log(data);
+
+					if(data.length > 0) {
+
+						isDupliCheck = false;
+
+						// UI에 빨갛게 표시
+						setSuccessOrError($('#korNameInput'), false);
+						setSuccessOrError($('#enNameInput'), false);
+
+						// 경고 알림 띄우기
+						var dupList = "";
+						for(var i=0; i<data.length; i++) {
+							dupList += "중복: " + data[i]['name_kr'] + " / " + data[i]['name_en'] + "\n";
+						}
+						printWarningPanel("칵테일 데이터 중복!", dupList);		
+					} else {
+						printSuccessPanel("칵테일 데이터 중복 없음", "")
+						setSuccessOrError($('#korNameInput'), true);
+						setSuccessOrError($('#enNameInput'), true);	
+						isDupliCheck = true;
+					}
+				
+				}
+			});
+
+		}
+
+		function previewFile() {
+			
+			console.log("previewFile()")
+
+			//var preview = document.querySelector('img');
+			var preview = document.getElementById('thumb');
+			var file	= document.querySelector('input[type=file]').files[0];
+			var reader	= new FileReader();
+
+			reader.addEventListener("load", function() {
+				preview.src = reader.result;
+			}, false);
+
+			if(file) {
+				reader.readAsDataURL(file);
+			} else {
+
+				console.log(prefix + "/raw_data_manager/image/default_image.jpg")
+
+				$("#thumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
+
+			}			
+		}
+
+		// 새로운 레시피 입력란을 추가
+		function addInputRecipe() {
+			
+			var hasEmpty = false;
+			$('input:text[name="recipe"]').each(function() {
+				console.log($(this).val());
+				var text = $(this).val();
+				if(text != null && text.length > 0) {
+				} else {
+					console.log("레시피 내용을 입력해주세요.");
+					hasEmpty = true;
+					return;
+				}
+			});
+
+			if(!hasEmpty) {
+				console.log("[새로운 레시피 입력란 추가]");
+				var item = '<input type="text" name="recipe" placeholder="칵테일 레시피를 입력해주세요." class="form-control" style="margin-bottom: 5px;">';
+				$('#recipeDiv').append(item);
+			} else {
+				printWarningPanel('데이터 입력 오류', '레시피 입력란을 모두 채워주세요.');
+			}
+		}
+
+
+		// 최종 칵테일 데이터 저장 요청
+		function sendCocktailData() {
+			
+			let formData = new FormData;
+
+			// 필수 데이터 확인
+			let imageData = $("#imageFileInput")[0].files[0];
+
+			
+			if(imageData == null){
+				alert("이미지를 선택해주세요!")
+				return 0;
+			} else {
+				formData.append("image_file", imageData)
+			}
+
+			let korName = $('#korNameInput').val();
+			if(korName != null && korName.length > 0){
+				formData.append('name_kr', korName);
+			} else {
+				alert('칵테일의 한국 이름을 입력해주세요.')
+				return 0;
+			}
+			
+			let enName = $('#enNameInput').val();
+			if(enName != null && enName.length > 0){
+				formData.append('name_en', enName);
+			} else {
+				alert('칵테일의 영어 이름을 입력해주세요.')
+				return 0;
+			}
+
+			if(!isDupliCheck){
+				alert('이름 중복 확인을 해주세요.')
+				return 0;
+			}
+
+			// TODO: 선택된 도수 레벨 넣어주기
+			let strengthLevel = $("input[name='strengthLevel']:checked").val();
+			strengthLevel = parseInt(strengthLevel);
+			console.log("[Strength Level]")
+			console.log(strengthLevel)
+
+			if(isNaN(strengthLevel) != true && strengthLevel != null){
+				formData.append('strength', strengthLevel);
+			} else {
+				alert('칵테일의 알코올 등급을 입력해주세요.')
+				return 0;
+			}
+
+			//formData.append("category1_id", COCTAIL_CATEGORY_NUM);
+		
+			// 선택 입력 데이터 확인
+			// 가격, 설명, 유래
+			let desc = $('#descInput').val();
+			if(desc != null && desc.length > 0){
+				formData.append("description", desc);
+			}
+
+
+			// detail_json
+			var detailJson = {};
+			// 색상
+			var selectedColors = [];
+			$("input:checkbox[name='color']").each(function(){
+				if($(this).is(":checked") == true) {
+					console.log($(this).val());
+					selectedColors.push($(this).val());
+				}
+			});
+			
+			console.log("[selectedColors]")
+			console.log(selectedColors)
+
+			if(selectedColors.length <= 0) {
+				printWarningPanel('데이터 입력 오류', '칵테일 색상을 1개 이상 선택해주세요.');
+			} else {
+				detailJson['color'] = selectedColors;
+			}
+
+
+			// 재료
+			// 재료가 1개이하이면x
+			if(selectedIngredientList.length > 1) {
+				
+				// 재료중에서 상세 용량 입력 안한 재료가 있다면 실패
+				for(var i=0; i<selectedIngredientList.length; i++) {
+					var item = selectedIngredientList[i];
+					if(item['content_type'] != CONTENT_TYPE_EQUIP) {
+						if(item['unit'] == null || item['volume'] == null) {						
+							printWarningPanel('데이터 입력 오류', '재료의 상세 용량을 설정해주세요.');
+							return 0;
+						}	
+					}					
+				}
+				
+				var ingredientJson = makeIngredientData();				
+
+				console.log("[Make Ingredient JSON]");
+				console.log(ingredientJson);
+				
+				detailJson['ingredient'] 	= ingredientJson;
+			} else {
+				printWarningPanel('데이터 입력 오류', '재료를 2개 이상 선택해주세요.');
+				return 0;
+			}
+
+			// 장비 - 최소 1개
+			if(selectedEquipList.length <= 0) {
+				printWarningPanel('데이터 입력 오류', '장비를 선택해주세요.');
+				return 0;
+			}
+			
+			
+			// 레시피
+			var recipeCnt = 0;
+			var recipeList = [];
+			$('input:text[name="recipe"]').each(function() {
+				var text = $(this).val();
+				if(text != null && text.length > 0) {
+					recipeCnt++;
+					recipeList.push(recipeCnt + "_" + $(this).val());
+					$(this).removeClass('has-error')
+				} else {					
+					$(this).addClass('has-error')
+				}
+			});
+
+			if(recipeCnt <= 2) {
+				printWarningPanel('데이터 입력 오류', '레시피를 3개 이상 입력해주세요.');
+				return 0;
+			} else {
+				var recipeJson = {};
+				detailJson['recipe'] 	= recipeList;
+			}
+
+			formData.append("detail_json", JSON.stringify(detailJson));
+			
+			console.log("[Detail JSON]")
+			console.log(detailJson)
+
+			console.log("[FORM DATA]")
+			console.log(formData)
+
+
+			var url = "/admin/raw_data_manager/api/cocktail";
+
+			console.log("칵테일 등록 API URL : " + url)
+			
+			$.ajax({
+				url:url,
+				type:"post",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("insert cocktail result")
+					console.log(data)
+					alert("칵테일 정보 등록 완료.")
+					location.replace("/admin/cocktail_list.html")
+				},
+				error:function(request, status, error){
+				}
+			})
+
+		}
+
+		// TODO: json 형태 변경에 따른 로직 변경
+		// 선택된 재료들의 id만 detail_json에 포함시킴
+		function makeIngredientData() {
+			var res = {};
+			
+			var tmpLiquorList = [];
+			for(var i=0; i<selectedLiquorList.length; i++) {
+				var item = selectedLiquorList[i];
+				var obj = {
+					categ_id: item['categ_id'],
+					categ_name_kr: item['categ_name_kr'],
+					categ_name_en: item['categ_name_en'],
+					items: []
+				};
+				tmpLiquorList.push(obj);
+			}
+			res['liquor'] = tmpLiquorList;
+
+			var tmpIngdList = [];
+			for(var i=0; i<selectedIngdList.length; i++) {
+				var item = selectedIngdList[i];
+				var items = [];
+				var itemObj = {
+					item_id: item['item_id'],
+					item_name_kr: item['item_name_kr'],
+					item_name_en: item['item_name_en'],
+				};
+				items.push(itemObj);
+				var obj = {
+					categ_id: item['categ_id'],
+					categ_name_kr: item['categ_name_kr'],
+					categ_name_en: item['categ_name_en'],
+					item_id: item['item_id'],
+					item_name_kr: item['item_name_kr'],
+					item_name_en: item['item_name_en'],
+					items: items
+				}
+				tmpIngdList.push(obj);
+			}
+			res['ingd'] = tmpIngdList;
+
+			var tmpEquipList = [];
+			for(var i=0; i<selectedEquipList.length; i++) {
+				var item = selectedEquipList[i];
+				var obj = {
+					categ_id: item['categ_id'],
+					categ_name_kr: item['categ_name_kr'],
+					categ_name_en: item['categ_name_en'],
+					item_id: item['item_id'],
+					item_name_kr: item['item_name_kr'],
+					item_name_en: item['item_name_en']
+				}
+				tmpEquipList.push(obj);
+			}
+			res['equip'] = tmpEquipList;
+
+			return res;
+		}
+
+		var categTree = [];
+		var categMap = new Map();
+		var categLv1 = new Map();
+		var categLv2Parent = new Map();
+		var categLv3Parent = new Map();
+		var categLv4Parent = new Map();
+		function loadCategTree() {
+
+			var url = "/admin/raw_data_manager/api/categ_tree"
+			
+			$.ajax({
+				url: url,
+				type:'get',
+				success:function(data){
+					console.log(data);
+					if(data.length > 0) {
+
+						categTree = data;
+
+						// 변수 설정
+						for (var categ of data) {
+							//console.log(categ)
+							// '^'을 기준으로 split
+							// 단계에 따라서 부모 설정
+							var treeStr = categ['categ_tree_key'];
+							splitedArr = treeStr.split('^');
+
+							if(splitedArr.length > 0) {
+								
+								for(var i=1; i<=splitedArr.length; i++){
+									if(i == 1 && categ['category1_id'] != COCTAIL_CATEGORY_NUM) {
+										var info = {
+											'id': categ['category1_id'],
+											'parent': -1,
+											'name': categ['category1_name'],
+											'name_en': categ['category1_name_en']
+										}
+										categLv1.set(info['id'], info);
+										categMap.set(info['id'], info);
+									} else if(i == 2) {
+										var info = {
+											'id': categ['category2_id'],
+											'parent': categ['category1_id'],
+											'name': categ['category2_name'],
+											'name_en': categ['category2_name_en']
+										}
+										
+										if(categMap.get(info['id']) == null) {
+											if(categLv2Parent.get(info['parent']) != null) {
+												// parent가 등록되어 있으면 기존의 리스트에 추가 
+												var childList = categLv2Parent.get(info['parent']);
+												childList.push(info);
+												categLv2Parent.set(info['parent'], childList);
+											} else {
+												// parent가 등록되어 있지 않으면 새로 리스트 생성해서 넣기
+												var newChildList = new Array()
+												newChildList.push(info);
+												categLv2Parent.set(info['parent'], newChildList);
+											}
+											categMap.set(info['id'], info);
+										}
+										
+									} else if(i == 3) {
+										var info = {
+											'id': categ['category3_id'],
+											'parent': categ['category2_id'],
+											'name': categ['category3_name'],
+											'name_en': categ['category3_name_en']
+										}
+
+										if(categMap.get(info['id']) == null) {
+											if(categLv3Parent.get(info['parent']) != null) {
+												// parent가 등록되어 있으면 기존의 리스트에 추가 
+												var childList = categLv3Parent.get(info['parent']);
+												childList.push(info);
+												categLv3Parent.set(info['parent'], childList);
+											} else {
+												// parent가 등록되어 있지 않으면 새로 리스트 생성해서 넣기
+												var newChildList = new Array()
+												newChildList.push(info);
+												categLv3Parent.set(info['parent'], newChildList);
+											}
+											categMap.set(info['id'], info);
+										}
+									} else if(i == 4) {
+										var info = {
+											'id': categ['category4_id'],
+											'parent': categ['category3_id'],
+											'name': categ['category4_name'],
+											'name_en': categ['category4_name_en']
+										}
+
+										if(categMap.get(info['id']) == null) {
+											if(categLv4Parent.get(info['parent']) != null) {
+												// parent가 등록되어 있으면 기존의 리스트에 추가 
+												var childList = categLv4Parent.get(info['parent']);
+												childList.push(info);
+												categLv4Parent.set(info['parent'], childList);
+											} else {
+												// parent가 등록되어 있지 않으면 새로 리스트 생성해서 넣기
+												var newChildList = new Array()
+												newChildList.push(info);
+												categLv4Parent.set(info['parent'], newChildList);
+											}
+											categMap.set(info['id'], info);
+										}
+									}
+								}
+
+							}
+						}
+
+						printCategSelect(0)
+
+					}
+				},
+				error:function(request, status, error){
+					
+				}
+	    	});
+		}
+
+
+		var selCategList = [];	// 선택된 카테고리 리스트
+		var lastLevel = 0;
+		function selectIngdCateg(selLv, categId) {
+
+			console.log("[selectIngdCateg]selLv:"+selLv+"/categId:"+categId);
+
+			if(selLv > 0) {
+				$('#backCategBtn').attr("disabled", false);
+			}
+
+			// 리스트에 선택된 ID 추가
+			lastLevel = selLv;
+			selCategList.push(categId);
+			printSelCategText();
+			
+
+			// 하위 카테고리 유무 확인			
+			let hasChild = false;
+			if(selLv == 1){
+				if(categLv2Parent.get(categId) != null){
+					hasChild = true;
+				}
+			} else if(selLv == 2){
+				if(categLv3Parent.get(categId) != null){
+					hasChild = true;
+				}
+			} else if(selLv == 3){
+				if(categLv4Parent.get(categId) != null){
+					hasChild = true;
+				}
+			} else if(selLv == 4){				
+			}
+
+			if(hasChild){
+				printCategSelect(selLv, categId);
+			} else {
+				// 주류는 카테고리로 선택 끝
+				// 재료 또는 장비의 경우 상세 아이템 선택
+				if(categId == 32 || categId == 33) {
+					loadIngdData();
+				} else {
+					selectLiquorCategory(categId);
+				}
+			}
+		}
+
+		// 재료 카테고리 선택
+		// -최소 2단계 이상의 카테고리를 선택해야함
+		function selectIngredientCategory() {
+
+			var lastCateg = selCategList[selCategList.length-1];
+			var lastCategLv = lastLevel;
+			var lastCategName = categMap.get(lastCateg)['name'];
+
+			console.log("[selectIngredientCategory]");
+			console.log("lastCateg:["+lastCateg+"]["+lastCategName+"]/lastCategLv["+lastCategLv+"]");
+
+			if(lastCategLv < 2) {
+				printWarningPanel('데이터 입력 오류', '최소한 2단계 이상의 카테고리를 선택해주세요.');
+			}
+
+			selectLiquorCategory(lastCateg);
+		}
+
+		// 현재까지 선택된 카테고리를 텍스트로 출력 (ex: 증류주 > 위스키 > 스카치위스키)
+		function printSelCategText(){
+			$('#selectedCategText').empty();			
+			for(var i=0; i<selCategList.length; i++) {
+				//console.log(categMap.get(selCategList[i])['name']);
+				if(i > 0) {
+					$('#selectedCategText').append(" > ");
+				}
+				$('#selectedCategText').append(categMap.get(selCategList[i])['name']);				
+			}
+		}
+
+		function selectLiquorCategory(categId) {
+			
+			var categNameKr = categMap.get(categId)['name']
+			var categNameEn = categMap.get(categId)['name_en']
+
+			// confirm dialog
+			swal({
+				title: '정말로 '+categNameKr+'를 재료를 선택하시겠습니까?',
+				text: "",
+				type: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						text : '취소',
+						className: 'btn btn-danger'
+					},        			
+					confirm: {
+						text : '재료 추가',
+						className : 'btn btn-success'
+					}
+				}
+			}).then((willAdd) => {
+				if (willAdd) {
+					var item = {
+						tmp_id: CONTENT_TYPE_LIQUOR+(selectedLiquorList.length+1),
+						categ_id: categId,
+						categ_name_kr: categNameKr,
+						categ_name_en: categNameEn,
+						content_type: CONTENT_TYPE_LIQUOR
+					};
+
+					//liquor['content_type'] = CONTENT_TYPE_LIQUOR;
+					selectedIngredientList.push(item);
+					selectedLiquorList.push(item);
+
+					// print selected ingredient list
+					printSelectedIngredient();
+
+					swal("재료가 추가 되었습니다.", {
+						icon: "success",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+				}				
+			});
+
+		}
+
+		// 선택된 카테고리 뒤로가기
+		function backToCategory() {
+			
+			selCategList = selCategList.slice(0, selCategList.length-1);
+			lastLevel = lastLevel - 1;
+			
+			if(lastLevel == 0) {
+				$('#backCategBtn').attr("disabled", true);				
+				printSelCategText();
+				printCategSelect(0);
+			} else {
+				var categId = selCategList[selCategList.length-1];
+				selCategList = selCategList.slice(0, selCategList.length-1);				
+				selectIngdCateg(lastLevel, categId);
+			}
+
+			if ( $('#ingdDataTable').css('display') != 'none' ) {
+				$('#ingredientTbody').empty();
+				$('#ingdDataTable').hide();
+				$('#ingdCategoryTable').show();
+			}
+		}
+
+		// 선택된 카테고리에 대한 재료 데이터 가져오기
+		var nextIngdPage = 1;
+		var liquorMap = new Map();
+		var ingdMap = new Map();
+		var equipMap = new Map();
+		function loadIngdData() {
+			
+			$('#ingdCategoryTable').hide();
+			$('#ingdDataTable').show();
+			
+			// 해당 카테고리로 데이터 조회
+			// url: http://localhost:8080/raw_data_manager/api/search?keyword=%EB%A0%88%EB%AA%AC&target=ingredient&categId=32&categLv=1
+
+			let lastCateg = selCategList[selCategList.length-1];
+			var url = "/admin/raw_data_manager/api/search?target=all&categId="+lastCateg+"&categLv="+lastLevel;
+			
+			//console.log("[Get ingredient list URL]:"+url);
+		
+			$.ajax({
+				url: url,
+				type:'get',
+				success:function(data){
+					
+					if(data != null) {
+						json = JSON.parse(data);
+						printIngdData(json, true);
+					}
+					
+				},
+				error:function(request, status, error){
+					
+				}
+			});
+
+			nextIngdPage++;
+		}
+
+		function printIngdData(data, isInit){
+
+			if(isInit){
+				$('#ingredientTbody').empty();
+			}
+
+			/*
+				<tr> 
+					<td>IMG</td>
+					<td>레몬</td>								
+					<td>선택</td>
+				</tr>
+			*/
+
+			var ingdData = data['data'];
+			var liquorList = ingdData['liquor_list'];
+			var ingdList = ingdData['ingredient_list'];
+			var equipList = ingdData['equipment_list'];
+
+			if(liquorList != null) {
+				for(var i=0; i<liquorList.length; i++) {
+					let liquor = liquorList[i];
+					liquorMap.set(liquor['liquor_id'], liquor);
+					let imgUrl = imgprefix + '/' + liquor['rep_img'] + '_300.png';
+					let item = '<tr>' +
+							   '	<td><img src="'+imgUrl+'" style="width: 70px;"/></td>' +
+							   '	<td>'+liquor['name_kr']+'<br>'+liquor['name_en']+'</td>' +
+							   '	<td><button type="button" class="btn btn-default" onclick="addLiquor('+liquor['liquor_id']+')">선택</button></td>' +
+							   '</tr>';
+					$('#ingredientTbody').append(item);
+				}
+			}
+
+			if(ingdList != null) {
+				for(var i=0; i<ingdList.length; i++) {
+					let ingd = ingdList[i];
+					ingdMap.set(ingd['ingd_id'], ingd);
+					let imgUrl = imgprefix + '/' + ingd['rep_img'] + '_300.png';
+					let item = '<tr>' +
+							   '	<td><img src="'+imgUrl+'" style="width: 70px;"/></td>' +
+							   '	<td>'+ingd['name_kr']+'<br>'+ingd['name_en']+'</td>' +
+							   '	<td><button type="button" class="btn btn-default" onclick="addIngd('+ingd['ingd_id']+')">선택</button></td>' +
+							   '</tr>';
+					$('#ingredientTbody').append(item);
+				}
+			}
+
+			if(equipList != null) {
+				for(var i=0; i<equipList.length; i++) {
+					let equip = equipList[i];
+					equipMap.set(equip['equip_id'], equip);
+					let imgUrl = imgprefix + '/' + equip['rep_img'] + '_300.png';
+					let item = '<tr>' +
+							   '	<td><img src="'+imgUrl+'" style="width: 70px;"/></td>' +
+							   '	<td>'+equip['name_kr']+'<br>'+equip['name_en']+'</td>' +
+							   '	<td><button type="button" class="btn btn-default" onclick="addEquip('+equip['equip_id']+')">선택</button></td>' +
+							   '</tr>';
+					$('#ingredientTbody').append(item);
+				}
+			}
+
+		}
+
+
+		var selectedIngredientList = [];
+		var selectedLiquorList = [];
+		var selectedIngdList = [];
+		var selectedEquipList = [];
+		function addLiquor(liquorId) {
+
+			for(var i=0; i<selectedLiquorList.length; i++) {
+				if(selectedLiquorList[i]['liquor_id'] == liquorId) {
+					swal("이미 추가한 재료입니다.", {
+						icon: "error",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+					return;
+				}
+			}
+
+			// 선택 컨펌 받기
+			swal({
+				title: '정말로 해당 재료를 선택하시겠습니까?',
+				text: "",
+				type: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						text : '취소',
+						className: 'btn btn-danger'
+					},        			
+					confirm: {
+						text : '재료 추가',
+						className : 'btn btn-success'
+					}
+				}
+			}).then((willAdd) => {
+				if (willAdd) {
+					var liquor = liquorMap.get(liquorId);
+					liquor['content_type'] = CONTENT_TYPE_LIQUOR;
+					liquor['volume'] = null;
+					liquor['unit'] = "oz";
+					selectedIngredientList.push(liquor);
+					selectedLiquorList.push(liquor);
+
+					// print selected ingredient list
+					printSelectedIngredient();
+
+					swal("재료가 추가 되었습니다.", {
+						icon: "success",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+				}				
+			});
+		}
+
+		function addIngd(ingdId) {
+			
+			for(var i=0; i<selectedIngdList.length; i++) {
+				if(selectedIngdList[i]['ingd_id'] == ingdId) {
+					swal("이미 추가한 재료입니다.", {
+						icon: "error",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+					return;
+				}
+			}
+
+
+			// 선택 컨펌 받기
+			swal({
+				title: '정말로 해당 재료를 선택하시겠습니까?',
+				text: "",
+				type: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						text : '취소',
+						className: 'btn btn-danger'
+					},        			
+					confirm: {
+						text : '재료 추가',
+						className : 'btn btn-success'
+					}
+				}
+			}).then((willAdd) => {
+				if (willAdd) {
+
+					var ingd = ingdMap.get(ingdId);
+
+					console.log(ingd)
+
+
+					var item = {
+						categ_id: ingd['category1_id'],
+						categ_name_kr: "재료",
+						categ_name_en: "Ingredient",						
+						content_type: CONTENT_TYPE_INGD,
+						item_id: ingd['ingd_id'],
+						item_name_kr: ingd['name_kr'],
+						item_name_en: ingd['name_en'],
+						volume: null,
+						unit: null,
+						rep_img: ingd['rep_img']
+					};
+
+					ingd['content_type'] = CONTENT_TYPE_INGD;
+					selectedIngredientList.push(item);
+					selectedIngdList.push(item);
+
+					console.log("재료 추가 확인");
+					console.log(selectedIngredientList);
+					console.log(selectedIngdList);
+
+					// print selected ingredient list
+					printSelectedIngredient();
+
+					swal("재료가 추가 되었습니다.", {
+						icon: "success",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+				}				
+			});
+		}
+
+		function addEquip(equipId) {
+		
+
+			for(var i=0; i<selectedEquipList.length; i++) {
+				if(selectedEquipList[i]['equip_id'] == equipId) {
+					swal("이미 추가한 재료입니다.", {
+						icon: "error",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+					return;
+				}
+			}
+
+			// 선택 컨펌 받기
+			swal({
+				title: '정말로 해당 재료를 선택하시겠습니까?',
+				text: "",
+				type: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						text : '취소',
+						className: 'btn btn-danger'
+					},        			
+					confirm: {
+						text : '재료 추가',
+						className : 'btn btn-success'
+					}
+				}
+			}).then((willAdd) => {
+				if (willAdd) {
+
+					var equip = equipMap.get(equipId);
+					
+					console.log(equip)
+
+					var item = {
+						categ_id: equip['category1_id'],
+						categ_name_kr: "장비",
+						categ_name_en: "Equipment",						
+						content_type: CONTENT_TYPE_EQUIP,
+						item_id: equip['equip_id'],
+						item_name_kr: equip['name_kr'],
+						item_name_en: equip['name_en'],
+						rep_img: equip['rep_img']
+					};
+
+
+					equip['content_type'] = CONTENT_TYPE_EQUIP;
+					selectedIngredientList.push(item);
+					selectedEquipList.push(item);
+
+					console.log("장비 추가 확인");
+					console.log(selectedIngredientList);
+					console.log(selectedEquipList);
+
+					// print selected ingredient list
+					printSelectedIngredient();
+
+					swal("재료가 추가 되었습니다.", {
+						icon: "success",
+						buttons : {
+							confirm : {
+								className: 'btn btn-success'
+							}
+						}
+					});
+				}				
+			});
+		}
+
+
+		// 재료 상세 설정 모달 열기
+		// id - liquor의 경우 tmpId임
+		// TODO		
+		var nowDetailSetType = null;	// 현재 설정중인 재료의 유형
+		var nowDetailSetId = null;	// 현재 설정중인 재료 id => default: null		
+		function showIngredientSettingModal(contentType ,id) {
+
+			console.log("[showIngredientSettingModal] contentType: " + contentType + " / id:" + id);
+
+			nowDetailSetType = contentType;
+			nowDetailSetId = id;
+
+			$('#unitInput').val("");
+			$('#volumeInput').val("");
+
+			for(var i=0; i<selectedLiquorList.length; i++) {
+				var item = selectedLiquorList[i];
+				console.log(item);
+
+				// 데이터 가져오기
+				if((item['content_type'] == CONTENT_TYPE_LIQUOR && item['tmp_id'] == id) 
+					|| (item['content_type'] == CONTENT_TYPE_INGD && item['item_id'] == id)) {
+
+					// 상세 재료 데이터 설정 확인	
+					// 데이터가 있다면 모달에 설정
+					// -단위: unitInput
+					// -용량: volumeInput
+					console.log("[item]");
+					console.log(item);
+
+					$('#unitInput').val(item['unit']);
+					$('#volumeInput').val(item['volume']);
+
+					break;
+				}
+			}
+			
+			$('#liquorSettingModal').modal('show');
+		}
+
+		// 재료 상세 설정
+		function setIngdDetail() {			
+			for(var i=0; i<selectedIngredientList.length; i++) {
+				var item = selectedIngredientList[i];
+				if(item['content_type'] == nowDetailSetType && item['item_id'] != null && item['item_id'] == nowDetailSetId){
+					item['unit'] = $('#unitInput').val();
+					item['volume'] = $('#volumeInput').val();
+					selectedIngredientList[i] = item;					
+					break;
+				} else if(item['content_type'] == nowDetailSetType && item['tmp_id'] != null && item['tmp_id'] == nowDetailSetId) {
+					item['unit'] = $('#unitInput').val();
+					item['volume'] = $('#volumeInput').val();
+					selectedIngredientList[i] = item;
+					break;
+				}	
+			}
+			if(nowDetailSetType == CONTENT_TYPE_LIQUOR) {
+				for(var i=0; i<selectedLiquorList.length; i++) {
+					var item = selectedLiquorList[i];
+					if(item['tmp_id'] == nowDetailSetId){
+						item['unit'] = $('#unitInput').val();
+						item['volume'] = $('#volumeInput').val();
+						selectedLiquorList[i] = item;						
+						break;
+					} 
+				}
+			} else if(nowDetailSetType == CONTENT_TYPE_INGD) {
+				for(var i=0; i<selectedIngdList.length; i++) {
+					var item = selectedIngdList[i];
+					if(item['item_id'] == nowDetailSetId){
+						item['unit'] = $('#unitInput').val();
+						item['volume'] = $('#volumeInput').val();
+						selectedIngdList[i] = item;
+						break;
+					} 
+				}
+			}
+		}
+
+		// 선택된 모든 재료들을 화면에 출력한다.
+		function printSelectedIngredient() {
+
+			$('#selectedIngdDiv').empty();
+
+			for(var i=0; i<selectedIngredientList.length; i++) {
+				var ingredient = selectedIngredientList[i];
+				console.log(ingredient);
+				/*
+				<div style="width: 70px; display: inline-block;">
+					<div style="padding: 0px 5px 0px 0px; text-align: right;">
+						<span onclick="">x</span>
+					</div>
+					<div style="text-align: center;">
+						<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg" style="width: 60px;">
+					</div>
+					<div style="text-align: center; padding: 3px;">
+						<span><b>이름</b></span>
+					</div>
+				</div>
+				*/
+				var repImgUrl = "http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg";
+				if(ingredient['rep_img'] != null && ingredient['rep_img'].length > 0) {
+					repImgUrl = imgprefix + "/" + ingredient['rep_img'] + "_300.png";
+				}
+
+				// TODO: item이 지정되지 않은 경우 처리 필요
+				var itemId = null;
+				if(ingredient['content_type'] == CONTENT_TYPE_LIQUOR) {
+					itemId = ingredient['tmp_id'];
+				} else if(ingredient['item_id'] != null) {
+					itemId = ingredient['item_id'];
+				}
+
+				var name = "";
+				// 상세 재료가 있다면 이름 설정
+				// 없다면 카테고리명을 이름으로 설정
+				if('item_id' in ingredient) {
+					name = ingredient['item_name_kr'];
+				} else {
+					name = ingredient['categ_name_kr'];
+				}
+
+				
+				// 상세 재료가 없다면 경고표시 해주고 경고 표시 누르면 상세 설정으로...
+				var item = '<div style="width: auto; margin: 0px 5px 0px 0px;display: inline-block;">' +
+						   '	<div style="padding: 0px 10px 0px 0px; text-align: right;">' +
+						   '		<span onclick="removeIngredient('+ingredient['content_type']+', '+itemId+')">x</span>' +
+						   '	</div>';
+
+					if(ingredient['content_type'] == CONTENT_TYPE_EQUIP) {
+						item +=  '	<div style="text-align: center;">' +
+						'		<img src="'+repImgUrl+'" style="width: 50px;">' +
+						'	</div>';
+					} else {
+						item +=  '	<div style="text-align: center;" onclick="showIngredientSettingModal('+ingredient['content_type']+','+itemId+')">' +
+						'		<img src="'+repImgUrl+'" style="width: 50px;">' +
+						'	</div>';
+					}
+					
+					item += '	<div style="text-align: center; padding: 3px;">' +
+						   '		<span><b>'+name+'</b></span>' +
+						   '	</div>';
+
+					if(ingredient['content_type'] != CONTENT_TYPE_EQUIP && ingredient['volume'] == null) {
+						item += '<p style="text-align: center;"><span style="font-size: 7px; color: #C4B73B;">상세 설정 필요</span></p>';
+					}
+
+					item += '</div>';
+
+				$('#selectedIngdDiv').append(item);
+			}
+
+			$("#ingredientModal").modal("hide");
+
+		}
+
+		// TODO: 선택된 재료를 취소
+		function removeIngredient(contentType, id) {
+
+			console.log("========= [removeIngredient] =========");
+			console.log("content-type:["+contentType+"] / id:["+id+"]")
+
+		}
+
+
+		/*
+			선택된 카테고리에 대한 하위 카테고리 또는 데이터 리스트를 출력한다.
+		*/		
+		function printCategSelect(selLv, categId) {
+
+			if(selLv == 0) {
+
+				$('#categoryTbody').empty();
+
+				categLv1.forEach(function(value, key) {
+					let categ = value;
+					let item = makeCategRow(selLv+1, categ['id'], categ['name']);
+					$('#categoryTbody').append(item);
+				});
+			} else if(selLv == 4) {
+				return;
+			}
+			
+			
+			// 카테고리 레벨1 선택되었을 때
+			if(selLv == 1) {
+
+				$('#categoryTbody').empty();			
+				let parentId = selCategList[selCategList.length-1];			
+
+				if(categLv2Parent.get(parentId) != null){
+					let childList = categLv2Parent.get(parentId);
+					childList.forEach(function(categ) {
+						let item = makeCategRow(selLv+1, categ['id'], categ['name']);
+						$('#categoryTbody').append(item);						
+					})
+				}
+								
+			}
+			
+			// 카테고리 레벨2 선택되었을 때
+			if(selLv == 2) {
+
+				$('#categoryTbody').empty();
+				let parentId = selCategList[selCategList.length-1];
+
+				if(categLv3Parent.get(parentId) != null){
+					let childList = categLv3Parent.get(parentId);
+					childList.forEach(function(categ) {
+						let item = makeCategRow(selLv+1, categ['id'], categ['name']);
+						$('#categoryTbody').append(item);				
+					})
+				}
+					
+			}
+			
+			// 카테고리 레벨3 선택되었을 때
+			if(selLv == 3) {
+
+				$('#categoryTbody').empty();
+				let parentId = selCategList[selCategList.length-1];
+
+				if(categLv4Parent.get(parentId) != null){
+					let childList = categLv4Parent.get(parentId);
+					childList.forEach(function(categ) {
+						let item = makeCategRow(selLv+1, categ['id'], categ['name']);
+						$('#categoryTbody').append(item);		
+					})
+				}
+			}
+		}
+
+	
+		function makeCategRow(level, categId, name) {
+			var row = '<tr categ_id="'+categId+'" onclick="selectIngdCateg('+level+','+categId+')">' +
+					  '	<td>' + name + '</td>' +
+					  '	<td>></td>' +
+					  '</tr>';
+			return row;
+		}
+	
+	</script>
+{% endblock content %}
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+
+{% endblock javascripts %}	

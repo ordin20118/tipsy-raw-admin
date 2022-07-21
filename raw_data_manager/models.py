@@ -330,6 +330,7 @@ class ManageLog(models.Model):
     job_name = models.CharField(max_length=45, blank=True, null=True)
     content_id = models.IntegerField(blank=True, null=True)
     content_type = models.IntegerField(blank=True, null=True)
+    info = models.TextField(blank=True, null=True)
     reg_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -27,3 +27,14 @@ function printWarningPanel(title, message){
         },
     });
 }
+
+function printDangerPanel(title, message){
+    swal(title, message, {
+        icon : "danger",
+        buttons: {        			
+            confirm: {
+                className : 'btn btn-warning'
+            }
+        },
+    });
+}
