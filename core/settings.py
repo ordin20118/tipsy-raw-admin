@@ -12,6 +12,7 @@ import os
 from decouple import config
 from unipath import Path
 import dj_database_url
+import logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = Path(__file__).parent
@@ -99,6 +100,68 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filter': {
+       'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'django.server': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': '[{server_time}] {message}',
+            'style': '{',
+        },
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler'
+        },
+        'django.server': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'django.server',
+        },
+        # 'file': {
+        #     'level': 'INFO',
+        #     'encoding': 'UTF-8',
+        #     'filters': ['require_debug_false'],
+        #     'class': 'logging.handlers.RotatingFileHandler',            
+        #     'filename': os.path.join(BASE_DIR, 'logs/tipsy.log'),
+        #     'maxBytes': 1024*1024*5,  # 5 MB
+        #     'backupCount': 5,
+        #     'formatter': 'standard',
+        # },
+        'file': {
+            'level': 'INFO',
+            'encoding': 'UTF-8',
+            'class': 'logging.handlers.TimedRotatingFileHandler',            
+            'filename': f'logs/tipsy.log',
+            'when': 'midnight',
+            'formatter': 'standard',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+        'django.server': {
+            'handlers': ['django.server'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },        
+    },
+}
 
 
 # Internationalization

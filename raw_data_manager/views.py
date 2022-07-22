@@ -20,8 +20,9 @@ import PIL.Image as pilimg
 import os
 import requests
 import json
+import logging
 
-
+logger = logging.getLogger('django')
 
 @api_view(['GET'])
 def dashboardCount(request):
@@ -324,8 +325,8 @@ def page_info(request, name):
 @api_view(['GET', 'POST', 'PUT'])
 def liquor(request):
 
-    print("[liquor API]");
-    print(request.method);
+    logger.info("[liquor API]");
+    logger.info(request.method);
     
     if request.method == 'GET':
 
@@ -480,7 +481,7 @@ def liquor(request):
                 return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     elif request.method == 'PUT':
 
-        print(request.POST)
+        logger.info(request.POST)
 
         form = LiquorForm(request.POST)
         
@@ -637,7 +638,7 @@ def cocktail(request):
 
                 return Response(respone, status=status.HTTP_200_OK)
             else:
-                print("No Validated")
+                logger.info("No Validated")
                 # TODO: return error response
                 return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     elif request.method == 'PUT':
@@ -652,13 +653,13 @@ def cocktail(request):
 
     elif request.method == 'DELETE':
 
-        print("[[Enter Cocktail Remove]]")
+        logger.info("[[Enter Cocktail Remove]]")
 
         form = CocktailDelForm(request.POST)
     
         if form.is_valid():
 
-            print("[[It's Valid!]]")
+            logger.info("[[It's Valid!]]")
 
             cocktail_form = form.get_obj()            
             cocktail_id = cocktail_form.cocktail_id
