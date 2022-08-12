@@ -894,6 +894,8 @@
 			}
 
 			formData.append("detail_json", JSON.stringify(detailJson));
+
+			formData.append("format_version", COCKTAIL_FORMAT_VERSION);
 			
 			console.log("[Detail JSON]")
 			console.log(detailJson)
