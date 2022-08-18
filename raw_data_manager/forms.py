@@ -4,6 +4,7 @@ from raw_data_manager.models import *
 from .validators import *
 
 class LiquorForm(forms.Form):
+	liquor_id = forms.IntegerField(required=False)
 	name_kr = forms.CharField(max_length=100, validators=[blank_validate])
 	name_en = forms.CharField(max_length=200, validators=[blank_validate])
 	upload_state = forms.IntegerField(required=False)

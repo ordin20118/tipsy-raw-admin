@@ -488,29 +488,128 @@ def liquor(request):
         if form.is_valid():
             liquor = form.save(commit=False)            
             
-            
-            # 수정된 사항들을 info에 json 형태로 남겨야 한다.
-            # 기존의 값 => 변경된 값
-            
-            
-            
-            
-            liquor.update_admin = request.user.id
-            liquor.update_date = timezone.now()
-            #liquor.save()
-            #liquor.save(update_fields=['name_kr', 'name_en', 'vintage', 'abv', 'country_id', 'description'
-            #                            'upload_state', 'update_state', 'price', 'history', 'update_admin'
-            #                            'update_date', 'category1_id', 'category2_id,' 'category3_id', 'category4_id'])
+            liquor_id = liquor.liquor_id
 
-            liquorId = liquor.liquor_id
+            print("updated liquor id: %s"% id)
+
+            # 변경 내용 확인
+            prev_liquor = RawLiquor.objects.get(liquor_id=liquor_id)
+
+            prev_info = {}
+            updated_info = {}
+
+            # name_kr
+            if prev_liquor.name_kr != liquor.name_kr:
+                prev_info['name_kr'] = prev_liquor.name_kr
+                updated_info['name_kr'] = liquor.name_kr
+                prev_liquor.name_kr = liquor.name_kr
+            
+            # name_en
+            if prev_liquor.name_en != liquor.name_en:
+                prev_info['name_en'] = prev_liquor.name_en
+                updated_info['name_en'] = liquor.name_en
+                prev_liquor.name_en = liquor.name_en
+            
+            # # upload_state
+            # if prev_liquor.upload_state != liquor.upload_state:
+            #     prev_info['upload_state'] = prev_liquor.upload_state
+            #     updated_info['upload_state'] = liquor.upload_state
+            #     prev_liquor.upload_state = liquor.upload_state
+
+            # # update_state
+            # if prev_liquor.update_state != liquor.update_state:
+            #     prev_info['update_state'] = prev_liquor.update_state
+            #     updated_info['update_state'] = liquor.update_state
+            #     prev_liquor.update_state = liquor.update_state
+
+            # vintage
+            if prev_liquor.vintage != liquor.vintage:
+                prev_info['vintage'] = prev_liquor.vintage
+                updated_info['vintage'] = liquor.vintage
+                prev_liquor.vintage = liquor.vintage
+
+            # abv
+            if prev_liquor.abv != liquor.abv:
+                prev_info['abv'] = prev_liquor.abv
+                updated_info['abv'] = liquor.abv
+                prev_liquor.abv = liquor.abv
+
+            # country_id
+            if prev_liquor.country_id != liquor.country_id:
+                prev_info['country_id'] = prev_liquor.country_id
+                updated_info['country_id'] = liquor.country_id
+                prev_liquor.country_id = liquor.country_id
+
+            # region
+            if prev_liquor.region != liquor.region:
+                prev_info['region'] = prev_liquor.region
+                updated_info['region'] = liquor.region
+                prev_liquor.region = liquor.region
+
+            # region_id
+            if prev_liquor.region_id != liquor.region_id:
+                prev_info['region_id'] = prev_liquor.region_id
+                updated_info['region_id'] = liquor.region_id
+                prev_liquor.region_id = liquor.region_id
+
+            # category1_id
+            if prev_liquor.category1_id != liquor.category1_id:
+                prev_info['category1_id'] = prev_liquor.category1_id
+                updated_info['category1_id'] = liquor.category1_id
+                prev_liquor.category1_id = liquor.category1_id
+
+            # category2_id
+            if prev_liquor.category2_id != liquor.category2_id:
+                prev_info['category2_id'] = prev_liquor.category2_id
+                updated_info['category2_id'] = liquor.category2_id
+                prev_liquor.category2_id = liquor.category2_id
+
+            # category3_id
+            if prev_liquor.category3_id != liquor.category3_id:
+                prev_info['category3_id'] = prev_liquor.category3_id
+                updated_info['category3_id'] = liquor.category3_id
+                prev_liquor.category3_id = liquor.category3_id
+
+            # category4_id
+            if prev_liquor.category4_id != liquor.category4_id:
+                prev_info['category4_id'] = prev_liquor.category4_id
+                updated_info['category4_id'] = liquor.category4_id
+                prev_liquor.category4_id = liquor.category4_id
+
+            # description
+            if prev_liquor.description != liquor.description:
+                prev_info['description'] = prev_liquor.description
+                updated_info['description'] = liquor.description
+                prev_liquor.description = liquor.description
+
+            # history
+            if prev_liquor.history != liquor.history:
+                prev_info['history'] = prev_liquor.history
+                updated_info['history'] = liquor.history
+                prev_liquor.history = liquor.history
+
+            prev_liquor.update_state = ContentInfo.UPDATE_STATE_NEED_CONFIRM
+            prev_liquor.update_admin = request.user.id
+            prev_liquor.update_date = timezone.now()
+            #liquor.save()
+            prev_liquor.save(update_fields=['name_kr', 'name_en', 'vintage', 'abv', 'country_id', 'description', 'region',
+                                        'upload_state', 'update_state', 'price', 'history', 'update_admin', 'region_id',
+                                        'update_date', 'category1_id', 'category2_id', 'category3_id', 'category4_id'])
+
+            info = {
+                "prev_info": prev_info,
+                "updated_info": updated_info
+            }
+            info_str = json.dumps(info, ensure_ascii=False)
 
             logInfo = ManageLog()
             logInfo.admin_id = request.user.id
             logInfo.job_code = JobInfo.JOB_MODIFY_SPIRITS
             logInfo.job_name = JobInfo.JOBN_MODIFY_SPIRITS
-            logInfo.content_id = liquorId
+            logInfo.content_id = liquor_id
+            logInfo.info = info_str
             logInfo.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
-            #logInfo.save()
+            logInfo.save()
             return Response("success", status=status.HTTP_200_OK)
         else:
             print("No Validated")
