@@ -1,0 +1,519 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Forms {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+	<div class="content">
+		<div class="page-inner">
+			<div class="page-header">
+				<h4 class="page-title">용어</h4>
+				<ul class="breadcrumbs">
+					<li class="nav-home">
+						<a href="#">
+							<i class="flaticon-home"></i>
+						</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">용어</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">데이터 추가</a>
+					</li>
+				</ul>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title">용어 데이터 추가</div>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-6 col-lg-4">
+								
+									<div class="form-group">
+										<label for="exampleFormControlFile1">이미지</label>
+										<input id="imageFileInput" accept="image/*" type="file" class="form-control-file" onchange="previewFile()">
+										<img id="thumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
+									</div>
+
+									<div class="form-group form-group-default">
+										<label>용어(한국어)</label>
+										<input id="korNameInput" type="text" class="form-control" placeholder="용어의 한국어 이름을 입력하세요.">
+										<!-- <small id="emailHelp" class="form-text text-muted">Please provide a valid informations.</small> -->
+									</div>
+
+									<div class="form-group form-group-default">
+										<label>용어(영어)</label>
+										<input id="enNameInput" type="text" class="form-control" placeholder="용어의 영어 이름을 입력하세요.">
+									</div>
+
+									<div class="form-group">
+										<button id="chckDuplicateBtn" class="btn btn-secondary" onclick="checkNameDup()" disabled>중복 확인</button>
+									</div>
+								</div>
+
+								<div class="col-md-6 col-lg-4">
+									<div class="form-group">
+										<label for="descInput">설명</label>
+										<textarea class="form-control" id="descInput" rows="5"></textarea>
+									</div>
+								</div>
+								
+							</div>
+						</div>
+						<div class="card-action">
+							<button class="btn btn-success" onclick="javascript:sendData()">등록</button>
+							<button class="btn btn-danger">취소</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+
+		var isDupliCheck = false;
+
+		var selCountry = 0;
+		var selCategory;
+		
+		var countryList = null;
+		var categoryList = null;
+
+		var numberRegex = /^[0-9|'.']*$/;
+		var koreanRegex = /[^ㄱ-ㅎ가-힣\s0-9]/g;
+		var englishRegex = /[^a-zA-Z\s0-9]/g;
+
+		$(document).ready(function(){
+
+			setEvent();		
+			previewFile();
+    
+    	});
+
+		function setSuccessOrError(el, isSuccess) {
+			if(isSuccess){
+				$(el).parent().removeClass('has-error')
+				$(el).parent().addClass('has-success')
+			} else {
+				$(el).parent().removeClass('has-success')
+				$(el).parent().addClass('has-error')
+			}
+		}
+
+
+		function setEvent() {
+			
+			$('#korNameInput').change(function(){
+				// 한국어만
+				if( koreanRegex.test($("#korNameInput").val()) ) {
+					alert("한글만 입력해주세요");
+					$("#korNameInput").val('')
+					setSuccessOrError($(this), false)
+					return;
+				}
+
+				if($("#korNameInput").val() != null && $("#korNameInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+					$("#chckDuplicateBtn").attr("disabled",false); 
+					isDupliCheck = false;
+				}
+				
+			});
+
+			$('#enNameInput').change(function(){
+				// 영어만
+				if( englishRegex.test($("#enNameInput").val()) ) {
+					alert("영어만 입력해주세요");
+					nameEnReward = 0;
+					$("#enNameInput").val('')
+					setSuccessOrError($(this), false)
+					return;
+				}
+
+				if($("#enNameInput").val() != null && $("#enNameInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+					$("#chckDuplicateBtn").attr("disabled",false); 
+					isDupliCheck = false;
+				}
+			});
+
+			$("#descInput").change(function() {
+
+				setSuccessOrError($(this), true);
+
+				// if($("#descInput").val() != null && $("#descInput").val().length > 20) {
+				// 	setSuccessOrError($(this), true)
+				// } else {
+				// 	alert('20자 이상 입력해주세요');
+				// 	setSuccessOrError($(this), false)
+				// }			
+
+			});
+
+		}
+
+		function checkNameDup() {
+
+			var nameKr = $('#korNameInput').val();
+			var nameEn = $('#enNameInput').val();
+
+			var url = "/admin/raw_data_manager/api/word_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
+
+			$.ajax({
+				url: url,
+				type:'get',
+				success:function(data){
+
+					console.log(data);
+
+					if(data.length > 0) {
+
+						isDupliCheck = false;
+
+						// UI에 빨갛게 표시
+						setSuccessOrError($('#korNameInput'), false);
+						setSuccessOrError($('#enNameInput'), false);
+
+						// 경고 알림 띄우기
+						var dupList = "";
+						for(var i=0; i<data.length; i++) {
+							dupList += "중복: " + data[i]['name_kr'] + " / " + data[i]['name_en'] + "\n";
+						}
+						printWarningPanel("용어 데이터 중복!", dupList);		
+					} else {
+						printSuccessPanel("용어 데이터 중복 없음", "")
+						setSuccessOrError($('#korNameInput'), true);
+						setSuccessOrError($('#enNameInput'), true);
+						isDupliCheck = true;
+					}
+				
+				}
+			});
+
+		}
+
+		function previewFile() {
+			
+			console.log("previewFile()")
+
+			//var preview = document.querySelector('img');
+			var preview = document.getElementById('thumb');
+			var file	= document.querySelector('input[type=file]').files[0];
+			var reader	= new FileReader();
+
+			reader.addEventListener("load", function() {
+				preview.src = reader.result;
+			}, false);
+
+			if(file) {
+				reader.readAsDataURL(file);
+			} else {
+
+				console.log(prefix + "/raw_data_manager/image/default_image.jpg")
+
+				$("#thumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
+
+			}			
+		}
+
+
+		function sendData() {
+			
+			let formData = new FormData;
+
+
+			// 필수 데이터 확인
+			let imageData = $("#imageFileInput")[0].files[0];
+
+			
+			if(imageData == null){
+				//alert("이미지를 선택해주세요!")
+				//return 0;
+			} else {
+				formData.append("image_file", imageData)
+			}
+
+			let korName = $('#korNameInput').val();
+			if(korName != null && korName.length > 0){
+				formData.append('name_kr', korName);
+			} else {
+				alert('용어의 한국 이름을 입력해주세요.')
+				return 0;
+			}
+
+			let enName = $('#enNameInput').val();
+			if(enName != null && enName.length > 0){
+				formData.append('name_en', enName);
+			} else {
+				alert('용어의 영어 이름을 입력해주세요.')
+				return 0;
+			}
+
+			let desc = $('#descInput').val();
+			if(desc != null && desc.length > 0){
+				formData.append("description", desc);
+			}
+
+			formData.append("category1_id", 33);
+
+		
+			if(!isDupliCheck) {
+				alert('이름 중복확인을 해주세요.')
+				return 0;
+			}
+
+
+			console.log("보내는 데이터 확인")
+			console.log(formData)
+
+			var url = "/admin/raw_data_manager/api/word";
+
+			console.log("용어 등록 API URL : " + url)
+			
+			$.ajax({
+				url:url,
+				type:"post",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("insert word result")
+					console.log(data)
+					alert("용어 정보 등록 완료.")
+					location.replace("/list_word.html")
+				},
+				error:function(request, status, error){
+				}
+			})
+
+		}
+
+		var categTree = []
+		var categMap = new Map()
+		var categLv1 = new Map()
+		var categLv2Parent = new Map()
+		var categLv3Parent = new Map()
+		var categLv4Parent = new Map()
+		function loadCategTree() {
+
+			var url = "/admin/raw_data_manager/api/categ_tree"
+			
+			$.ajax({
+				url: url,
+				type:'get',
+				success:function(data){
+					//console.log(data);
+					if(data.length > 0) {
+
+						categTree = data;
+
+						// 변수 설정
+						for (var categ of data) {
+							//console.log(categ)
+							// '^'을 기준으로 split
+							// 깊이에 따라서 부모 설정
+							var treeStr = categ['categ_tree_key'];
+							splitedArr = treeStr.split('^');
+
+							if(splitedArr.length > 0) {
+								
+								for(var i=1; i<=splitedArr.length; i++){
+									if(i == 1) {
+										var info = {
+											'id': categ['category1_id'],
+											'parent': -1,
+											'name': categ['category1_name']
+										}
+										categLv1.set(info['id'], info);
+										categMap.set(info['id'], info);
+									} else if(i == 2) {
+										var info = {
+											'id': categ['category2_id'],
+											'parent': categ['category1_id'],
+											'name': categ['category2_name']
+										}
+										
+										if(categMap.get(info['id']) == null) {
+											if(categLv2Parent.get(info['parent']) != null) {
+												// parent가 등록되어 있으면 기존의 리스트에 추가 
+												var childList = categLv2Parent.get(info['parent']);
+												childList.push(info);
+												categLv2Parent.set(info['parent'], childList);
+											} else {
+												// parent가 등록되어 있지 않으면 새로 리스트 생성해서 넣기
+												var newChildList = new Array()
+												newChildList.push(info);
+												categLv2Parent.set(info['parent'], newChildList);
+											}
+											categMap.set(info['id'], info);
+										}
+										
+									} else if(i == 3) {
+										var info = {
+											'id': categ['category3_id'],
+											'parent': categ['category2_id'],
+											'name': categ['category3_name']
+										}
+
+										if(categMap.get(info['id']) == null) {
+											if(categLv3Parent.get(info['parent']) != null) {
+												// parent가 등록되어 있으면 기존의 리스트에 추가 
+												var childList = categLv3Parent.get(info['parent']);
+												childList.push(info);
+												categLv3Parent.set(info['parent'], childList);
+											} else {
+												// parent가 등록되어 있지 않으면 새로 리스트 생성해서 넣기
+												var newChildList = new Array()
+												newChildList.push(info);
+												categLv3Parent.set(info['parent'], newChildList);
+											}
+											categMap.set(info['id'], info);
+										}
+									} else if(i == 4) {
+										var info = {
+											'id': categ['category4_id'],
+											'parent': categ['category3_id'],
+											'name': categ['category4_name']
+										}
+
+										if(categMap.get(info['id']) == null) {
+											if(categLv4Parent.get(info['parent']) != null) {
+												// parent가 등록되어 있으면 기존의 리스트에 추가 
+												var childList = categLv4Parent.get(info['parent']);
+												childList.push(info);
+												categLv4Parent.set(info['parent'], childList);
+											} else {
+												// parent가 등록되어 있지 않으면 새로 리스트 생성해서 넣기
+												var newChildList = new Array()
+												newChildList.push(info);
+												categLv4Parent.set(info['parent'], newChildList);
+											}
+											categMap.set(info['id'], info);
+										}
+									}
+								}
+
+							}
+						}
+
+						printCategSelect(0)
+
+					}
+				},
+				error:function(request, status, error){
+					
+				}
+	    	});
+		}
+
+		function printCategSelect(selLv) {
+  		
+			let noneItem = '<option value=0>선택 없음</option>';
+			
+			if(selLv == 0) {		
+				initCategSelect(1);
+				categLv1.forEach(function(value, key) {
+					let categ = value;
+					let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+					$('#categ1Select').append(item);
+				});
+			} else if(selLv == 4) {
+				return;
+			}
+			
+			
+			// 카테고리 레벨1 선택되었을 때
+			if(selLv == 1) {
+
+				initCategSelect(2);
+
+				if($('#categ1Select').val() != '0'){
+					let parentId = Number($('#categ1Select').val());
+
+					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
+					if(categLv2Parent.get(parentId) != null){
+						let childList = categLv2Parent.get(parentId);
+						childList.forEach(function(categ) {
+							let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+							$('#categ2Select').append(item);
+						})
+					}
+				}
+				
+			}
+			
+			// 카테고리 레벨2 선택되었을 때
+			if(selLv == 2) {
+				initCategSelect(3);
+
+				if($('#categ2Select').val() != '0'){
+
+					let parentId = Number($('#categ2Select').val());
+
+					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
+					if(categLv3Parent.get(parentId) != null){
+						let childList = categLv3Parent.get(parentId);
+						childList.forEach(function(categ) {
+							let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+							$('#categ3Select').append(item);
+						})
+					}
+				}
+			}
+			
+			// 카테고리 레벨3 선택되었을 때
+			if(selLv == 3) {
+				initCategSelect(4);
+
+				if($('#categ3Select').val() != '0'){
+
+					let parentId = Number($('#categ3Select').val());
+
+					// TODO: parentId에 맞는 자식들의 리스트를 가져와서 option으로 추가한다.	
+					if(categLv4Parent.get(parentId) != null){
+						let childList = categLv4Parent.get(parentId);
+						childList.forEach(function(categ) {
+							let item = '<option value='+categ['id']+'>'+categ['name']+'</option>';		
+							$('#categ4Select').append(item);
+						})
+					}
+				}
+			}
+		}
+
+		function initCategSelect(level){	
+			let noneItem = '<option value=0>선택 없음</option>';	
+			let count = 0;
+			for(var i=level; count<=(5-level); i++,count++) {
+				$('#categ'+i+'Select').empty();
+				$('#categ'+i+'Select').append(noneItem);
+			}
+		}
+
+	
+	</script>
+{% endblock content %}
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+{% endblock javascripts %}	

@@ -32,6 +32,11 @@ class JoinedEquipmentSerializer(serializers.ModelSerializer):
         model = JoinedEquipment
         fields = '__all__'
 
+class WordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Word
+        fields = '__all__'
+
 class CocktailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cocktail

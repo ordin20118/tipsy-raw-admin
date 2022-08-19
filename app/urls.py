@@ -14,6 +14,7 @@ urlpatterns = [
     path('cocktail_list.html', views.cocktailList, name='cocktailList'),
     path('ingredient_list.html', views.ingredientList, name='ingredientList'),
     path('equipment_list.html', views.equipmentList, name='equipmentList'),
+    path('list_word.html', views.wordList, name='wordList'),
     path('modify_liquor.html', views.modifyLiquor, name='modifyLiquor'),
     path('modify_cocktail.html', views.modifyCocktail, name='modifyCocktail'),
 

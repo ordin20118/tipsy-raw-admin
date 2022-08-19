@@ -435,39 +435,11 @@ def liquor(request):
                     imgData.save()
 
                     # 2. 이미지 ID를 이용한 경로 생성
-                    imgPath = imageIdToPath(imgData.image_id)
-
-                    # 3. 원본, 300, 600 3가지로 저장          
-                    # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
-                    # 업로드할 이미지 데이터 pillow로 객체화
-                    img = pilimg.open(imageFile)
-
-                    # 저장할 경로 폴더 존재 확인
-                    imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
-
-                    if os.path.isdir(imgDir) == False:
-                        os.makedirs(imgDir)
-                    
-                    imgOrgPath = imgDir + str(imgData.image_id) + '.' + 'png'
-                    
-                    img.save(imgOrgPath)
-
-                    # resize 300
-                    img300Path = imgDir + str(imgData.image_id) + '_300.' + 'png'
-                    height_300 = getScaledHeight(img.width, img.height, 300)
-
-                    img300 = img.resize((300, height_300))
-                    img300.save(img300Path)
-
-                    # resize 600
-                    img600Path = imgDir + str(imgData.image_id) + '_600.' + 'png'
-                    height_600 = getScaledHeight(img.width, img.height, 600)
-                    
-                    img600 = img.resize((600, height_600))
-                    img600.save(img600Path)
+                    img_path = imageIdToPath(imgData.image_id)
+                    saveImgToPath(imageFile, imgData.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
 
                     # DB에 이미지 경로 업데이트
-                    imgData.path = imgPath + "/" + str(imgData.image_id)
+                    imgData.path = img_path + "/" + str(imgData.image_id)
                     imgData.save(update_fields=['path'])
 
                     # 임시 파일 저장 이름
@@ -696,39 +668,11 @@ def cocktail(request):
                     imgData.save()
 
                     # 2. 이미지 ID를 이용한 경로 생성
-                    imgPath = imageIdToPath(imgData.image_id)
-
-                    # 3. 원본, 300, 600 3가지로 저장          
-                    # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
-                    # 업로드할 이미지 데이터 pillow로 객체화
-                    img = pilimg.open(imageFile)
-
-                    # 저장할 경로 폴더 존재 확인
-                    imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
-
-                    if os.path.isdir(imgDir) == False:
-                        os.makedirs(imgDir)
-                    
-                    imgOrgPath = imgDir + str(imgData.image_id) + '.' + 'png'
-                    
-                    img.save(imgOrgPath)
-
-                    # resize 300
-                    img300Path = imgDir + str(imgData.image_id) + '_300.' + 'png'
-                    height_300 = getScaledHeight(img.width, img.height, 300)
-
-                    img300 = img.resize((300, height_300))
-                    img300.save(img300Path)
-
-                    # resize 600
-                    img600Path = imgDir + str(imgData.image_id) + '_600.' + 'png'
-                    height_600 = getScaledHeight(img.width, img.height, 600)
-                    
-                    img600 = img.resize((600, height_600))
-                    img600.save(img600Path)
+                    img_path = imageIdToPath(imgData.image_id)
+                    saveImgToPath(imageFile, imgData.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
 
                     # DB에 이미지 경로 업데이트
-                    imgData.path = imgPath + "/" + str(imgData.image_id)
+                    imgData.path = img_path + "/" + str(imgData.image_id)
                     imgData.save(update_fields=['path'])
 
                     # 임시 파일 저장 이름
@@ -881,39 +825,11 @@ def ingredient(request):
                     imgData.save()
 
                     # 2. 이미지 ID를 이용한 경로 생성
-                    imgPath = imageIdToPath(imgData.image_id)
-
-                    # 3. 원본, 300, 600 3가지로 저장          
-                    # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
-                    # 업로드할 이미지 데이터 pillow로 객체화
-                    img = pilimg.open(imageFile)
-
-                    # 저장할 경로 폴더 존재 확인
-                    imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
-
-                    if os.path.isdir(imgDir) == False:
-                        os.makedirs(imgDir)
-                    
-                    imgOrgPath = imgDir + str(imgData.image_id) + '.' + 'png'
-                    
-                    img.save(imgOrgPath)
-
-                    # resize 300
-                    img300Path = imgDir + str(imgData.image_id) + '_300.' + 'png'
-                    height_300 = getScaledHeight(img.width, img.height, 300)
-
-                    img300 = img.resize((300, height_300))
-                    img300.save(img300Path)
-
-                    # resize 600
-                    img600Path = imgDir + str(imgData.image_id) + '_600.' + 'png'
-                    height_600 = getScaledHeight(img.width, img.height, 600)
-                    
-                    img600 = img.resize((600, height_600))
-                    img600.save(img600Path)
+                    img_path = imageIdToPath(imgData.image_id)
+                    saveImgToPath(imageFile, imgData.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
 
                     # DB에 이미지 경로 업데이트
-                    imgData.path = imgPath + "/" + str(imgData.image_id)
+                    imgData.path = img_path + "/" + str(imgData.image_id)
                     imgData.save(update_fields=['path'])
 
                     # 임시 파일 저장 이름
@@ -981,44 +897,85 @@ def equipment(request):
                     imgData.save()
 
                     # 2. 이미지 ID를 이용한 경로 생성
-                    imgPath = imageIdToPath(imgData.image_id)
-
-                    # 3. 원본, 300, 600 3가지로 저장          
-                    # - 파일 형식: image/{이미지 경로}/{이미지_ID}_{이미지_SIZE}.png
-                    # 업로드할 이미지 데이터 pillow로 객체화
-                    img = pilimg.open(imageFile)
-
-                    # 저장할 경로 폴더 존재 확인
-                    imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
-
-                    if os.path.isdir(imgDir) == False:
-                        os.makedirs(imgDir)
-                    
-                    imgOrgPath = imgDir + str(imgData.image_id) + '.' + 'png'
-                    
-                    img.save(imgOrgPath)
-
-                    # resize 300
-                    img300Path = imgDir + str(imgData.image_id) + '_300.' + 'png'
-                    height_300 = getScaledHeight(img.width, img.height, 300)
-
-                    img300 = img.resize((300, height_300))
-                    img300.save(img300Path)
-
-                    # resize 600
-                    img600Path = imgDir + str(imgData.image_id) + '_600.' + 'png'
-                    height_600 = getScaledHeight(img.width, img.height, 600)
-                    
-                    img600 = img.resize((600, height_600))
-                    img600.save(img600Path)
+                    img_path = imageIdToPath(imgData.image_id)
+                    saveImgToPath(imageFile, imgData.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
 
                     # DB에 이미지 경로 업데이트
-                    imgData.path = imgPath + "/" + str(imgData.image_id)
+                    imgData.path = img_path + "/" + str(imgData.image_id)
                     imgData.save(update_fields=['path'])
 
                     # 임시 파일 저장 이름
                     #length_of_string = 8
                     #tmpName = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length_of_string))
+
+                return Response(respone, status=status.HTTP_200_OK)
+            else:
+                print("No Validated")
+                # TODO: return error response
+                return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+      
+        return Response(respone)
+
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def word(request):
+    
+    if request.method == 'GET':
+        return ""
+        
+
+    elif request.method == 'POST':
+        respone = 'this is test response'
+        
+
+        # 용어 데이터 저장 + 이미지 저장 트랜잭션 처리
+        with transaction.atomic():
+
+            # validate data
+            form = WordForm(request.POST, request.FILES)
+            
+            if form.is_valid():
+                
+                # save word data in DB
+                word = form.save(commit=False)
+                #word.upload_state = 0
+                #word.update_state = 0
+                word.reg_admin = request.user.id
+                word.reg_date = timezone.now()
+                word.save()
+
+                word_id = word.word_id
+
+                log_info = ManageLog()
+                log_info.admin_id = request.user.id
+                log_info.job_code = JobInfo.JOB_ADD_WORD
+                log_info.job_name = JobInfo.JOBN_ADD_WORD
+                log_info.content_id = word_id
+                log_info.content_type = ContentInfo.CONTENT_TYPE_WORD
+                log_info.save()
+                
+                # save img data
+                image_file = request.FILES.get('image_file', False)
+
+                if image_file == False:
+                    pass
+                else:          
+                    
+                    # 1. 이미지 데이터 DB 저장
+                    img_data = Image()
+                    img_data.image_type = Image.IMG_TYPE_REP
+                    img_data.content_id = word_id
+                    img_data.content_type = ContentInfo.CONTENT_TYPE_WORD
+                    img_data.is_open = Image.IMG_STATUS_PUB
+                    img_data.save()
+
+                    # save image to DB
+                    img_path = imageIdToPath(img_data.image_id)
+                    saveImgToPath(image_file, img_data.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
+
+                    # DB에 이미지 경로 업데이트
+                    img_data.path = img_path + "/" + str(img_data.image_id)
+                    img_data.save(update_fields=['path'])
 
                 return Response(respone, status=status.HTTP_200_OK)
             else:
@@ -1142,6 +1099,45 @@ def equipment_dup_chck(request):
     # db query
     dup_list = Equipment.objects.raw(q)
     serialized_dup_list = EquipmentSerializer(dup_list, many=True) 
+    
+    # TODO: 이름 리스트만 반환 할 수 있도록 변경
+    
+    return Response(serialized_dup_list.data)
+
+@api_view(['GET'])
+def word_dup_chck(request):
+
+    # name_kr, name_en 수신
+    name_kr = request.GET.get('nameKr')
+    name_en = request.GET.get('nameEn')
+
+    # null and '' check
+    # lowercase, remove whitespace
+    if name_kr != None and len(name_kr) > 0:
+        name_kr = name_kr.lower()
+        name_kr = name_kr.replace(" ", "")
+    else:
+        name_kr = ""
+
+    if name_en != None and len(name_en) > 0:
+        name_en = name_en.lower()
+        name_en = name_en.replace(" ", "")
+    else:
+        name_en = ""
+
+    q = '''
+        SELECT 
+            word_id,
+            name_kr,
+            name_en
+        FROM tipsy_raw.word
+        WHERE lower(replace(name_kr, ' ', '')) = '%s'
+        OR lower(replace(name_en, ' ', '')) = '%s'        
+    ''' % (name_kr, name_en)
+
+    # db query
+    dup_list = Word.objects.raw(q)
+    serialized_dup_list = WordSerializer(dup_list, many=True) 
     
     # TODO: 이름 리스트만 반환 할 수 있도록 변경
     

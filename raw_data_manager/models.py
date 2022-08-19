@@ -241,6 +241,38 @@ class JoinedCocktail(models.Model):
         managed = False
         db_table = 'cocktail'
 
+class Word(models.Model):
+    word_id = models.IntegerField(primary_key=True)
+    name_kr = models.CharField(max_length=100)
+    name_en = models.CharField(max_length=100)
+    description = models.TextField()
+    reg_admin = models.IntegerField()
+    update_admin = models.IntegerField(blank=True, null=True)
+    reg_date = models.DateTimeField()
+    update_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'word'
+
+class JoinedWord(models.Model):
+    word_id = models.AutoField(primary_key=True)
+    name_kr = models.CharField(max_length=100, blank=True, null=True)
+    name_en = models.CharField(max_length=100, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+    reg_admin = models.IntegerField(blank=True, null=True)
+    update_admin = models.IntegerField(blank=True, null=True)
+    reg_date = models.DateTimeField(blank=True, null=True)
+    update_date = models.DateTimeField(blank=True, null=True)
+     
+    # Joined Data
+    reg_admin_name = models.CharField(max_length=150, blank=True, null=True)
+    update_admin_name = models.CharField(max_length=150, blank=True, null=True)
+    rep_img = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'word'
 
 
 class RawCategory(models.Model):

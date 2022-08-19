@@ -6,6 +6,7 @@ class ContentInfo():
     CONTENT_TYPE_COCTAIL = 200
     CONTENT_TYPE_INGREDIENT = 300
     CONTENT_TYPE_EQUIP = 400
+    CONTENT_TYPE_WORD = 500
     CONTENT_TYPE_FLAG = 901
 
     UPLOAD_STATE_NOT_YET = 0
@@ -44,6 +45,12 @@ class JobInfo():
     JOB_INACTIVE_EQUIP = 4004
     JOB_ACTIVE_EQUIP = 4005
 
+    JOB_ADD_WORD = 5001
+    JOB_MODIFY_WORD = 5002
+    JOB_REMOVE_WORD = 5003
+    JOB_INACTIVE_WORD = 5004
+    JOB_ACTIVE_WORD = 5005
+
     JOBN_ADD_SPIRITS = "술 정보 등록"
     JOBN_MODIFY_SPIRITS = "술 정보 수정"
     JOBN_REMOVE_SPIRITS = "술 정보 제거(영구)"
@@ -67,6 +74,12 @@ class JobInfo():
     JOBN_REMOVE_EQUIP = "도구 정보 제거(영구)"
     JOBN_INACTIVE_EQUIP = "도구 정보 비활성"
     JOBN_ACTIVE_EQUIP = "도구 정보 활성"
+
+    JOBN_ADD_WORD = "용어 정보 등록"
+    JOBN_MODIFY_WORD = "용어 정보 수정"
+    JOBN_REMOVE_WORD = "용어 정보 제거(영구)"
+    JOBN_INACTIVE_WORD = "용어 정보 비활성"
+    JOBN_ACTIVE_WORD = "용어 정보 활성"
 
 
 class SearchParam(models.Model):

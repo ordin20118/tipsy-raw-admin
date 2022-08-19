@@ -10,7 +10,7 @@
 	<div class="content">
 		<div class="page-inner">
 			<div class="page-header">
-				<h4 class="page-title">도구</h4>
+				<h4 class="page-title">용어</h4>
 				<ul class="breadcrumbs">
 					<li class="nav-home">
 						<a href="#">
@@ -21,7 +21,7 @@
 						<i class="flaticon-right-arrow"></i>
 					</li>
 					<li class="nav-item">
-						<a href="#">도구</a>
+						<a href="#">용어</a>
 					</li>
 					<li class="separator">
 						<i class="flaticon-right-arrow"></i>
@@ -37,7 +37,7 @@
 					<div class="card">
 						<div class="card-header">
 							<div class="d-flex align-items-center">
-								<h4 class="card-title">도구 데이터 조회</h4>
+								<h4 class="card-title">용어 데이터 조회</h4>
 								<button class="btn btn-primary btn-round ml-auto" onclick="javascript:moveToInsert()">
 									<i class="fa fa-plus"></i>
 									데이터 추가
@@ -60,12 +60,9 @@
 											<table id="add-row" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info">
 												<thead>
 													<tr>
-														<th style="width: 6%">도구<br>번호</th>
+														<th style="width: 6%">용어<br>번호</th>
 														<th style="width: 10%">이미지</th>
-														<th style="width: 15%">카테고리</th>
 														<th style="width: 20%">이름(ko/en)</th>
-														<th style="width: 7%">상태</th>
-														<th style="width: 8%">업로드</th>
 														<th style="width: 8%">등록자</th>
 														<th style="width: 15%">등록일</th>
 														<th style="width: 6%">Action</th>
@@ -73,97 +70,54 @@
 												</thead>
 												<tfoot>
 													<tr>
-														<th>도구<br>번호</th>
+														<th>용어<br>번호</th>
 														<th>이미지</th>
-														<th>카테고리</th>
 														<th>이름(ko/en)</th>
-														<th>상태</th>
-														<th>업로드</th>
 														<th>등록자</th>
 														<th>등록일</th>
 														<th>Action</th>
 													</tr>
 												</tfoot>
-												<tbody id="equipTable">
-													{% for equip in equipment_list %}
+												<tbody id="wordTable">
+													{% for word in word_list %}
 													<tr>
-														<td>{{equip.equip_id}}</td>
+														<td>{{word.word_id}}</td>
 														<td>
-															{% if 'default' in equip.rep_img %}
-															<img src="{{ imgprefix }}/{{equip.rep_img}}_image.jpg" style='width:80px; height:80px;'>
+															{% if 'default' in word.rep_img %}
+															<img src="{{ imgprefix }}/{{word.rep_img}}_image.jpg" style='width:80px; height:80px;'>
 															{% else %}
-															<img src="{{ imgprefix }}/{{equip.rep_img}}_300.png" style='width:70px;'>
-															{% endif %}
-														</td>
-														<td style="font-size: 11px;">															
-															{% if equip.category1_name != None %}
-																{{equip.category1_name}}<br>
-															{% endif %}
-															{% if equip.category2_name != None %}
-																{{equip.category2_name}}<br>
-															{% endif %}
-															{% if equip.category3_name != None %}
-																{{equip.category3_name}}<br>
-															{% endif %}
-															{% if equip.category4_name != None %}
-																{{equip.category4_name}}<br>
+															<img src="{{ imgprefix }}/{{word.rep_img}}_300.png" style='width:70px;'>
 															{% endif %}
 														</td>
 														<td>
-															{% if equip.name_kr != None %}
-																{{equip.name_kr}}<br>
+															{% if word.name_kr != None %}
+																{{word.name_kr}}<br>
 															{% endif %}
-															{% if equip.name_en != None %}
-																{{equip.name_en}}<br>
-															{% endif %}
-														</td>
-														<td>
-															{% if equip.update_state == 0 %}
-																<button type="button" class="btn btn-icon btn-round btn-success" title="정상">
-																	<i class="fa fa-check"></i>
-																</button>																															
-															{% elif equip.update_state == 1 %}
-																<button type="button" class="btn btn-icon btn-round btn-warning" title="수정 내용\n확인 필요">
-																	<i class="fa fas fa-exclamation"></i>
-																</button>
-															{% else %}
-																<div class="btn-success btn-border btn-round" style="padding: 10px;">-</div>
+															{% if word.name_en != None %}
+																{{eqworduip.name_en}}<br>
 															{% endif %}
 														</td>
 														<td>
-															{% if equip.upload_state == 0 %}
-																<button type="button" class="btn btn-icon btn-round btn-warning" title="업로드 안됨">
-																	<i class="fa fas fa-exclamation"></i>
-																</button>												
-															{% elif equip.upload_state == 1 %}
-																<button type="button" class="btn btn-icon btn-round btn-success" title="업로드됨">
-																	<i class="fa fa-check"></i>
-																</button>
-															{% else %}
-																<div class="btn-success btn-border btn-round" style="padding: 10px;">-</div>
-															{% endif %}
-														</td>
-														<td>
-															{% if equip.update_admin_name != None %}
-															{{ equip.update_admin_name }}
-															{% elif equip.reg_admin_name != None %}
-															{{ equip.reg_admin_name }}
+															{% if word.update_admin_name != None %}
+															{{ word.update_admin_name }}
+															{% elif word.reg_admin_name != None %}
+															{{ word.reg_admin_name }}
 															{% else %}
 															-
 															{% endif %}
 														</td>
 														<td>
-															{% if equip.update_date != None %}
-															{{ equip.update_date|date:"Y-m-d" }}
-															{% elif equip.reg_date != None %}
-															{{ equip.reg_date|date:"Y-m-d" }}
+															{% if word.update_date != None %}
+															{{ word.update_date|date:"Y-m-d" }}
+															{% elif word.reg_date != None %}
+															{{ word.reg_date|date:"Y-m-d" }}
 															{% else %}
 															-
 															{% endif %}
 														</td>
 														<td>
 															<div class="form-button-action">
-																<button type="button" onclick="javascript:moveToModifyPage('{{equip.equip_id}}')" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="데이터 수정">
+																<button type="button" onclick="javascript:moveToModifyPage('{{word.word_id}}')" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="데이터 수정">
 																	<i class="fa fa-edit"></i>
 																</button>
 															</div>
@@ -220,14 +174,14 @@
 										<div class="col-sm-12 col-md-7">
 											<div class="dataTables_paginate paging_simple_numbers" id="basic-datatables_paginate">
 												<ul class="pagination">
-													{% if equipment_list.has_previous %}
+													{% if word_list.has_previous %}
 													<li class="paginate_button page-item previous" id="basic-datatables_previous">
-														<a href="?page={{ equipment_list.previous_page_number }}" aria-controls="basic-datatables" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
+														<a href="?page={{ word_list.previous_page_number }}" aria-controls="basic-datatables" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
 													</li>
 													{% endif %}
-													{% for page_number in equipment_list.paginator.page_range %}
-													{% if page_number >= equipment_list.number|add:-3 and page_number <= equipment_list.number|add:3 %}
-													{% if page_number == equipment_list.number %}
+													{% for page_number in word_list.paginator.page_range %}
+													{% if page_number >= word_list.number|add:-3 and page_number <= word_list.number|add:3 %}
+													{% if page_number == word_list.number %}
 													<li class="paginate_button page-item active">
 														<a href="?page={{ page_number }}" aria-controls="basic-datatables" data-dt-idx="1" tabindex="0" class="page-link">{{ page_number }}</a>
 													</li>
@@ -240,7 +194,7 @@
         											{% endfor %}													
 													{% if equipment_list.has_next %}
 													<li class="paginate_button page-item next" id="basic-datatables_next">
-														<a href="?page={{ equipment_list.next_page_number }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
+														<a href="?page={{ word_list.next_page_number }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
 													</li>
 													{% endif %}
 												</ul>
@@ -267,15 +221,15 @@
 		var perPage = 10;
 
 		function moveToInsert() {
-			location.href = "/admin/insert_equipment.html"
+			location.href = "/admin/insert_word.html"
 		}
 
 		$(document).ready(function() {
 
 		});
 
-		function moveToModifyPage(equipId) {
-			location.href = "modify_equipment.html?equipId="+equipId;
+		function moveToModifyPage(wordId) {
+			location.href = "modify_word.html?wordId="+wordId;
 		}
 
 

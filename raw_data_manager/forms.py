@@ -93,6 +93,17 @@ class EquipmentForm(forms.Form):
 			equip.save()
 		return equip
 
+class WordForm(forms.Form):
+	name_kr = forms.CharField(max_length=100, validators=[blank_validate])
+	name_en = forms.CharField(max_length=200, validators=[blank_validate])
+	description = forms.CharField(required=False)
+	
+	def save(self, commit=True):		
+		word = Word(**self.cleaned_data)
+		if commit:
+			word.save()
+		return word
+
 
 class ImageForm(forms.Form):
 	image_id = forms.IntegerField(required=False)

@@ -26,8 +26,8 @@ def index(request):
     context = {}
     context['segment'] = 'index'
     # context['prefix'] = 'http://211.37.150.105:8000'
-    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
     html_template = loader.get_template( 'index.html' )
     return HttpResponse(html_template.render(context, request))
@@ -36,8 +36,8 @@ def index(request):
 def pages(request):
 
     context = {}
-    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:
@@ -63,8 +63,8 @@ def liquorList(request):
     
     context = {}
     context['segment'] = 'liquorList'
-    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
     # load data
     page = int(request.GET.get('page', 1))
@@ -111,8 +111,8 @@ def modifyLiquor(request):
 
     context = {}
     context['segment'] = 'modifyLiquor'
-    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
     # load data
     liquorId = request.GET.get('liquorId')
@@ -178,8 +178,8 @@ def ingredientList(request):
     
     context = {}
     context['segment'] = 'ingredientList'
-    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
     # load data
     page = int(request.GET.get('page', 1))
@@ -220,8 +220,8 @@ def equipmentList(request):
     
     context = {}
     context['segment'] = 'equipList'
-    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
     # load data
     page = int(request.GET.get('page', 1))
@@ -256,13 +256,47 @@ def equipmentList(request):
     html_template = loader.get_template( 'equipment_list.html' )
     return HttpResponse(html_template.render(context, request))
 
+
+@login_required(login_url="/admin/login/")
+def wordList(request):
+    
+    context = {}
+    context['segment'] = 'wordList'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+
+    # load data
+    page = int(request.GET.get('page', 1))
+    perPage = int(request.GET.get('perPage', 10))
+
+    # TODO: join에 대한 내용을 model에 반영해서 조회하기
+    wordList = JoinedWord.objects.order_by('-word_id').raw('''
+        SELECT 
+            word.*,
+            reg_user.username as reg_admin_name,
+            update_user.username as update_admin_name,
+            if(image.path is null, 'default', image.path) as rep_img
+        FROM tipsy_raw.word
+        LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = word.reg_admin
+        LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = word.update_admin
+        LEFT OUTER JOIN image ON image.content_id = word.word_id AND image.content_type = 500 AND image.image_type = 0
+    ''')
+
+    paginator = Paginator(wordList, perPage)  # 페이지당 10개씩 보여주기
+    page_obj = paginator.get_page(page)
+
+    context['word_list'] = page_obj
+
+    html_template = loader.get_template( 'list_word.html' )
+    return HttpResponse(html_template.render(context, request))
+
 @login_required(login_url="/admin/login/")
 def cocktailList(request):
     
     context = {}
     context['segment'] = 'cocktailList'
-    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
     # load data
     page = int(request.GET.get('page', 1))
@@ -294,8 +328,8 @@ def modifyCocktail(request):
 
     context = {}
     context['segment'] = 'modifyCocktail'
-    context['prefix'] = 'http://tipsy.co.kr:8000/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr:8000/admin/raw_data_manager/image'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
     # load data
     cocktailId = request.GET.get('cocktailId')
