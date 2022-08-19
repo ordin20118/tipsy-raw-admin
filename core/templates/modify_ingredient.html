@@ -1,0 +1,645 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Forms {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+	<!-- Image Modify Modal -->
+	<div id="imgModifyModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="imgModifyTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="imgModifyTitle">이미지 관리</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="form-group">
+					<label for="modifyThumb">이미지</label>
+					<img id="modifyThumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
+				</div>
+
+				<div class="form-group">
+					<div class="selectgroup w-100">
+						<label class="selectgroup-item">
+							<input type="radio" name="modifyIsOpen" value="0" id="open1" class="selectgroup-input" onclick="modifyImgChangeActive(0)">
+							<span class="selectgroup-button">활성화</span>
+						</label>
+						<label class="selectgroup-item">
+							<input type="radio" name="modifyIsOpen" value="1" id="open2" class="selectgroup-input" onclick="modifyImgChangeActive(1)">
+							<span class="selectgroup-button">비활성화</span>
+						</label>
+					</div>					
+				</div>
+
+				<div class="form-group">
+					<label for="modifyImageType">대표 설정</label>
+					<select class="form-control" id="modifyImageType">
+						<option value="0">대표 이미지</option>
+						<option value="1">일반 이미지</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<button type="button" class="btn btn-danger" onclick="deleteImage()">영구 제거</button>
+				</div>
+				
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" onclick="initModifyImgModal()">취소</button>
+					<button type="button" class="btn btn-primary" onclick="TODO">수정</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	
+	<!-- Image Add Modal -->
+	<div id="imgAddModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="imgAddTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="imgAddTitle">이미지 추가</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="form-group">
+					<label for="newImageInput">이미지</label>
+					<input id="newImageInput" accept="image/*" type="file" class="form-control-file" onchange="previewNewImage()">
+					<img id="newImgThumb" class="" height="50%" width="50%" alt="이미지 미리보기...">
+				</div>
+
+				<div class="form-group">
+					<div class="selectgroup w-100">
+						<label class="selectgroup-item">
+							<input type="radio" name="newIsOpen" value="0" class="selectgroup-input" onclick="newImgChangeActive(0)" checked="">
+							<span class="selectgroup-button">활성화</span>
+						</label>
+						<label class="selectgroup-item">
+							<input type="radio" name="newIsOpen" value="1" class="selectgroup-input" onclick="newImgChangeActive(1)">
+							<span class="selectgroup-button">비활성화</span>
+						</label>
+					</div>					
+				</div>
+
+				<div class="form-group">
+					<label for="newImgType">대표 설정</label>
+					<select class="form-control" id="newImgType">
+						<option value="0">대표 이미지</option>
+						<option value="1" selected>일반 이미지</option>
+					</select>
+				</div>				
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+					<button type="button" class="btn btn-primary" onclick="sendNewImage()">추가</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="content">
+		<div class="page-inner">
+			<div class="page-header">
+				<h4 class="page-title">재료</h4>
+				<ul class="breadcrumbs">
+					<li class="nav-home">
+						<a href="#">
+							<i class="flaticon-home"></i>
+						</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">재료</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">데이터 수정</a>
+					</li>
+				</ul>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title">재료 데이터 수정</div>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-6 col-lg-4">
+								
+									<div class="form-group">
+										<label for="addImgBtn">이미지</label>
+										<br>										
+										<button id="addImgBtn" class="btn btn-secondary" onclick="openImgAddModal()">이미지 추가</button>										
+									</div>
+
+									<div id="imgListDiv" style="height: 120px; border: 1px solid grey; padding: 5px; overflow: auto; white-space: nowrap;">
+										<div style="width: 80px; display: inline-block;">
+											<div style="padding: 0px 5px 0px 0px; text-align: right;">
+												<span onclick="">x</span>
+											</div>
+											<div style="text-align: center;">
+												<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg" style="width: 60px;">
+											</div>
+										</div>	
+									</div>
+
+									<div class="form-group form-group-default">
+										<label>재료 이름(한국어)</label>
+										<input id="korNameInput" type="text" class="form-control" placeholder="재료의 한국어 이름을 입력하세요.">
+										<!-- <small id="emailHelp" class="form-text text-muted">Please provide a valid informations.</small> -->
+									</div>
+
+									<div class="form-group form-group-default">
+										<label>재료 이름(영어)</label>
+										<input id="enNameInput" type="text" class="form-control" placeholder="재료의 영어 이름을 입력하세요.">
+									</div>
+									<br>
+								</div>
+
+
+								<div class="col-md-6 col-lg-4">											
+									<div class="form-group">
+										<label for="selUploadState">업로드 상태</label>
+										<select class="form-control" id="selUploadState">
+											<option value="0">업로드 안됨</option>
+											<option value="1">업로드됨</option>
+											<option value="2">업로드 금지</option>
+											<option value="3">에러</option>
+										</select>
+									</div>
+
+									<div class="form-group">
+										<label for="selUpdateState">업데이트 상태</label>
+										<select class="form-control" id="selUpdateState">
+											<option value="0">정상</option>
+											<option value="1">수정 불가능</option>
+											<option value="2">컨펌 필요</option>
+											<option value="3">에러</option>
+										</select>
+									</div>
+								</div>
+
+
+								<div class="col-md-6 col-lg-4">
+									<div class="form-group">
+										<label for="descInput">설명</label>
+										<textarea class="form-control" id="descInput" rows="5"></textarea>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card-action">
+							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
+							<button class="btn btn-success" onclick="javascript:sendIngredientData()">수정</button>
+							<button class="btn btn-danger" onclick="javascript:cancelModify()">취소</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+
+		var INGREDIENT_CATEGORY_NUM = 32;
+
+		var numberRegex = /^[0-9|'.']*$/;
+		var koreanRegex = /[^ㄱ-ㅎ가-힣\s0-9]/g;
+		var englishRegex = /[^a-zA-Z\s0-9]/g;
+
+		var ingredient = null;
+		var images = null;
+
+		var isModified = false;
+		var isLoadedCateg = false;
+		var isLoadedCountry = false;
+
+		var nowModifyImgId = null;
+
+		$(document).ready(function(){
+			
+			// |escapejs
+			ingredient = JSON.parse('{{ingredient|safe}}');
+			images = JSON.parse('{{images|safe}}');
+
+			// set images
+			printImages(images);
+
+			console.log(ingredient)
+			console.log(images)
+			
+			setEvent();	
+			setIngredientData(ingredient);
+    
+    	});
+
+		function openImgModifyModal(imageId) {
+			nowModifyImgId = imageId;
+			$("#imgModifyModal").modal("show");
+			for(var i=0; i<images.length; i++) {
+				var item = images[i];
+				if(item['image_id'] == imageId) {
+					console.log(item);
+					// set modify modal					
+					$('#modifyImageType').val(item['image_type']);					
+					modifyImgChangeActive(item['is_open']);
+					var imgPath = imgprefix + "/" + item['path'] + '_300.png';
+					$('#modifyThumb').attr("src", imgPath);
+				}
+			}
+		}
+
+		// 이미지 수정 모달 초기화
+		function initModifyImgModal() {
+			// 썸네일 default 이미졸 변경			
+			modifyImgActive = null;
+		}
+
+		function openImgAddModal() {
+			previewNewImage();
+			$("#imgAddModal").modal("show");
+		}
+
+		function printImages(images) {
+
+			$('#imgListDiv').empty();
+			for(var i=0; i<images.length; i++) {
+				var imageId = images[i]['image_id'];
+				var path = images[i]['path'];
+				var item = '<div style="width: 80px; display: inline-block; border: dashed 1px gray;">' +
+						   '	<div style="padding: 0px 5px 0px 0px; text-align: right;">' +
+						   '		<span onclick="openImgModifyModal('+imageId+')">수정</span>' +
+						   '	</div>' +
+						   '	<div style="text-align: center;">' +
+						   '		<img src="http://tipsy.co.kr/admin/raw_data_manager/image/'+path+'_300.png" style="width: 60px;">' +
+						   '	</div>' +
+						   '</div>';						   
+				$('#imgListDiv').append(item);
+			}
+			
+		}
+
+
+		function clearImgAddModal() {
+			// 이미지 제거
+			$('#newImageInput').val('');
+			previewNewImage();
+			// 활성, 비활성
+			// 대표 설정 => 일반 이미지			
+			
+		}
+	
+		var modifyImgActive = null;
+		function modifyImgChangeActive(value) {
+			modifyImgActive = value;
+			var selectList = $('input[name=modifyIsOpen]');			
+			for (var input of selectList) {				
+				if(value == input.value) {
+					input.checked = true;
+				} else {
+					input.checked = false;
+				}
+			}
+		}
+
+		var newImgActive = 0;
+		function newImgChangeActive(value) {
+			newImgActive = value;
+		}
+
+		// 신규 이미지 추가 요청
+		function sendNewImage() {
+			console.log("sendNewImage")
+
+			let formData = new FormData;
+
+			let imageData = $("#newImageInput")[0].files[0];
+			
+			if(imageData == null){
+				alert("이미지를 선택해주세요!")
+				return 0;
+			} else {
+				formData.append("image_file", imageData)
+			}
+
+			formData.append("is_open", newImgActive);
+			var imgType = $('#newImgType').val();
+			formData.append("image_type", imgType);
+			formData.append("content_id", ingredient['ingd_id']);
+			formData.append("content_type", CONTENT_TYPE_INGD);
+
+
+			var url = "/admin/raw_data_manager/api/image";
+
+			// send
+			$.ajax({
+				url:url,
+				type:"post",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("Add new ingredient image result")
+					console.log(data)
+					alert("이미지 추가 완료.");
+					location.reload();
+				},
+				error:function(request, status, error){
+				}
+			});
+			
+
+			//clearImgAddModal();
+		}
+
+		// 이미지 제거 요청
+		function deleteImage() {
+
+			console.log("[deleteImage] image_id:" + nowModifyImgId);
+
+			swal({
+				title: '이미지를 삭제하시겠습니까?',
+				text: "삭제된 이미지는 복구되지 않습니다.",
+				type: 'warning',
+				buttons:{
+					cancel: {
+						visible: true,
+						text : '취소',
+						className: 'btn btn-danger'
+					},        			
+					confirm: {
+						text : '확인',
+						className : 'btn btn-success'
+					}
+				}
+			}).then((isOk) => {
+				if (isOk) {
+					var url = "/admin/raw_data_manager/api/image";
+					let formData = new FormData;
+					formData.append("image_id", nowModifyImgId);		
+
+					$.ajax({
+						url:url,
+						type:"delete",
+						headers: {
+							'X-CSRFTOKEN' : '{{ csrf_token }}'
+						},
+						contentType:false,
+						processData:false,
+						data:formData,
+						success:function(data){
+							console.log("Delete image("+nowModifyImgId+") result")
+							console.log(data)
+							alert("이미지 제거 완료.");
+							location.reload();
+						},
+						error:function(request, status, error){
+						}
+					});
+				}
+			});
+		}
+
+		function cancelModify() {
+			if(isModified) {
+				swal({
+					title: '페이지를 나가시겠습니까?수정 사항은 적용되지 않습니다.',
+					text: "",
+					type: 'warning',
+					buttons:{
+						cancel: {
+							visible: true,
+							text : '취소',
+							className: 'btn btn-danger'
+						},        			
+						confirm: {
+							text : '확인',
+							className : 'btn btn-success'
+						}
+					}
+				}).then((isOk) => {
+					if (isOk) {
+						history.back();	
+					}
+				});
+			} else {
+				history.back();
+			}
+		}
+		
+		// 재료 데이터 설정
+		function setIngredientData(ingredient){
+
+			console.log("[setIngredientData]:"+ingredient['ingd_id']);
+
+
+			// set image => 이미지는 따로 리스트 형태로 받음
+			if(ingredient['rep_img'] != null && ingredient['rep_img'].lenght > 0) {
+
+			}
+
+			// 한글 이름 korNameInput
+			$('#korNameInput').val(ingredient['name_kr']);
+			// 영어 이름
+			$('#enNameInput').val(ingredient['name_en']);
+
+			// 업로드 상태
+			$("#selUploadState").val(ingredient['upload_state']).prop("selected", true);
+
+			// 업데이트 상태
+			$("#selUpdateState").val(ingredient['update_state']).prop("selected", true);
+			
+			// 설명
+			if(ingredient['description'] != null && ingredient['description'].length > 0){
+				$('#descInput').val(ingredient['description']);	
+			}
+
+		}
+	
+
+		function setSuccessOrError(el, isSuccess) {
+			if(isSuccess){
+				$(el).parent().removeClass('has-error')
+				$(el).parent().addClass('has-success')
+			} else {
+				$(el).parent().removeClass('has-success')
+				$(el).parent().addClass('has-error')
+			}
+		}
+
+
+		function setEvent() {
+			
+			$('#korNameInput').change(function(){
+				isModified = true;
+				// 한국어만
+				if( koreanRegex.test($("#korNameInput").val()) ) {
+					alert("한글만 입력해주세요");
+					$("#korNameInput").val('')
+					setSuccessOrError($(this), false)
+					return;
+				}
+
+				if($("#korNameInput").val() != null && $("#korNameInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+					$("#chckDuplicateBtn").attr("disabled",false); 
+					isDupliCheck = false;
+				}				
+			});
+
+
+			$('#enNameInput').change(function(){
+				isModified = true;
+				// 영어만
+				if( englishRegex.test($("#enNameInput").val()) ) {
+					alert("영어만 입력해주세요");
+					nameEnReward = 0;
+					$("#enNameInput").val('')
+					setSuccessOrError($(this), false)
+					return;
+				}
+
+				if($("#enNameInput").val() != null && $("#enNameInput").val().length > 0) {
+					setSuccessOrError($(this), true)
+					$("#chckDuplicateBtn").attr("disabled",false); 
+					isDupliCheck = false;
+				}
+			});
+
+
+			$("#descInput").change(function() {
+				isModified = true;
+				if($("#descInput").val() != null && $("#descInput").val().length > 20) {
+					setSuccessOrError($(this), true)
+				} else {
+					alert('20자 이상 입력해주세요');
+					setSuccessOrError($(this), false)
+				}			
+
+			});
+
+			$('#selUploadState').change(function() {
+				isModified = true;
+			});
+
+			$('#selUpdateState').change(function() {
+				isModified = true;
+			});
+
+		}
+
+		// 신규 이미지 썸네일 설정
+		function previewNewImage() {
+			
+			console.log("previewNewImage()")
+
+			//var preview = document.querySelector('img');
+			var preview = document.getElementById('newImgThumb');
+			var file	= document.querySelector('#newImageInput').files[0];
+			var reader	= new FileReader();
+
+			reader.addEventListener("load", function() {
+				preview.src = reader.result;
+			}, false);
+
+			if(file) {
+				reader.readAsDataURL(file);
+			} else {
+				$("#newImgThumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
+			}			
+		} 
+
+		// 수정 요청
+		function sendIngredientData() {
+			
+			let formData = new FormData;
+
+			formData.append('ingd_id', ingredient['ingd_id']);
+
+			// 필수 데이터 확인
+			let korName = $('#korNameInput').val();
+			if(korName != null && korName.length > 0){
+				formData.append('name_kr', korName);
+			} else {
+				alert('재료의 한국 이름을 입력해주세요.')
+				return 0;
+			}
+			
+			let enName = $('#enNameInput').val();
+			if(enName != null && enName.length > 0){
+				formData.append('name_en', enName);
+			} else {
+				alert('재료의 영어 이름을 입력해주세요.')
+				return 0;
+			}
+
+			categ1 = INGREDIENT_CATEGORY_NUM;
+			formData.append("category1_id", parseInt(categ1));
+
+			let desc = $('#descInput').val();
+			if(desc != null && desc.length > 0){
+				formData.append("description", desc);
+			}
+
+			// 업로드 상태
+			var uploadState = $("#selUploadState").val();
+			formData.append("upload_state", uploadState);
+
+			// 업데이트 상태
+			var updateState = $("#selUpdateState").val();
+			formData.append("update_state", updateState);
+
+			console.log("보내는 데이터 확인")
+			console.log(formData)
+
+			var url = "/admin/raw_data_manager/api/ingredient";
+
+			console.log("재료 등록 API URL : " + url)
+			
+			$.ajax({
+				url:url,
+				type:"put",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("update ingredient result")
+					console.log(data)
+					alert("재료 정보 수정 완료.")
+					location.realod();
+				},
+				error:function(request, status, error){
+				}
+			});
+
+		}
+	
+	</script>
+{% endblock content %}
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+
+{% endblock javascripts %}	

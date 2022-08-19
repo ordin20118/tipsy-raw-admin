@@ -451,6 +451,8 @@ def liquor(request):
                 print("No Validated")
                 # TODO: return error response
                 return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
     elif request.method == 'PUT':
 
         logger.info(request.POST)
@@ -482,17 +484,17 @@ def liquor(request):
                 updated_info['name_en'] = liquor.name_en
                 prev_liquor.name_en = liquor.name_en
             
-            # # upload_state
-            # if prev_liquor.upload_state != liquor.upload_state:
-            #     prev_info['upload_state'] = prev_liquor.upload_state
-            #     updated_info['upload_state'] = liquor.upload_state
-            #     prev_liquor.upload_state = liquor.upload_state
+            # upload_state
+            if prev_liquor.upload_state != liquor.upload_state:
+                prev_info['upload_state'] = prev_liquor.upload_state
+                updated_info['upload_state'] = liquor.upload_state
+                prev_liquor.upload_state = liquor.upload_state
 
-            # # update_state
-            # if prev_liquor.update_state != liquor.update_state:
-            #     prev_info['update_state'] = prev_liquor.update_state
-            #     updated_info['update_state'] = liquor.update_state
-            #     prev_liquor.update_state = liquor.update_state
+            # update_state
+            if prev_liquor.update_state != liquor.update_state:
+                prev_info['update_state'] = prev_liquor.update_state
+                updated_info['update_state'] = liquor.update_state
+                prev_liquor.update_state = liquor.update_state
 
             # vintage
             if prev_liquor.vintage != liquor.vintage:
@@ -773,7 +775,7 @@ def cocktail(request):
 
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def ingredient(request):
     
     if request.method == 'GET':
@@ -843,6 +845,106 @@ def ingredient(request):
                 return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
       
         return Response(respone)
+
+    elif request.method == 'PUT':
+
+        logger.info(request.POST)
+
+        form = IngredientForm(request.POST)
+        
+        if form.is_valid():
+            updated_ingd = form.save(commit=False)            
+            
+            ingd_id = updated_ingd.ingd_id
+
+            logger.debug("updated ingredient id: %s"% id)
+
+            # 변경 내용 확인
+            prev_ingd = Ingredient.objects.get(ingd_id=ingd_id)
+
+            prev_info = {}
+            updated_info = {}
+
+            # name_kr
+            if prev_ingd.name_kr != updated_ingd.name_kr:
+                prev_info['name_kr'] = prev_ingd.name_kr
+                updated_info['name_kr'] = updated_ingd.name_kr
+                prev_ingd.name_kr = updated_ingd.name_kr
+            
+            # name_en
+            if prev_ingd.name_en != updated_ingd.name_en:
+                prev_info['name_en'] = prev_ingd.name_en
+                updated_info['name_en'] = updated_ingd.name_en
+                prev_ingd.name_en = updated_ingd.name_en
+            
+            # upload_state
+            if prev_ingd.upload_state != updated_ingd.upload_state:
+                prev_info['upload_state'] = prev_ingd.upload_state
+                updated_info['upload_state'] = updated_ingd.upload_state
+                prev_ingd.upload_state = updated_ingd.upload_state
+
+            # update_state
+            if prev_ingd.update_state != updated_ingd.update_state:
+                prev_info['update_state'] = prev_ingd.update_state
+                updated_info['update_state'] = updated_ingd.update_state
+                prev_ingd.update_state = updated_ingd.update_state
+
+            # category1_id
+            if prev_ingd.category1_id != updated_ingd.category1_id:
+                prev_info['category1_id'] = prev_ingd.category1_id
+                updated_info['category1_id'] = updated_ingd.category1_id
+                prev_ingd.category1_id = updated_ingd.category1_id
+
+            # category2_id
+            if prev_ingd.category2_id != updated_ingd.category2_id:
+                prev_info['category2_id'] = prev_ingd.category2_id
+                updated_info['category2_id'] = updated_ingd.category2_id
+                prev_ingd.category2_id = updated_ingd.category2_id
+
+            # category3_id
+            if prev_ingd.category3_id != updated_ingd.category3_id:
+                prev_info['category3_id'] = prev_ingd.category3_id
+                updated_info['category3_id'] = updated_ingd.category3_id
+                prev_ingd.category3_id = updated_ingd.category3_id
+
+            # category4_id
+            if prev_ingd.category4_id != updated_ingd.category4_id:
+                prev_info['category4_id'] = prev_ingd.category4_id
+                updated_info['category4_id'] = updated_ingd.category4_id
+                prev_ingd.category4_id = updated_ingd.category4_id
+
+            # description
+            if prev_ingd.description != updated_ingd.description:
+                prev_info['description'] = prev_ingd.description
+                updated_info['description'] = updated_ingd.description
+                prev_ingd.description = updated_ingd.description
+
+            prev_ingd.update_state = ContentInfo.UPDATE_STATE_NEED_CONFIRM
+            prev_ingd.update_admin = request.user.id
+            prev_ingd.update_date = timezone.now()
+            prev_ingd.save(update_fields=['name_kr', 'name_en', 'description', 'upload_state', 'update_state', 'update_admin',
+                                        'update_date', 'category1_id', 'category2_id', 'category3_id', 'category4_id'])
+
+            info = {
+                "prev_info": prev_info,
+                "updated_info": updated_info
+            }
+            info_str = json.dumps(info, ensure_ascii=False)
+
+            logInfo = ManageLog()
+            logInfo.admin_id = request.user.id
+            logInfo.job_code = JobInfo.JOB_MODIFY_INGREDIENT
+            logInfo.job_name = JobInfo.JOBN_MODIFY_INGREDIENT
+            logInfo.content_id = ingd_id
+            logInfo.info = info_str
+            logInfo.content_type = ContentInfo.CONTENT_TYPE_INGREDIENT
+            logInfo.save()
+            return Response("success", status=status.HTTP_200_OK)
+        else:
+            print("No Validated")
+            # TODO: return error response
+            return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(['GET', 'POST'])
 def equipment(request):
@@ -915,7 +1017,103 @@ def equipment(request):
                 return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
       
         return Response(respone)
+    
+    elif request.method == 'PUT':
 
+        logger.info(request.POST)
+
+        form = EquipmentForm(request.POST)
+        
+        if form.is_valid():
+            
+            updated_equip = form.save(commit=False)            
+            
+            equip_id = updated_equip.equip_id
+
+            logger.debug("updated equipment id: %s"% id)
+
+            # 변경 내용 확인
+            prev_equip = Equipment.objects.get(equip_id=equip_id)
+
+            prev_info = {}
+            updated_info = {}
+
+            # name_kr
+            if prev_equip.name_kr != updated_equip.name_kr:
+                prev_info['name_kr'] = prev_equip.name_kr
+                updated_info['name_kr'] = updated_equip.name_kr
+                prev_equip.name_kr = updated_equip.name_kr
+            
+            # name_en
+            if prev_equip.name_en != updated_equip.name_en:
+                prev_info['name_en'] = prev_equip.name_en
+                updated_info['name_en'] = updated_equip.name_en
+                prev_equip.name_en = updated_equip.name_en
+            
+            # upload_state
+            if prev_equip.upload_state != updated_equip.upload_state:
+                prev_info['upload_state'] = prev_equip.upload_state
+                updated_info['upload_state'] = updated_equip.upload_state
+                prev_equip.upload_state = updated_equip.upload_state
+
+            # update_state
+            if prev_equip.update_state != updated_equip.update_state:
+                prev_info['update_state'] = prev_equip.update_state
+                updated_info['update_state'] = updated_equip.update_state
+                prev_equip.update_state = updated_equip.update_state
+
+            # category1_id
+            if prev_equip.category1_id != updated_equip.category1_id:
+                prev_info['category1_id'] = prev_equip.category1_id
+                updated_info['category1_id'] = updated_equip.category1_id
+                prev_equip.category1_id = updated_equip.category1_id
+
+            # category2_id
+            if prev_equip.category2_id != updated_equip.category2_id:
+                prev_info['category2_id'] = prev_equip.category2_id
+                updated_info['category2_id'] = updated_equip.category2_id
+                prev_equip.category2_id = updated_equip.category2_id
+
+            # category3_id
+            if prev_equip.category3_id != updated_equip.category3_id:
+                prev_info['category3_id'] = prev_equip.category3_id
+                updated_info['category3_id'] = updated_equip.category3_id
+                prev_equip.category3_id = updated_equip.category3_id
+
+            # category4_id
+            if prev_equip.category4_id != updated_equip.category4_id:
+                prev_info['category4_id'] = prev_equip.category4_id
+                updated_info['category4_id'] = updated_equip.category4_id
+                prev_equip.category4_id = updated_equip.category4_id
+
+            # description
+            if prev_equip.description != updated_equip.description:
+                prev_info['description'] = prev_equip.description
+                updated_info['description'] = updated_equip.description
+                prev_equip.description = updated_equip.description
+
+            prev_equip.update_state = ContentInfo.UPDATE_STATE_NEED_CONFIRM
+            prev_equip.update_admin = request.user.id
+            prev_equip.update_date = timezone.now()
+            prev_equip.save(update_fields=['name_kr', 'name_en', 'description', 'upload_state', 'update_state', 'update_admin',
+                                        'update_date', 'category1_id', 'category2_id', 'category3_id', 'category4_id'])
+
+            info = {
+                "prev_info": prev_info,
+                "updated_info": updated_info
+            }
+            info_str = json.dumps(info, ensure_ascii=False)
+
+            log_info = ManageLog()
+            log_info.admin_id = request.user.id
+            log_info.job_code = JobInfo.JOB_MODIFY_EQUIP
+            log_info.job_name = JobInfo.JOBN_MODIFY_EQUIP
+            log_info.content_id = equip_id
+            log_info.info = info_str
+            log_info.content_type = ContentInfo.CONTENT_TYPE_EQUIP
+            log_info.save()
+            return Response("success", status=status.HTTP_200_OK)
+    
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def word(request):
@@ -938,8 +1136,6 @@ def word(request):
                 
                 # save word data in DB
                 word = form.save(commit=False)
-                #word.upload_state = 0
-                #word.update_state = 0
                 word.reg_admin = request.user.id
                 word.reg_date = timezone.now()
                 word.save()
@@ -984,6 +1180,65 @@ def word(request):
                 return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
       
         return Response(respone)
+    
+    elif request.method == 'PUT':
+
+        logger.info(request.POST)
+
+        form = WordForm(request.POST)
+        
+        if form.is_valid():
+            
+            updated_word = form.save(commit=False)            
+            
+            word_id = updated_word.word_id
+
+            logger.debug("updated word id: %s"% id)
+
+            # 변경 내용 확인
+            prev_word = Word.objects.get(word_id=word_id)
+
+            prev_info = {}
+            updated_info = {}
+
+            # name_kr
+            if prev_word.name_kr != updated_word.name_kr:
+                prev_info['name_kr'] = prev_word.name_kr
+                updated_info['name_kr'] = updated_word.name_kr
+                prev_word.name_kr = updated_word.name_kr
+            
+            # name_en
+            if prev_word.name_en != updated_word.name_en:
+                prev_info['name_en'] = prev_word.name_en
+                updated_info['name_en'] = updated_word.name_en
+                prev_word.name_en = updated_word.name_en
+            
+            # description
+            if prev_word.description != updated_word.description:
+                prev_info['description'] = prev_word.description
+                updated_info['description'] = updated_word.description
+                prev_word.description = updated_word.description
+
+            prev_word.update_state = ContentInfo.UPDATE_STATE_NEED_CONFIRM
+            prev_word.update_admin = request.user.id
+            prev_word.update_date = timezone.now()
+            prev_word.save(update_fields=['name_kr', 'name_en', 'description', 'update_admin', 'update_date'])
+
+            info = {
+                "prev_info": prev_info,
+                "updated_info": updated_info
+            }
+            info_str = json.dumps(info, ensure_ascii=False)
+
+            log_info = ManageLog()
+            log_info.admin_id = request.user.id
+            log_info.job_code = JobInfo.JOB_MODIFY_WORD
+            log_info.job_name = JobInfo.JOBN_MODIFY_WORD
+            log_info.content_id = word_id
+            log_info.info = info_str
+            log_info.content_type = ContentInfo.CONTENT_TYPE_WORD
+            log_info.save()
+            return Response("success", status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

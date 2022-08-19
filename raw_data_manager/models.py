@@ -242,7 +242,7 @@ class JoinedCocktail(models.Model):
         db_table = 'cocktail'
 
 class Word(models.Model):
-    word_id = models.IntegerField(primary_key=True)
+    word_id = models.AutoField(primary_key=True)
     name_kr = models.CharField(max_length=100)
     name_en = models.CharField(max_length=100)
     description = models.TextField()

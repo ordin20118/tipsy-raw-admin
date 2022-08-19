@@ -61,13 +61,16 @@ class CocktailDelForm(forms.Form):
 
 
 class IngredientForm(forms.Form):
+	ingd_id = forms.IntegerField(required=False, validators=[int_zero_validate])
 	name_kr = forms.CharField(max_length=100, validators=[blank_validate])
 	name_en = forms.CharField(max_length=100, validators=[blank_validate])
+	upload_state = forms.IntegerField(required=False)
+	update_state = forms.IntegerField(required=False)
 	category1_id = forms.IntegerField(validators=[int_zero_validate])
-	category2_id = forms.IntegerField(required=False, validators=[int_zero_validate])
-	category3_id = forms.IntegerField(required=False, validators=[int_zero_validate])
-	category4_id = forms.IntegerField(required=False, validators=[int_zero_validate])
-	unit = forms.CharField(max_length=10, validators=[blank_validate])
+	category2_id = forms.IntegerField(required=False)
+	category3_id = forms.IntegerField(required=False)
+	category4_id = forms.IntegerField(required=False)
+	unit = forms.CharField(required=False, max_length=10)
 	description = forms.CharField(required=False)	
     
 	def save(self, commit=True):		
@@ -79,8 +82,11 @@ class IngredientForm(forms.Form):
 
 
 class EquipmentForm(forms.Form):
+	equip_id = forms.IntegerField(required=False, validators=[int_zero_validate])
 	name_kr = forms.CharField(max_length=100, validators=[blank_validate])
 	name_en = forms.CharField(max_length=200, validators=[blank_validate])
+	upload_state = forms.IntegerField(required=False)
+	update_state = forms.IntegerField(required=False)
 	category1_id = forms.IntegerField(validators=[int_zero_validate])
 	category2_id = forms.IntegerField(required=False, validators=[int_zero_validate])
 	category3_id = forms.IntegerField(required=False, validators=[int_zero_validate])
@@ -94,6 +100,7 @@ class EquipmentForm(forms.Form):
 		return equip
 
 class WordForm(forms.Form):
+	word_id = forms.IntegerField(required=False, validators=[int_zero_validate])
 	name_kr = forms.CharField(max_length=100, validators=[blank_validate])
 	name_en = forms.CharField(max_length=200, validators=[blank_validate])
 	description = forms.CharField(required=False)

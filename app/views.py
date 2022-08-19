@@ -1,8 +1,4 @@
 # -*- encoding: utf-8 -*-
-"""
-Copyright (c) 2019 - present AppSeed.us
-"""
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template import loader
@@ -15,10 +11,13 @@ from rest_framework.parsers import JSONParser
 
 import io
 import json
+import logging
 
 from raw_data_manager.forms import *
 from raw_data_manager.models import *
 from raw_data_manager.serializers import *
+
+logger = logging.getLogger('django')
 
 @login_required(login_url="/admin/login/")
 def index(request):
@@ -255,6 +254,75 @@ def equipmentList(request):
 
     html_template = loader.get_template( 'equipment_list.html' )
     return HttpResponse(html_template.render(context, request))
+
+
+@login_required(login_url="/admin/login/")
+def modifyIngredient(request):
+    
+    #logger.debug("This is modifyIngredient View ... ")
+
+    context = {}
+    context['segment'] = 'modifyIngredient'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+
+    # load data
+    ingdId = request.GET.get('ingdId')
+
+    if ingdId == None or ingdId == 0:
+        html_template = loader.get_template( 'page-404.html' )
+        return HttpResponse(html_template.render(context, request))
+    else:
+        ingdId = int(ingdId)
+
+    # TODO: join에 대한 내용을 model에 반영해서 조회하기
+    ingd = JoinedIngredient.objects.order_by('-ingd_id').raw('''
+        SELECT 
+            ingredient.*,
+            categ1.name as category1_name,
+            categ2.name as category2_name,
+            categ3.name as category3_name,
+            categ4.name as category4_name,
+            reg_user.username as reg_admin_name, 
+            update_user.username as update_admin_name,
+            if(image.path is null, 'default', image.path) as rep_img
+        FROM tipsy_raw.ingredient
+        LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = ingredient.category1_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = ingredient.category2_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON categ3.id = ingredient.category3_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON categ4.id = ingredient.category4_id
+        LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = ingredient.reg_admin
+        LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = ingredient.update_admin
+        LEFT OUTER JOIN image ON image.content_id = ingredient.ingd_id AND image.content_type = 300 AND image.image_type = 0
+        WHERE ingredient.ingd_id = %d
+    ''' % ingdId)
+
+    if ingd == None:
+        html_template = loader.get_template( 'page-404.html' )
+        return HttpResponse(html_template.render(context, request))
+
+    
+    serialize_ingd = JoinedIngredientSerializer(ingd[0]) 
+    ingd_bjson = JSONRenderer().render(serialize_ingd.data)    
+    stream = io.BytesIO(ingd_bjson)
+    ingd_dict = JSONParser().parse(stream)    
+    ingd_json = json.dumps(ingd_dict, ensure_ascii=False)
+    context['ingredient'] = ingd_json
+
+    logger.debug(ingd_json)
+
+    # get images
+    images = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_INGREDIENT, content_id=ingd[0].ingd_id)   
+    serialize_images = ImageSerializer(images, many=True)     
+    images_bjson = JSONRenderer().render(serialize_images.data)    
+    images_stream = io.BytesIO(images_bjson)
+    images_dict = JSONParser().parse(images_stream)    
+    images_json = json.dumps(images_dict, ensure_ascii=False)
+    context['images'] = images_json
+
+    html_template = loader.get_template( 'modify_ingredient.html' )   
+    return HttpResponse(html_template.render(context, request))
+
 
 
 @login_required(login_url="/admin/login/")
