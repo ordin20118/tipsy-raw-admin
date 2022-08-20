@@ -18,7 +18,8 @@ urlpatterns = [
     path('modify_liquor.html', views.modifyLiquor, name='modifyLiquor'),
     path('modify_cocktail.html', views.modifyCocktail, name='modifyCocktail'),
     path('modify_ingredient.html', views.modifyIngredient, name='modifyIngredient'),
-    #path('modify_equipment.html', views.modifyEquip, name='modifyEquip'),
+    path('modify_equipment.html', views.modifyEquipment, name='modifyEquipment'),
+    path('modify_word.html', views.modifyWord, name='modifyWord'),
 
     # Matches any html file
     re_path(r'^.*\.*', views.pages, name='pages'),

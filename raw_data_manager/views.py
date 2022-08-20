@@ -946,7 +946,7 @@ def ingredient(request):
             return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def equipment(request):
     
     if request.method == 'GET':

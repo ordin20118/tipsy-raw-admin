@@ -324,6 +324,74 @@ def modifyIngredient(request):
     return HttpResponse(html_template.render(context, request))
 
 
+@login_required(login_url="/admin/login/")
+def modifyEquipment(request):
+    
+    logger.debug("This is modifyEquipment View ... ")
+
+    context = {}
+    context['segment'] = 'modifyEquipment'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+
+    # load data
+    equipId = request.GET.get('equipId')
+
+    if equipId == None or equipId == 0:
+        html_template = loader.get_template( 'page-404.html' )
+        return HttpResponse(html_template.render(context, request))
+    else:
+        equipId = int(equipId)
+
+    # TODO: join에 대한 내용을 model에 반영해서 조회하기
+    equip = JoinedEquipment.objects.order_by('-equip_id').raw('''
+        SELECT 
+            equipment.*,
+            categ1.name as category1_name,
+            categ2.name as category2_name,
+            categ3.name as category3_name,
+            categ4.name as category4_name,
+            reg_user.username as reg_admin_name, 
+            update_user.username as update_admin_name,
+            if(image.path is null, 'default', image.path) as rep_img
+        FROM tipsy_raw.equipment
+        LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = equipment.category1_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = equipment.category2_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON categ3.id = equipment.category3_id
+        LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON categ4.id = equipment.category4_id
+        LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = equipment.reg_admin
+        LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = equipment.update_admin
+        LEFT OUTER JOIN image ON image.content_id = equipment.equip_id AND image.content_type = 400 AND image.image_type = 0
+        WHERE equipment.equip_id = %d
+    ''' % equipId)
+
+    if equip == None:
+        html_template = loader.get_template( 'page-404.html' )
+        return HttpResponse(html_template.render(context, request))
+
+    
+    serialize_equip = JoinedEquipmentSerializer(equip[0]) 
+    equip_bjson = JSONRenderer().render(serialize_equip.data)    
+    stream = io.BytesIO(equip_bjson)
+    equip_dict = JSONParser().parse(stream)    
+    equip_json = json.dumps(equip_dict, ensure_ascii=False)
+    context['equipment'] = equip_json
+
+    logger.debug(equip_json)
+
+    # get images
+    images = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_EQUIP, content_id=equip[0].equip_id)   
+    serialize_images = ImageSerializer(images, many=True)     
+    images_bjson = JSONRenderer().render(serialize_images.data)    
+    images_stream = io.BytesIO(images_bjson)
+    images_dict = JSONParser().parse(images_stream)    
+    images_json = json.dumps(images_dict, ensure_ascii=False)
+    context['images'] = images_json
+
+    html_template = loader.get_template( 'modify_equipment.html' )   
+    return HttpResponse(html_template.render(context, request))
+
+
 
 @login_required(login_url="/admin/login/")
 def wordList(request):
@@ -357,6 +425,66 @@ def wordList(request):
 
     html_template = loader.get_template( 'list_word.html' )
     return HttpResponse(html_template.render(context, request))
+
+
+@login_required(login_url="/admin/login/")
+def modifyWord(request):
+    
+    logger.debug("This is modifyWord View ... ")
+
+    context = {}
+    context['segment'] = 'modifyWord'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+
+    # load data
+    wordId = request.GET.get('wordId')
+
+    if wordId == None or wordId == 0:
+        html_template = loader.get_template( 'page-404.html' )
+        return HttpResponse(html_template.render(context, request))
+    else:
+        wordId = int(wordId)
+
+    word = JoinedWord.objects.order_by('-word_id').raw('''
+        SELECT 
+            word.*,
+            reg_user.username as reg_admin_name, 
+            update_user.username as update_admin_name,
+            if(image.path is null, 'default', image.path) as rep_img
+        FROM tipsy_raw.word
+        LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = word.reg_admin
+        LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = word.update_admin
+        LEFT OUTER JOIN image ON image.content_id = word.word_id AND image.content_type = 500 AND image.image_type = 0
+        WHERE word.word_id = %d
+    ''' % wordId)
+
+    if word == None:
+        html_template = loader.get_template( 'page-404.html' )
+        return HttpResponse(html_template.render(context, request))
+
+    
+    serialize_word = JoinedWordSerializer(word[0]) 
+    word_bjson = JSONRenderer().render(serialize_word.data)    
+    stream = io.BytesIO(word_bjson)
+    word_dict = JSONParser().parse(stream)    
+    word_json = json.dumps(word_dict, ensure_ascii=False)
+    context['word'] = word_json
+
+    logger.debug(word_json)
+
+    # get images
+    images = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_EQUIP, content_id=word[0].word_id)   
+    serialize_images = ImageSerializer(images, many=True)     
+    images_bjson = JSONRenderer().render(serialize_images.data)    
+    images_stream = io.BytesIO(images_bjson)
+    images_dict = JSONParser().parse(images_stream)    
+    images_json = json.dumps(images_dict, ensure_ascii=False)
+    context['images'] = images_json
+
+    html_template = loader.get_template( 'modify_word.html' )   
+    return HttpResponse(html_template.render(context, request))
+
 
 @login_required(login_url="/admin/login/")
 def cocktailList(request):

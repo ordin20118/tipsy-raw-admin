@@ -37,6 +37,11 @@ class WordSerializer(serializers.ModelSerializer):
         model = Word
         fields = '__all__'
 
+class JoinedWordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JoinedWord
+        fields = '__all__'
+
 class CocktailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cocktail
