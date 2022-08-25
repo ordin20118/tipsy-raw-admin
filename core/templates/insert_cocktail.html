@@ -470,7 +470,7 @@
 										<label for="descInput">재료</label>
 										<br>
 										<button id="addIngredientBtn" class="btn btn-secondary" onclick="" data-toggle="modal" data-target="#ingredientModal">재료 추가</button>										
-										<button class="btn btn-secondary" onclick="printIngredientJSON()">재료 JSON 보기</button>										
+										<!-- <button class="btn btn-secondary" onclick="printIngredientJSON()">재료 JSON 보기</button>										 -->
 									</div>
 
 									<div id="selectedIngdDiv" style="height: 190px; border: 1px solid grey; padding: 5px; overflow: auto; white-space: nowrap;">
@@ -1146,7 +1146,7 @@
 		var lastLevel = 0;
 		function selectIngdCateg(selLv, categId) {
 
-			console.log("[selectIngdCateg]selLv:"+selLv+"/categId:"+categId);
+			//console.log("[selectIngdCateg]selLv:"+selLv+"/categId:"+categId);
 
 			if(selLv > 0) {
 				$('#backCategBtn').attr("disabled", false);
