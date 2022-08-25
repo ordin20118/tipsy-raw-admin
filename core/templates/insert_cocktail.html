@@ -48,27 +48,29 @@
 							</tr> -->
 						</tbody>						
 					</table>
-					<table id="ingdDataTable" class="table" style="display: none;">
-						<thead>
-							<tr>
-								<th scope="col" style="width: 20%"></th>
-								<th scope="col" style="width: 60%"></th>
-								<th scope="col" style="width: 20%"></th>
-							</tr>
-						</thead>
-						<tbody id="ingredientTbody" style="width: 100%; height: 180px; overflow:auto;">
-							<!-- <tr> 
-								<td>IMG</td>
-								<td>레몬</td>								
-								<td>></td>
-							</tr>
-							<tr>
-								<td>IMG</td>
-								<td>얼음</td>								
-								<td>></td>
-							</tr> -->
-						</tbody>
-					</table>
+					<div id="ingdDataTable" style="display: none;width: 100%; height: 300px; overflow:auto;">
+						<table class="table">
+							<thead>
+								<tr>
+									<th scope="col" style="width: 20%"></th>
+									<th scope="col" style="width: 60%"></th>
+									<th scope="col" style="width: 20%"></th>
+								</tr>
+							</thead>
+							<tbody id="ingredientTbody" style="width: 100%; height: 300px; overflow:auto;">
+								<!-- <tr> 
+									<td>IMG</td>
+									<td>레몬</td>								
+									<td>></td>
+								</tr>
+								<tr>
+									<td>IMG</td>
+									<td>얼음</td>								
+									<td>></td>
+								</tr> -->
+							</tbody>
+						</table>	
+					</div>
 				</div>
 				<div class="modal-footer">
 					<button type="button" id="backCategBtn" class="btn btn-secondary" onclick="backToCategory()" disabled>뒤로가기</button>
@@ -124,7 +126,7 @@
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-danger" data-dismiss="modal">취소</button>
-					<button type="button" class="btn btn-primary" onclick="setIngdDetail()">확인</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal" onclick="setIngdDetail()">확인</button>
 				</div>
 			</div>
 		</div>
@@ -468,6 +470,7 @@
 										<label for="descInput">재료</label>
 										<br>
 										<button id="addIngredientBtn" class="btn btn-secondary" onclick="" data-toggle="modal" data-target="#ingredientModal">재료 추가</button>										
+										<button class="btn btn-secondary" onclick="printIngredientJSON()">재료 JSON 보기</button>										
 									</div>
 
 									<div id="selectedIngdDiv" style="height: 190px; border: 1px solid grey; padding: 5px; overflow: auto; white-space: nowrap;">
@@ -539,6 +542,7 @@
 			loadCategTree();
 			setEvent();		
 			previewFile();
+			scrollAndAutoMore();
 
     	});
 
@@ -550,6 +554,21 @@
 				$(el).parent().removeClass('has-success')
 				$(el).parent().addClass('has-error')
 			}
+		}
+
+		var ingdDataHasMore = true;
+		var ingdDataLoading = false;
+		function scrollAndAutoMore() {
+
+			jQuery(ingdDataTable).scroll(function() {
+				//console.log("[[ Scroll ]]"+(jQuery(ingdDataTable).scrollTop()+300)+"/"+jQuery(ingdDataTable).height()+"/"+jQuery(ingredientTbody).height());
+				if ((jQuery(ingdDataTable).scrollTop()+300) >= jQuery(ingredientTbody).height()) {
+					if(ingdDataHasMore && !ingdDataLoading) {
+						ingdDataLoading = true;
+						loadIngdData();
+					}
+				}
+			});
 		}
 
 
@@ -614,6 +633,14 @@
 
 			});
 
+		}
+
+		function printIngredientJSON() {
+			console.log("[printIngredientJSON()]");
+			var ingredientJson = makeIngredientData();				
+
+			console.log("[Make Ingredient JSON]");
+			console.log(ingredientJson);
 		}
 
 
@@ -794,11 +821,9 @@
 				return 0;
 			}
 
-			// TODO: 선택된 도수 레벨 넣어주기
 			let strengthLevel = $("input[name='strengthLevel']:checked").val();
 			strengthLevel = parseInt(strengthLevel);
-			console.log("[Strength Level]")
-			console.log(strengthLevel)
+			
 
 			if(isNaN(strengthLevel) != true && strengthLevel != null){
 				formData.append('strength', strengthLevel);
@@ -903,7 +928,6 @@
 			console.log("[FORM DATA]")
 			console.log(formData)
 
-
 			var url = "/admin/raw_data_manager/api/cocktail";
 
 			console.log("칵테일 등록 API URL : " + url)
@@ -941,7 +965,12 @@
 					categ_id: item['categ_id'],
 					categ_name_kr: item['categ_name_kr'],
 					categ_name_en: item['categ_name_en'],
-					items: []
+					//item_id: item['item_id'],
+					//item_name_kr: item['item_name_kr'],
+					//item_name_en: item['item_name_en'],
+					unit: "oz",
+					volume: 1,
+					substitution: []
 				};
 				tmpLiquorList.push(obj);
 			}
@@ -951,12 +980,12 @@
 			for(var i=0; i<selectedIngdList.length; i++) {
 				var item = selectedIngdList[i];
 				var items = [];
-				var itemObj = {
-					item_id: item['item_id'],
-					item_name_kr: item['item_name_kr'],
-					item_name_en: item['item_name_en'],
-				};
-				items.push(itemObj);
+				// var itemObj = {
+				// 	item_id: item['item_id'],
+				// 	item_name_kr: item['item_name_kr'],
+				// 	item_name_en: item['item_name_en'],
+				// };
+				// items.push(itemObj);
 				var obj = {
 					categ_id: item['categ_id'],
 					categ_name_kr: item['categ_name_kr'],
@@ -964,7 +993,9 @@
 					item_id: item['item_id'],
 					item_name_kr: item['item_name_kr'],
 					item_name_en: item['item_name_en'],
-					items: items
+					unit: item['unit'],
+					volume: item['volume'],
+					substitution: items
 				}
 				tmpIngdList.push(obj);
 			}
@@ -1150,7 +1181,7 @@
 				// 주류는 카테고리로 선택 끝
 				// 재료 또는 장비의 경우 상세 아이템 선택
 				if(categId == 32 || categId == 33) {
-					loadIngdData();
+					loadIngdData(1, true);
 				} else {
 					selectLiquorCategory(categId);
 				}
@@ -1194,7 +1225,7 @@
 
 			// confirm dialog
 			swal({
-				title: '정말로 '+categNameKr+'를 재료를 선택하시겠습니까?',
+				title: '정말로 '+categNameKr+'를 재료로 선택하시겠습니까?',
 				text: "",
 				type: 'warning',
 				buttons:{
@@ -1266,7 +1297,15 @@
 		var liquorMap = new Map();
 		var ingdMap = new Map();
 		var equipMap = new Map();
-		function loadIngdData() {
+		function loadIngdData(nextPage, isInit) {
+			
+			if(nextPage != null) {
+				nextIngdPage = nextPage;
+			}
+
+			if(isInit) {
+				ingdDataHasMore = true;
+			}
 			
 			$('#ingdCategoryTable').hide();
 			$('#ingdDataTable').show();
@@ -1275,23 +1314,30 @@
 			// url: http://localhost:8080/raw_data_manager/api/search?keyword=%EB%A0%88%EB%AA%AC&target=ingredient&categId=32&categLv=1
 
 			let lastCateg = selCategList[selCategList.length-1];
-			var url = "/admin/raw_data_manager/api/search?target=all&categId="+lastCateg+"&categLv="+lastLevel;
+			var url = "/admin/raw_data_manager/api/search?target=all&categId="+lastCateg+"&categLv="+lastLevel+"&nowPage="+nextIngdPage+"&perPage=3";
 			
-			//console.log("[Get ingredient list URL]:"+url);
-		
 			$.ajax({
 				url: url,
 				type:'get',
 				success:function(data){
-					
+
+					ingdDataLoading = false;
 					if(data != null) {
 						json = JSON.parse(data);
-						printIngdData(json, true);
-					}
-					
+						if((json['data']['ingredient_list'] != null && json['data']['ingredient_list'].length > 0)
+							|| (json['data']['liquor_list'] != null && json['data']['liquor_list'].length > 0)
+							|| (json['data']['equipment_list'] != null && json['data']['equipment_list'].length > 0)) {
+							ingdDataHasMore = true;
+						} else {
+							ingdDataHasMore = false;
+						}	
+
+						printIngdData(json, isInit);
+						
+					} 
 				},
 				error:function(request, status, error){
-					
+					ingdDataLoading = false;
 				}
 			});
 
@@ -1652,6 +1698,7 @@
 					} 
 				}
 			}
+			printSelectedIngredient();
 		}
 
 		// 선택된 모든 재료들을 화면에 출력한다.
@@ -1731,11 +1778,51 @@
 
 		}
 
-		// TODO: 선택된 재료를 취소
+		// 선택된 재료를 취소
 		function removeIngredient(contentType, id) {
 
-			console.log("========= [removeIngredient] =========");
-			console.log("content-type:["+contentType+"] / id:["+id+"]")
+			//console.log("========= [removeIngredient] =========");
+			//console.log("content-type:["+contentType+"] / id:["+id+"]")
+
+			// selectedIngredientList
+			for(var i=0; i<selectedIngredientList.length; i++) {
+				var item = selectedIngredientList[i];
+				if(!item.tmp_id != null && item.tmp_id == id && item.content_type == contentType) {
+					selectedIngredientList.splice(i, 1);
+				} 
+				
+				if(item['item_id'] == id && item['content_type'] == contentType) {
+					selectedIngredientList.splice(i, 1);
+				}
+			}
+			
+			if(contentType == CONTENT_TYPE_LIQUOR) {
+				// selectedLiquorList
+				for(var i=0; i<selectedLiquorList.length; i++) {
+					var item = selectedLiquorList[i];
+					if(item['tmp_id'] == id) {
+						selectedLiquorList.splice(i, 1);
+					}
+				}
+			} else if(contentType == CONTENT_TYPE_INGD) {
+				//selectedIngdList
+				for(var i=0; i<selectedIngdList.length; i++) {
+					var item = selectedIngdList[i];
+					if(item['item_id'] == id) {
+						selectedIngdList.splice(i, 1);
+					}
+				}
+			} else if(contentType == CONTENT_TYPE_EQUIP) {
+				//selectedEquipList
+				for(var i=0; i<selectedEquipList.length; i++) {
+					var item = selectedEquipList[i];
+					if(item['item_id'] == id) {
+						selectedEquipList.splice(i, 1);
+					}
+				}
+			}
+
+			printSelectedIngredient();
 
 		}
 

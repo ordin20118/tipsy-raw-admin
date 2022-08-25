@@ -65,11 +65,11 @@ def search(request):
 
         nowPage = request.GET.get('nowPage')
         if nowPage != None:
-            search_url += '&nowPage=%s'%nowPage
+            search_url += '&paging.nowPage=%s'%nowPage
 
-        pergPage = request.GET.get('pergPage')
+        pergPage = request.GET.get('perPage')
         if pergPage != None:
-            search_url += '&pergPage=%s'%pergPage
+            search_url += '&paging.perPage=%s'%pergPage
 
 
         try:
