@@ -624,8 +624,27 @@
 				success:function(data){
 					console.log("update ingredient result")
 					console.log(data)
-					alert("재료 정보 수정 완료.")
-					location.realod();
+					
+					swal({
+						title: '수정 완료',
+						text: "재료 정보 수정 완료",
+						type: 'success',
+						buttons:{
+							cancel: {
+								visible: false,
+								text : '취소',
+								className: 'btn btn-danger'
+							},        			
+							confirm: {
+								text : '확인',
+								className : 'btn btn-success'
+							}
+						}
+					}).then((isOk) => {
+						if (isOk) {
+							location.replace("/admin/ingredient_list.html");		
+						}
+					});
 				},
 				error:function(request, status, error){
 				}

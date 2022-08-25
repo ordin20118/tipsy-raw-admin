@@ -90,6 +90,7 @@ def liquorList(request):
         LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = raw_liquor.reg_admin
         LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin
         LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0
+        ORDER BY liquor_id DESC
     ''')
 
     paginator = Paginator(liquorList, perPage)  # 페이지당 10개씩 보여주기
@@ -203,6 +204,7 @@ def ingredientList(request):
         LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = ingredient.reg_admin
         LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = ingredient.update_admin
         LEFT OUTER JOIN image ON image.content_id = ingredient.ingd_id AND image.content_type = 300 AND image.image_type = 0
+        ORDER BY ingd_id DESC
     ''')
 
     paginator = Paginator(ingredientList, perPage)  # 페이지당 10개씩 보여주기
@@ -245,6 +247,7 @@ def equipmentList(request):
         LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = equipment.reg_admin
         LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = equipment.update_admin
         LEFT OUTER JOIN image ON image.content_id = equipment.equip_id AND image.content_type = 400 AND image.image_type = 0
+        ORDER BY equip_id DESC
     ''')
 
     paginator = Paginator(equipmentList, perPage)  # 페이지당 10개씩 보여주기
@@ -416,6 +419,7 @@ def wordList(request):
         LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = word.reg_admin
         LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = word.update_admin
         LEFT OUTER JOIN image ON image.content_id = word.word_id AND image.content_type = 500 AND image.image_type = 0
+        ORDER BY word_id DESC
     ''')
 
     paginator = Paginator(wordList, perPage)  # 페이지당 10개씩 보여주기
@@ -474,7 +478,7 @@ def modifyWord(request):
     logger.debug(word_json)
 
     # get images
-    images = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_EQUIP, content_id=word[0].word_id)   
+    images = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_WORD, content_id=word[0].word_id)   
     serialize_images = ImageSerializer(images, many=True)     
     images_bjson = JSONRenderer().render(serialize_images.data)    
     images_stream = io.BytesIO(images_bjson)
