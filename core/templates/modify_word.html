@@ -619,8 +619,27 @@
 				success:function(data){
 					console.log("update word result")
 					console.log(data)
-					alert("용어 정보 수정 완료.")
-					location.realod();
+
+					swal({
+						title: '수정 완료',
+						text: "용어 정보 수정 완료",
+						type: 'success',
+						buttons:{
+							cancel: {
+								visible: false,
+								text : '취소',
+								className: 'btn btn-danger'
+							},        			
+							confirm: {
+								text : '확인',
+								className : 'btn btn-success'
+							}
+						}
+					}).then((isOk) => {
+						if (isOk) {
+							location.replace("/admin/list_word.html");		
+						}
+					});
 				},
 				error:function(request, status, error){
 				}

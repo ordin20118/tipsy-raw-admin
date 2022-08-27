@@ -41,6 +41,7 @@ class CocktailForm(forms.Form):
 	strength = forms.IntegerField(validators=[int_zero_validate])
 	description = forms.CharField(required=False, validators=[blank_validate])
 	detail_json = forms.CharField(required=True, validators=[blank_validate])
+	format_version = forms.FloatField(required=True, validators=[float_zero_validate])
 
 	def save(self, commit=True):
 		

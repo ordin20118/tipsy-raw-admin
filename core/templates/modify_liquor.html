@@ -898,9 +898,27 @@
 				success:function(data){
 					console.log("update liquor result")
 					console.log(data)
-					alert("주류 정보 수정 완료.")
-					//location.replace("/liquor_list.html");
-					location.realod();
+					
+					swal({
+						title: '수정 완료',
+						text: "주류 정보 수정 완료",
+						type: 'success',
+						buttons:{
+							cancel: {
+								visible: false,
+								text : '취소',
+								className: 'btn btn-danger'
+							},        			
+							confirm: {
+								text : '확인',
+								className : 'btn btn-success'
+							}
+						}
+					}).then((isOk) => {
+						if (isOk) {
+							location.replace("/admin/liquor_list.html");		
+						}
+					});
 				},
 				error:function(request, status, error){
 				}
