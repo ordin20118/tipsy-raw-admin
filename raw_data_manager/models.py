@@ -377,5 +377,7 @@ class ManageLog(models.Model):
         managed = False
         db_table = 'manage_log'
 
+        
+
 
 

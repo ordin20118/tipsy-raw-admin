@@ -23,22 +23,6 @@ import json
 import logging
 
 logger = logging.getLogger('django')
-
-@api_view(['GET'])
-def dashboardCount(request):
-    
-    if request.method == 'GET':
-        target = int(request.GET.get('target', None))
-        type = int(request.GET.get('type', None))
-        start_date = int(request.GET.get('start_date', None))
-        end_date = int(request.GET.get('end_date', None))
-
-        if target == None:
-            # return 500
-            pass
-
-    else:
-        pass
     
 
 @api_view(['GET'])

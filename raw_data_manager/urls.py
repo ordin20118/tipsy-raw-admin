@@ -1,6 +1,7 @@
 # -*- encoding: utf-8 -*-
 from django.urls import path, re_path
 from raw_data_manager import views
+from raw_data_manager import view_dashboard
 
 urlpatterns = [
 
@@ -19,7 +20,9 @@ urlpatterns = [
     path('api/word_dup_chck', views.word_dup_chck, name='wordDupChck'),
     path('api/cocktail_dup_chck', views.cocktail_dup_chck, name='cocktailDupChck'),
     path('api/search', views.search, name='search'),
-    #path('api/dashboard/count', views.dashboardCount, name='dashboardCount'),
+
+    path('api/dashboard/timeline/new', view_dashboard.newContentTimeline, name='newTimeline'),
+
     re_path(r'^image/.*\.*', views.image, name='image'),
 
 ]
