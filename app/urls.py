@@ -10,10 +10,10 @@ urlpatterns = [
 
     # The home page
     path('', views.index, name='home'),
-    path('liquor_list.html', views.liquorList, name='liquorList'),
-    path('cocktail_list.html', views.cocktailList, name='cocktailList'),
-    path('ingredient_list.html', views.ingredientList, name='ingredientList'),
-    path('equipment_list.html', views.equipmentList, name='equipmentList'),
+    path('list_liquor.html', views.liquorList, name='liquorList'),
+    path('list_cocktail.html', views.cocktailList, name='cocktailList'),
+    path('list_ingredient.html', views.ingredientList, name='ingredientList'),
+    path('list_equipment.html', views.equipmentList, name='equipmentList'),
     path('list_word.html', views.wordList, name='wordList'),
     path('modify_liquor.html', views.modifyLiquor, name='modifyLiquor'),
     path('modify_cocktail.html', views.modifyCocktail, name='modifyCocktail'),

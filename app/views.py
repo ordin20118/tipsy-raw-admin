@@ -61,7 +61,7 @@ def pages(request):
 def liquorList(request):
     
     context = {}
-    context['segment'] = 'liquorList'
+    context['segment'] = 'list_liquor'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
@@ -98,7 +98,7 @@ def liquorList(request):
 
     context['liquor_list'] = page_obj
 
-    html_template = loader.get_template( 'liquor_list.html' )
+    html_template = loader.get_template( 'list_liquor.html' )
     return HttpResponse(html_template.render(context, request))
 
 
@@ -177,7 +177,7 @@ def modifyLiquor(request):
 def ingredientList(request):
     
     context = {}
-    context['segment'] = 'ingredientList'
+    context['segment'] = 'list_ingredient'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
@@ -212,7 +212,7 @@ def ingredientList(request):
 
     context['ingredient_list'] = page_obj
 
-    html_template = loader.get_template( 'ingredient_list.html' )
+    html_template = loader.get_template( 'list_ingredient.html' )
     return HttpResponse(html_template.render(context, request))
 
 
@@ -220,7 +220,7 @@ def ingredientList(request):
 def equipmentList(request):
     
     context = {}
-    context['segment'] = 'equipList'
+    context['segment'] = 'list_equipment'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
@@ -255,7 +255,7 @@ def equipmentList(request):
 
     context['equipment_list'] = page_obj
 
-    html_template = loader.get_template( 'equipment_list.html' )
+    html_template = loader.get_template( 'list_equipment.html' )
     return HttpResponse(html_template.render(context, request))
 
 
@@ -494,7 +494,7 @@ def modifyWord(request):
 def cocktailList(request):
     
     context = {}
-    context['segment'] = 'cocktailList'
+    context['segment'] = 'list_cocktail'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
@@ -520,7 +520,7 @@ def cocktailList(request):
 
     context['cocktail_list'] = page_obj
 
-    html_template = loader.get_template( 'cocktail_list.html' )
+    html_template = loader.get_template( 'list_cocktail.html' )
     return HttpResponse(html_template.render(context, request))
 
 @login_required(login_url="/admin/login/")

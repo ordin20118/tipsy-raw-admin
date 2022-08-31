@@ -32,7 +32,6 @@
 				</ul>
 			</div>
 			<div class="row">
-				
 				<div class="col-md-12">
 					<div class="card">
 						<div class="card-header">
@@ -281,12 +280,15 @@
 		var perPage = 10;
 
 		function moveToInsertLiquor() {
-			location.href = "/insert_liquor.html"
+			location.href = "/admin/insert_liquor.html"
 		}   
 
 		$(document).ready(function() {
 
 			//loadLiqourList();
+			segment = '{{segment}}';
+			console.log(segment);
+			
 
 		});
 
