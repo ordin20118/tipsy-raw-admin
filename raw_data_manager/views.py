@@ -21,9 +21,68 @@ import os
 import requests
 import json
 import logging
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 
 logger = logging.getLogger('django')
-    
+
+@api_view(['GET'])
+def createPermissions(request):
+    logger.info("[[Create Permissions ]]");
+   
+    # # equipment
+    # content_type = ContentType.objects.get_for_model(Equipment)
+    # permission = Permission.objects.create(
+    #     codename='delete_equipment',
+    #     name='Can Delete Equipment',
+    #     content_type=content_type,
+    # )
+    # permission = Permission.objects.create(
+    #     codename='modify_equipment',
+    #     name='Can Modify Equipment',
+    #     content_type=content_type,
+    # )
+
+    # # ingredient
+    # content_type = ContentType.objects.get_for_model(Ingredient)
+    # permission = Permission.objects.create(
+    #     codename='delete_ingredient',
+    #     name='Can Delete Ingredient',
+    #     content_type=content_type,
+    # )
+    # permission = Permission.objects.create(
+    #     codename='modify_ingredient',
+    #     name='Can Modify Ingredient',
+    #     content_type=content_type,
+    # )
+
+    # # cocktail
+    # content_type = ContentType.objects.get_for_model(Cocktail)
+    # permission = Permission.objects.create(
+    #     codename='delete_cocktail',
+    #     name='Can Delete Cocktail',
+    #     content_type=content_type,
+    # )
+    # permission = Permission.objects.create(
+    #     codename='modify_cocktail',
+    #     name='Can Modify Cocktail',
+    #     content_type=content_type,
+    # )
+
+    # # word
+    # content_type = ContentType.objects.get_for_model(Word)
+    # permission = Permission.objects.create(
+    #     codename='delete_word',
+    #     name='Can Delete Word',
+    #     content_type=content_type,
+    # )
+    # permission = Permission.objects.create(
+    #     codename='modify_word',
+    #     name='Can Modify Word',
+    #     content_type=content_type,
+    # )
+
+    return 'success'    
 
 @api_view(['GET'])
 def search(request):
@@ -439,6 +498,10 @@ def liquor(request):
 
     elif request.method == 'PUT':
 
+        perm = request.user.has_perm('raw_data_manager.modify_liquor')
+        if perm == False:
+            return Response("No Permission", status=status.HTTP_403_FORBIDDEN)
+
         logger.info(request.POST)
 
         form = LiquorForm(request.POST)
@@ -678,9 +741,22 @@ def cocktail(request):
         # 3. 로그에는 이전 정보와 수정된 내용을 JSON 형태로 저장한다.
         
         # 비활성화
+        
+        # check permission
+        perm = request.user.has_perm('raw_data_manager.modify_cocktail')
+        if perm == False:
+            return Response("No Permission", status=status.HTTP_403_FORBIDDEN)
+
+
         pass
 
     elif request.method == 'DELETE':
+        
+        # check permission
+        perm = request.user.has_perm('raw_data_manager.delete_cocktail')
+        if perm == False:
+            return Response("No Permission", status=status.HTTP_403_FORBIDDEN)
+
 
         logger.info("[[Enter Cocktail Remove]]")
 
@@ -831,6 +907,11 @@ def ingredient(request):
         return Response(respone)
 
     elif request.method == 'PUT':
+        
+        # check permission
+        perm = request.user.has_perm('raw_data_manager.modify_ingredient')
+        if perm == False:
+            return Response("No Permission", status=status.HTTP_403_FORBIDDEN)
 
         logger.info(request.POST)
 
@@ -1004,6 +1085,13 @@ def equipment(request):
     
     elif request.method == 'PUT':
 
+
+        # check permission
+        perm = request.user.has_perm('raw_data_manager.modify_equipment')
+        if perm == False:
+            return Response("No Permission", status=status.HTTP_403_FORBIDDEN)
+
+
         logger.info(request.POST)
 
         form = EquipmentForm(request.POST)
@@ -1166,6 +1254,12 @@ def word(request):
         return Response(respone)
     
     elif request.method == 'PUT':
+        
+        # check permission
+        perm = request.user.has_perm('raw_data_manager.modify_word')
+        if perm == False:
+            return Response("No Permission", status=status.HTTP_403_FORBIDDEN)
+
 
         logger.info(request.POST)
 

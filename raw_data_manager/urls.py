@@ -23,6 +23,8 @@ urlpatterns = [
 
     path('api/dashboard/timeline/new', view_dashboard.newContentTimeline, name='newTimeline'),
 
+    path('permission/createPermissions', views.createPermissions, name='createPermissions'),    
+
     re_path(r'^image/.*\.*', views.image, name='image'),
 
 ]

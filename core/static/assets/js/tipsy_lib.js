@@ -13,7 +13,7 @@ function printSuccessPanel(title, message){
         icon : "success",
         buttons: {        			
             confirm: {
-                className : 'btn btn-warning'
+                className : 'btn btn-success'
             }
         },
     });
@@ -32,10 +32,10 @@ function printWarningPanel(title, message){
 
 function printDangerPanel(title, message){
     swal(title, message, {
-        icon : "danger",
+        icon : "error",
         buttons: {        			
             confirm: {
-                className : 'btn btn-warning'
+                className : 'btn btn-danger'
             }
         },
     });

@@ -5,6 +5,10 @@ from django.template import loader
 from django.http import HttpResponse
 from django import template
 from django.core.paginator import Paginator
+from rest_framework import status
+from rest_framework.response import Response
+
+from django.shortcuts import get_object_or_404
 
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
@@ -106,13 +110,18 @@ def liquorList(request):
 
 @login_required(login_url="/admin/login/")
 def modifyLiquor(request):
-    
-    print("This is modifyLiquor View ... ")
-
+   
     context = {}
     context['segment'] = 'modifyLiquor'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+
+    # check permission
+    # perm = request.user.has_perm('raw_data_manager.modify_liquor')
+    # if perm == False:
+    #     html_template = loader.get_template( 'page-403.html' )
+    #     return HttpResponse(html_template.render(context, request))
+
 
     # load data
     liquorId = request.GET.get('liquorId')
@@ -269,6 +278,12 @@ def modifyIngredient(request):
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
+    # check permission
+    # perm = request.user.has_perm('raw_data_manager.modify_ingredient')
+    # if perm == False:
+    #     html_template = loader.get_template( 'page-403.html' )
+    #     return HttpResponse(html_template.render(context, request))
+
     # load data
     ingdId = request.GET.get('ingdId')
 
@@ -336,6 +351,14 @@ def modifyEquipment(request):
     context['segment'] = 'modifyEquipment'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+
+
+    # check permission
+    # perm = request.user.has_perm('raw_data_manager.modify_equipment')
+    # if perm == False:
+    #     html_template = loader.get_template( 'page-403.html' )
+    #     return HttpResponse(html_template.render(context, request))
+
 
     # load data
     equipId = request.GET.get('equipId')
@@ -441,6 +464,14 @@ def modifyWord(request):
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
+
+    # check permission
+    # perm = request.user.has_perm('raw_data_manager.modify_word')
+    # if perm == False:
+    #     html_template = loader.get_template( 'page-403.html' )
+    #     return HttpResponse(html_template.render(context, request))
+
+
     # load data
     wordId = request.GET.get('wordId')
 
@@ -530,6 +561,12 @@ def modifyCocktail(request):
     context['segment'] = 'modifyCocktail'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+
+    # check permission
+    # perm = request.user.has_perm('raw_data_manager.modify_cocktail')
+    # if perm == False:
+    #     html_template = loader.get_template( 'page-403.html' )
+    #     return HttpResponse(html_template.render(context, request))
 
     # load data
     cocktailId = request.GET.get('cocktailId')
