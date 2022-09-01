@@ -15,6 +15,7 @@ from django.http import HttpResponse
 from rest_framework import status
 from django.db import transaction
 from django.core.paginator import Paginator
+from django.db.models import Q
 import mimetypes
 import PIL.Image as pilimg
 import os
@@ -162,11 +163,6 @@ def image(request):
             if imageFile == False:
                 raise Exception("No Image File")
             else:
-
-                print("[image type]:%s" % image.image_type)
-                print("[image content type]:%s" % image.content_id)
-                print("[image content id]:%s" % image.content_type)
-
                 try:
                     with transaction.atomic():
 
@@ -188,33 +184,71 @@ def image(request):
                             # update image's path to DB
                             image.path = img_path + "/" + str(image.image_id)
                             image.save(update_fields=['path'])
+                        else:
+                            image.save()
+                            img_path = imageIdToPath(image.image_id)
+                            saveImgToPath(imageFile, image.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
+                            image.path = img_path + "/" + str(image.image_id)
+                            image.save(update_fields=['path'])
+
+                        return Response("success")
 
                 except Image.DoesNotExist as e:
-                    print("There is no rep_img.")   # change to log...
+                    logger.error("There is no rep_img.")   # change to log...
                 except Image.MultipleObjectsReturned as e:
-                    print("There is multiple rep_img. content_id:%s, content_type:%s" % (image.content_id, image.content_type)) # change to log...
+                    logger.error("There is multiple rep_img. content_id:%s, content_type:%s" % (image.content_id, image.content_type)) # change to log...
         else:
             return Response("No Validated Request", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     elif request.method == 'PUT':
 
-        # 트랜잭션
+        # 트랜잭션 처리
         # 대표로 지정된 경우 해당 컨텐츠의 다른 이미지를 불러와서
         # 일반 이미지로 변경한다.
+        image_form = ImageForm(request.POST, request.FILES)        
 
-        # 수정 완료
+        if image_form.is_valid():
+            image = image_form.save(False)
+            try:
+                with transaction.atomic():
 
+                    if image.image_type == Image.IMG_TYPE_REP:
+                        # 기존에 존재하는 이미지중에 대표 이미지 조회 후 수정
+                        rep_img = Image.objects.get(image_type=Image.IMG_TYPE_REP, 
+                                                    content_type=image.content_type,
+                                                    content_id=image.content_id)
+                        rep_img.image_type = Image.IMG_TYPE_NORMAL
+                        rep_img.save(update_fields=['image_type'])
+                    else:
+                        images = Image.objects.filter(
+                                                    content_id=image.content_id,
+                                                    content_type=image.content_type,    
+                                                    image_type=Image.IMG_TYPE_NORMAL                   
+                                                )
 
+                        if len(images) <= 0:
+                            return Response("Last image can't change to normal type.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+                        for other in images:
+                            if other.image_id != image.image_id:
+                                other.image_type = Image.IMG_TYPE_REP
+                                other.save(update_fields=['image_type'])
+                                break 
+                        
+                    image.save(update_fields=['image_type', 'is_open'])
+                    return Response("success")
+
+            except Image.MultipleObjectsReturned as e:
+                logger.error("There is multiple rep_img. content_id:%s, content_type:%s" % (image.content_id, image.content_type)) # change to log...
+        else:
+            return Response("No Validated Request", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
         return Response("This is image PUT return")
 
     elif request.method == 'DELETE':
         req_data = ImageForm(request.POST)
 
-        #print(request.POST.get("is_delete"))
-        
         if req_data.is_valid():
-
-            print("%d 이미지 제거" % req_data.cleaned_data['image_id'])
 
             # 트랜잭션
             with transaction.atomic():
@@ -226,6 +260,24 @@ def image(request):
 
                 # DB 데이터 제거
                 img_data = Image.objects.get(pk=image_id)
+
+                # 대표 이미지라면 다른 이미지를 대표 이미지로 설정
+                if img_data.image_type == Image.IMG_TYPE_REP:
+                    images = Image.objects.filter(
+                                                    content_id=img_data.content_id,
+                                                    content_type=img_data.content_type,
+                                                    image_type=Image.IMG_TYPE_NORMAL                   
+                                                )
+
+                    if len(images) <= 0:
+                        return Response("Last image can't delete.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+                    for image in images:
+                        if image.image_id != image_id:
+                            image.image_type = Image.IMG_TYPE_REP
+                            image.save(update_fields=['image_type'])
+                            break
+                
                 img_data.delete()
 
                 # 이미지 파일 제거
@@ -491,8 +543,6 @@ def liquor(request):
 
                 return Response(respone, status=status.HTTP_200_OK)
             else:
-                print("No Validated")
-                # TODO: return error response
                 return Response("No Validated Data", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

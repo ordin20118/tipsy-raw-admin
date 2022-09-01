@@ -51,7 +51,7 @@
 
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal" onclick="initModifyImgModal()">취소</button>
-					<button type="button" class="btn btn-primary" onclick="TODO">수정</button>
+					<button type="button" class="btn btn-primary" onclick="sendImageModify()">수정</button>
 				</div>
 			</div>
 		</div>
@@ -454,6 +454,46 @@
 
 			//clearImgAddModal();
 		}
+
+		
+		// 신규 이미지 추가 요청
+		function sendImageModify() {
+			console.log("sendImageModify")
+
+			let formData = new FormData;
+			formData.append("image_id", nowModifyImgId);
+			formData.append("is_open", modifyImgActive);
+			var imgType = $('#modifyImageType').val();
+			formData.append("image_type", imgType);			
+			formData.append("content_id", liquor['liquor_id']);
+			formData.append("content_type", CONTENT_TYPE_LIQUOR);
+
+			var url = "/admin/raw_data_manager/api/image";
+
+			// send
+			$.ajax({
+				url:url,
+				type:"PUT",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("Modify liquor image result")
+					console.log(data)
+					alert("이미지 수정 완료.");
+					location.reload();
+				},
+				error:function(request, status, error){
+				}
+			});
+			
+
+			//clearImgAddModal();
+		}
+
 
 		// 이미지 제거 요청
 		function deleteImage() {
