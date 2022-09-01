@@ -364,8 +364,31 @@ class Image(models.Model):
         db_table = 'image'
 
 
+
+class AuthUser(models.Model):
+    id = models.AutoField(primary_key=True)
+    password = models.CharField(max_length=128)
+    last_login = models.DateTimeField(blank=True, null=True)
+    is_superuser = models.IntegerField()
+    username = models.CharField(unique=True, max_length=150)
+    first_name = models.CharField(max_length=150)
+    last_name = models.CharField(max_length=150)
+    email = models.CharField(max_length=254)
+    is_staff = models.IntegerField()
+    is_active = models.IntegerField()
+    date_joined = models.DateTimeField()
+
+    class Meta:
+        managed = False
+        db_table = 'auth_user'        
+
+
+
 class ManageLog(models.Model):
-    admin_id = models.IntegerField()
+    id = models.AutoField(primary_key=True)
+    #admin_id = models.IntegerField(blank=True, null=True)
+    #admin = models.ForeignKey(AuthUser, to_field='id', on_delete=models.SET_NULL, related_name='admin', null=True)
+    admin = models.ForeignKey(AuthUser, on_delete=models.SET_NULL, null=True)
     job_code = models.IntegerField(blank=True, null=True)
     job_name = models.CharField(max_length=45, blank=True, null=True)
     content_id = models.IntegerField(blank=True, null=True)
@@ -376,8 +399,4 @@ class ManageLog(models.Model):
     class Meta:
         managed = False
         db_table = 'manage_log'
-
-        
-
-
 

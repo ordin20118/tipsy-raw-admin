@@ -17,6 +17,7 @@ from django.http import HttpResponse
 from rest_framework import status
 from django.db import transaction
 from django.core.paginator import Paginator
+from django.db.models import Q
 import mimetypes
 import PIL.Image as pilimg
 import os
@@ -51,16 +52,18 @@ def newContentTimeline(request):
         
         #now = timezone.now()
         now = datetime.now()
-
-        print(now)
-
         count_timeline = []
 
         for i in range(10):            
             h = now - timedelta(hours=i)
             hour_start = h.strftime("%Y-%m-%d %H:00:00")
             hour_end = h.strftime("%Y-%m-%d %H:59:59")
-            hour_nac = ManageLog.objects.filter(reg_date__range=[hour_start, hour_end])
+
+            q = Q()
+            q.add(Q(reg_date__range=[hour_start, hour_end]), q.OR)
+            q.add(Q(job_code=1001) | Q(job_code=2001) | Q(job_code=3001) | Q(job_code=4001) | Q(job_code=5001), q.AND)
+
+            hour_nac = ManageLog.objects.filter(q)
             hour_nac_count = hour_nac.count()
             obj = {
                 'start_date': hour_start,
@@ -81,6 +84,18 @@ def newContentTimeline(request):
 
         return HttpResponse(json.dumps({'result': count_timeline}), content_type="application/json")
         #return Response(json.dumps({'result': count_timeline}))
+
+    else:
+        return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def manageTimeline(request):
+    
+    if request.method == 'GET':
+        log_list = ManageLog.objects.order_by('-id').select_related('admin')[:7]
+        res = ManageLogSerializer(log_list, many=True)
+        return Response(res.data)
 
     else:
         return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)

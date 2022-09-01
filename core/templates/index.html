@@ -13,11 +13,11 @@
 				<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row">
 					<div>
 						<h2 class="text-white pb-2 fw-bold">Dashboard</h2>
-						<h5 class="text-white op-7 mb-2">준비중... </h5>
+						<!-- <h5 class="text-white op-7 mb-2">준비중... </h5> -->
 					</div>
 					<div class="ml-md-auto py-2 py-md-0">
-						<a href="#" class="btn btn-white btn-border btn-round mr-2">Manage</a>
-						<a href="#" class="btn btn-secondary btn-round">Add Customer</a>
+						<!-- <a href="#" class="btn btn-white btn-border btn-round mr-2">Manage</a>
+						<a href="#" class="btn btn-secondary btn-round">Add Customer</a> -->
 					</div>
 				</div>
 			</div>
@@ -79,35 +79,12 @@
 							<div class="card-title">Feed Management</div>
 						</div>
 						<div class="card-body">
-							<ol class="activity-feed">
-								<li class="feed-item feed-item-secondary">
-									<time class="date" datetime="9-25">Sep 25</time>
-									<span class="text">Responded to need <a href="#">"Volunteer opportunity"</a></span>
-								</li>
-								<li class="feed-item feed-item-success">
-									<time class="date" datetime="9-24">Sep 24</time>
-									<span class="text">Added an interest <a href="#">"Volunteer Activities"</a></span>
-								</li>
-								<li class="feed-item feed-item-info">
-									<time class="date" datetime="9-23">Sep 23</time>
-									<span class="text">Joined the group <a href="single-group.php">"Boardsmanship Forum"</a></span>
-								</li>
-								<li class="feed-item feed-item-warning">
-									<time class="date" datetime="9-21">Sep 21</time>
-									<span class="text">Responded to need <a href="#">"In-Kind Opportunity"</a></span>
-								</li>
-								<li class="feed-item feed-item-danger">
-									<time class="date" datetime="9-18">Sep 18</time>
-									<span class="text">Created need <a href="#">"Volunteer Opportunity"</a></span>
-								</li>
-								<li class="feed-item">
-									<time class="date" datetime="9-17">Sep 17</time>
-									<span class="text">Attending the event <a href="single-event.php">"Some New Event"</a></span>
-								</li>
+							<ol id="feed_management" class="activity-feed">								
 							</ol>
 						</div>
 					</div>
 				</div>
+				<!--
 				<div class="col-md-6">
 					<div class="card full-height">
 						<div class="card-header">
@@ -196,6 +173,7 @@
 						</div>
 					</div>
 				</div>
+				-->
 			</div>
 		</div>
 	</div>
@@ -214,6 +192,7 @@
 		$(document).ready(function() {
 
 			loadNewContentTimeline();
+			loadManagementTimeline();
 
 		});
 
@@ -223,7 +202,7 @@
 			value:5,
 			maxValue:10,
 			width:7,
-			text: 5,
+			text: 1,
 			colors:['#f1f1f1', '#FF9E27'],
 			duration:400,
 			wrpClass:'circles-wrp',
@@ -238,7 +217,7 @@
 			value:70,
 			maxValue:100,
 			width:7,
-			text: 36,
+			text: 1,
 			colors:['#f1f1f1', '#F25961'],
 			duration:400,
 			wrpClass:'circles-wrp',
@@ -253,23 +232,21 @@
 			value:40,
 			maxValue:100,
 			width:7,
-			text: 12,
+			text: 1,
 			colors:['#f1f1f1', '#2478FF'],
 			duration:400,
 			wrpClass:'circles-wrp',
 			textClass:'circles-text',
 			styleWrapper:true,
 			styleText:true
-		})
-
-		
+		});
 
 
 		function loadNewContentTimeline() {
 
 			var url = "/admin/raw_data_manager/api/dashboard/timeline/new";
 
-			// request liquor data
+			// request
 			$.ajax({
 				url:url,
 				type:"get",
@@ -277,8 +254,6 @@
 					'X-CSRFTOKEN' : '{{ csrf_token }}'
 				},
 				success:function(data){
-					console.log("load new content timeline result")
-					console.log(data)
 					printNewContentTimeline(data)
 				},
 				error:function(request, status, error){
@@ -296,13 +271,10 @@
 			var label = new Array();
 			var data = new Array();
 
-
 			for(var i=timelineData.length-1; i>=0; i--) {
 				var item = timelineData[i];
-				console.log(item);
 				var startDate = moment(item['start_date'], 'YYYY-MM-DD HH:mm:ss');
 				label.push(startDate.format('HH시'));
-				console.log(startDate.format('HH시'));
 				data.push(item['count']);
 			}
 
@@ -375,6 +347,67 @@
 				}
 			});
 		}
+
+		function loadManagementTimeline() {
+
+			var url = "/admin/raw_data_manager/api/dashboard/timeline/managelog";
+
+			// request
+			$.ajax({
+				url:url,
+				type:"get",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				success:function(data){
+					printManagementTimeline(data)
+				},
+				error:function(request, status, error){
+				}
+			});
+
+		}
+
+		function printManagementTimeline(data) {
+
+			$('#feed_management').empty();
+			for(var i=0; i<data.length; i++) {
+				var item = data[i];
+				var regDate = moment(item['reg_date'], 'YYYY-MM-DD HH:mm:ss');
+				var dateStr = regDate.format('MM/DD HH:mm:ss');
+
+				/*	등록 / 수정 / 비활성 / 영구 제거 / 활성
+					secondary - 수정
+					success - 등록
+					info	- 비활성
+					warning 
+					danger	- 영구 제거
+				*/
+				var jobCode = item['job_code'];
+				var actNum = jobCode % 1000;
+				var style = 'secondary';
+				if(actNum == 1) {
+					style = 'success';
+				} else if(actNum == 2) {
+					style = 'secondary';
+				} else if(actNum == 3) {
+					style = 'danger';
+				} else if(actNum == 4) {
+					style = 'info';
+				} else if(actNum == 5) {
+					style = 'secondary';
+				}
+
+				var uiItem = '<li class="feed-item feed-item-'+style+'">' + 
+							'	<time class="date" datetime="9-25">'+dateStr+'</time>' + 
+							'	<span class="text"><b>'+item['admin']['username']+'</b> 님이 <a href="#">'+item['job_name']+'</a>을 했습니다.</span>' + 
+							'</li>';
+
+				$('#feed_management').append(uiItem);
+			}
+
+		}
+
 
 	</script>
 

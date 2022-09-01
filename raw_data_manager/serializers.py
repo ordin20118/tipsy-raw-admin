@@ -85,6 +85,22 @@ class SearchParamSerializer(serializers.Serializer):
     # content = serializers.CharField(max_length=200)
     # created = serializers.DateTimeField()
 
+class ManageLogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManageLog
+        fields = '__all__'
+
+    def to_representation(self, instance):
+        response = super().to_representation(instance)
+        response['admin'] = AuthUserSerializer(instance.admin).data
+        return response
+
+
+class AuthUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AuthUser
+        fields = ['username',  'email', 'last_login']
+
 
 
 

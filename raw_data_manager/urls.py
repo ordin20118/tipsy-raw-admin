@@ -22,8 +22,10 @@ urlpatterns = [
     path('api/search', views.search, name='search'),
 
     path('api/dashboard/timeline/new', view_dashboard.newContentTimeline, name='newTimeline'),
+    path('api/dashboard/timeline/managelog', view_dashboard.manageTimeline, name='manageTimeline'),    
 
-    path('permission/createPermissions', views.createPermissions, name='createPermissions'),    
+    path('permission/create_permissions', views.createPermissions, name='createPermissions'),    
+    
 
     re_path(r'^image/.*\.*', views.image, name='image'),
 
