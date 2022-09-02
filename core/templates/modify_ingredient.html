@@ -232,15 +232,13 @@
 		$(document).ready(function(){
 			
 			// |escapejs
-			ingredient = JSON.parse('{{ingredient|safe}}');
+			ingredient = '{{ingredient|safe}}';
+			var tmpIngredient = ingredient;
+			ingredient = JSON.parse(tmpIngredient);
 			images = JSON.parse('{{images|safe}}');
 
 			// set images
 			printImages(images);
-
-			console.log(ingredient)
-			console.log(images)
-			
 			setEvent();	
 			setIngredientData(ingredient);
     

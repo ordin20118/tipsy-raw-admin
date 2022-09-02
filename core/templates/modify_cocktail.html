@@ -405,6 +405,18 @@
 
 										</div>
 									</div>
+									
+									<div class="form-group">
+										<label class="form-label">제조 방식</label>
+										<select class="form-control" id="methodInput">
+											<option value=0>선택 없음</option>
+											<option value=1>블렌딩</option>
+											<option value=2>스터링</option>
+											<option value=3>플로팅</option>
+											<option value=4>쉐이크</option>
+											<option value=5>빌드</option>							
+										</select>
+									</div>
 
 									<div class="form-group">
 										<label for="descInput">설명</label>
@@ -487,8 +499,10 @@
 
 		$(document).ready(function(){
 
+			cocktail = '{{cocktail|safe}}';
+			var tmpCocktail = cocktail;
+			cocktail = JSON.parse(tmpCocktail);
 			detailJson = JSON.parse('{{detail_json|safe}}');
-			cocktail = JSON.parse('{{cocktail|safe}}');
 			cocktail['detail_json'] = detailJson;
 
 			loadCategTree();

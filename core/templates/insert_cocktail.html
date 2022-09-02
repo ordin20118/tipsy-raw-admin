@@ -458,6 +458,18 @@
 									</div>
 
 									<div class="form-group">
+										<label class="form-label">제조 방식</label>
+										<select class="form-control" id="methodInput">
+											<option value=0>선택 없음</option>
+											<option value=1>블렌딩</option>
+											<option value=2>스터링</option>
+											<option value=3>플로팅</option>
+											<option value=4>쉐이크</option>
+											<option value=5>빌드</option>							
+										</select>
+									</div>
+
+									<div class="form-group">
 										<label for="descInput">설명</label>
 										<textarea class="form-control" id="descInput" rows="5"></textarea>
 									</div>
@@ -838,8 +850,16 @@
 			// 가격, 설명, 유래
 			let desc = $('#descInput').val();
 			if(desc != null && desc.length > 0){
-				formData.append("description", desc);
+				formData.append("description", JSON.stringify(desc));
 			}
+
+			let method = $('#methodInput').val();
+			if(method > 0){
+				formData.append("method", method);
+			} else {
+				alert('제조 방식을 선택해주세요.')
+				return 0;
+			}			
 
 
 			// detail_json
@@ -945,7 +965,7 @@
 					console.log("insert cocktail result")
 					console.log(data)
 					alert("칵테일 정보 등록 완료.")
-					location.replace("/admin/cocktail_list.html")
+					location.replace("/admin/list_cocktail.html")
 				},
 				error:function(request, status, error){
 				}

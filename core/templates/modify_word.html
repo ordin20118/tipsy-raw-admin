@@ -230,7 +230,9 @@
 		$(document).ready(function(){
 			
 			// |escapejs
-			word = JSON.parse('{{word|safe}}');
+			word = '{{word|safe}}';
+			var tmpWord = word;
+			word = JSON.parse(tmpWord);
 			images = JSON.parse('{{images|safe}}');
 
 			// set images

@@ -168,6 +168,13 @@ def modifyLiquor(request):
     liquor_json = json.dumps(liquor_dict, ensure_ascii=False)
     context['liquor'] = liquor_json
 
+    log_obj = ManageLog.objects.get(id=83)
+    log_bjson = JSONRenderer().render(ManageLogSerializer(log_obj).data)    
+    log_stream = io.BytesIO(log_bjson)
+    log_dict = JSONParser().parse(log_stream)    
+    log_json = json.dumps(log_dict, ensure_ascii=False)
+    context['log'] = log_json
+
     # get images
     images = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_LIQUOR, content_id=liquor[0].liquor_id)   
     serialize_images = ImageSerializer(images, many=True)     

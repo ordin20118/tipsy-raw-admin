@@ -231,15 +231,13 @@
 		$(document).ready(function(){
 			
 			// |escapejs
-			equipment = JSON.parse('{{equipment|safe}}');
+			equipment = '{{equipment|safe}}';
+			var tmpEquip = equipment;
+			equipment = JSON.parse(tmpEquip);
 			images = JSON.parse('{{images|safe}}');
 
 			// set images
 			printImages(images);
-
-			console.log(equipment)
-			console.log(images)
-			
 			setEvent();	
 			setData(equipment);
     

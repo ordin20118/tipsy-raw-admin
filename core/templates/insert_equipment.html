@@ -265,7 +265,7 @@
 
 			let desc = $('#descInput').val();
 			if(desc != null && desc.length > 0){
-				formData.append("description", desc);
+				formData.append("description", JSON.stringify(desc));
 			}
 
 			formData.append("category1_id", 33);

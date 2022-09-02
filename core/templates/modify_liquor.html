@@ -316,16 +316,17 @@
 
 		$(document).ready(function(){
 			
-			// |escapejs
-			liquor = JSON.parse('{{liquor|safe}}');
+			// |escapejs	
+			liquor = '{{liquor|safe}}';
+			console.log(liquor);
+			var tmpLiquor = liquor;
+			liquor = JSON.parse(tmpLiquor);
+
 			images = JSON.parse('{{images|safe}}');
 
 			// set images
 			printImages(images);
 
-			console.log(liquor)
-			console.log(images)
-			
 			loadCategTree();
 			loadCountryData();
 			setEvent();	
