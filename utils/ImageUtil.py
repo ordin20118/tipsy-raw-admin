@@ -11,11 +11,18 @@ def imageIdToPath(id):
     if idLen < 9:   # 길이가 9보다 작은 경우
         zeroStr = '0' * (9 - idLen)
     else:           # 길이가 9이상인 경우
-        zeroStr = '0' * (3 - (idLen%3))
+        zeroStr = ''
+        #zeroStr = '0' * (3 - (idLen%3))
+
+    print(zeroStr)
 
     # 천의 자리까지 자름
     idStr = zeroStr + idStr
+
+    print(idStr)
+
     idStr = idStr[0:-3] 
+    print(idStr)
 
     # 3자리 단위로 '/' 추가
     path = ''
@@ -24,8 +31,20 @@ def imageIdToPath(id):
         if i%3 == 0 and i<len(idStr):
             path += '/'
 
+    path = path[0:7]
     return path
 
+# TEST
+# path = imageIdToPath(1234)
+# print(path)
+# print("\n\n")
+
+# path = imageIdToPath(123456)
+# print(path)
+# print("\n\n")
+
+# path = imageIdToPath(123123999777)
+# print(path)
 
 def getScaledHeight(org_width, org_height, scaled_width):
     

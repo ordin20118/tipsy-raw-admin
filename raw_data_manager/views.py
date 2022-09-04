@@ -18,6 +18,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 import mimetypes
 import PIL.Image as pilimg
+import pytesseract
+import easyocr
 import os
 import requests
 import json
@@ -1593,3 +1595,55 @@ def country(request):
     elif request.method == 'POST':
        pass 
        
+
+@api_view(['GET'])
+def ocr(request):
+    
+    print("[OCR TEST]")
+
+    # img_id = request.GET.get('imageId')
+    # img_id = int(img_id)
+
+    # logger.info("[OCR TEST] image_id: %d" % img_id)
+
+    # if img_id == None:
+    #     return Response("Not Found Image.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+  
+    # image = Image.objects.get(image_id=img_id)
+    # path = image.path
+
+    filename = request.GET.get('filename')
+
+    print("[OCR TEST] filename: %s" % filename)
+
+    reader = easyocr.Reader(['en', 'ko'], gpu=False)    
+    #result = reader.readtext('/data/datastore/image'+'/'+path+'.png')
+    result = reader.readtext('/Users/GwangA/datastore/tmp/' + filename)
+
+    logger.info("[OCR TEST] find file")
+    
+    candidate_list = []
+    logger.info("\n\n================ High Score ================\n")
+    for item in result:
+        confidence = item[2]
+        if confidence >= 0.6:
+            logger.info("%s => %s" % (item[1], item[2]))
+            logger.info("\n")    
+            candidate = {
+                "word": item[1],
+                "weight": item[2]
+            }
+            candidate_list.append(candidate)     
+
+    res = {
+        "candidate": candidate_list
+    }          
+
+    #return Response(json.dumps(res, ensure_ascii=False))
+    return Response(res)
+            
+    # logger.info("================ All Score ================\n")
+    # for item in result:
+    #     confidence = item[2]
+    #     logger.info("%s => %s" % (item[1], item[2]))
+    #     logger.info("\n")
