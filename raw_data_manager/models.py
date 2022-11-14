@@ -279,6 +279,45 @@ class JoinedWord(models.Model):
         db_table = 'word'
 
 
+class RatingStats(models.Model):
+    rating_stats_id = models.AutoField(primary_key=True)
+    content_id = models.IntegerField()
+    content_type = models.IntegerField()
+    rating_cnt = models.IntegerField()
+    rating_avg = models.FloatField()
+    rating00 = models.IntegerField()
+    rating01 = models.IntegerField()
+    rating02 = models.IntegerField()
+    rating03 = models.IntegerField()
+    rating04 = models.IntegerField()
+    rating05 = models.IntegerField()
+    reg_date = models.DateTimeField()
+    update_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'rating_stats'
+
+class ContentStats(models.Model):
+    content_stats_id = models.AutoField(primary_key=True)
+    content_id = models.IntegerField()
+    content_type = models.IntegerField()
+    view_cnt = models.IntegerField()
+    bookmark_cnt = models.IntegerField()
+    comment_cnt = models.IntegerField()
+    like_cnt = models.IntegerField()
+    dislike_cnt = models.IntegerField()
+    share_cnt = models.IntegerField()
+    report_cnt = models.IntegerField()
+    reg_date = models.DateTimeField()
+    update_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'content_stats'
+        unique_together = (('content_id', 'content_type'),)
+
+
 class RawCategory(models.Model):
     id = models.IntegerField(primary_key=True)
     parent = models.IntegerField(blank=True, null=True)

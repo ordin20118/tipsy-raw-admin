@@ -508,6 +508,19 @@ def liquor(request):
                 # content_type = models.IntegerField(blank=True, null=True)
                 # reg_date = models.DateTimeField(auto_now_add=True)
 
+                # content stats
+                content_stats = ContentStats()
+                content_stats.content_id = liquorId
+                content_stats.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
+                content_stats.save()
+
+                # rating stats
+                rating_stats = RatingStats()
+                rating_stats.content_id = liquorId
+                rating_stats.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
+                rating_stats.save()
+
+
                 logInfo = ManageLog()
                 logInfo.admin_id = request.user.id
                 logInfo.job_code = JobInfo.JOB_ADD_SPIRITS
@@ -863,6 +876,19 @@ def cocktail(request):
                         "name": cocktail_name
                     }
 
+                    
+                    # content stats
+                    content_stats = ContentStats()
+                    content_stats.content_id = cocktail_id
+                    content_stats.content_type = ContentInfo.CONTENT_TYPE_COCTAIL
+                    content_stats.save()
+
+                    # rating stats
+                    rating_stats = RatingStats()
+                    rating_stats.content_id = cocktail_id
+                    rating_stats.content_type = ContentInfo.CONTENT_TYPE_COCTAIL
+                    rating_stats.save()
+
                     logInfo.info = json.dumps(info_json, ensure_ascii=False)
                     logInfo.save()
                     return Response("success", status=status.HTTP_200_OK)               
@@ -1047,6 +1073,18 @@ def ingredient(request):
                 "updated_info": updated_info
             }
             info_str = json.dumps(info, ensure_ascii=False)
+            
+            # content stats
+            content_stats = ContentStats()
+            content_stats.content_id = ingd_id
+            content_stats.content_type = ContentInfo.CONTENT_TYPE_INGREDIENT
+            content_stats.save()
+
+            # rating stats
+            rating_stats = RatingStats()
+            rating_stats.content_id = ingd_id
+            rating_stats.content_type = ContentInfo.CONTENT_TYPE_INGREDIENT
+            rating_stats.save()
 
             logInfo = ManageLog()
             logInfo.admin_id = request.user.id
@@ -1090,13 +1128,25 @@ def equipment(request):
                 equipment.reg_date = timezone.now()
                 equipment.save()
 
-                equipId = equipment.equip_id
+                equip_id = equipment.equip_id
+            
+                # content stats
+                content_stats = ContentStats()
+                content_stats.content_id = equip_id
+                content_stats.content_type = ContentInfo.CONTENT_TYPE_EQUIP
+                content_stats.save()
+
+                # rating stats
+                rating_stats = RatingStats()
+                rating_stats.content_id = equip_id
+                rating_stats.content_type = ContentInfo.CONTENT_TYPE_EQUIP
+                rating_stats.save()
 
                 logInfo = ManageLog()
                 logInfo.admin_id = request.user.id
                 logInfo.job_code = JobInfo.JOB_ADD_EQUIP
                 logInfo.job_name = JobInfo.JOBN_ADD_EQUIP
-                logInfo.content_id = equipId
+                logInfo.content_id = equip_id
                 logInfo.content_type = ContentInfo.CONTENT_TYPE_EQUIP
                 logInfo.save()
                 
@@ -1110,7 +1160,7 @@ def equipment(request):
                     # 1. 이미지 데이터 DB 저장
                     imgData = Image()
                     imgData.image_type = Image.IMG_TYPE_REP
-                    imgData.content_id = equipId
+                    imgData.content_id = equip_id
                     imgData.content_type = ContentInfo.CONTENT_TYPE_EQUIP
                     imgData.is_open = Image.IMG_STATUS_PUB
                     imgData.save()
@@ -1265,6 +1315,18 @@ def word(request):
                 word.save()
 
                 word_id = word.word_id
+                
+                # content stats
+                content_stats = ContentStats()
+                content_stats.content_id = word_id
+                content_stats.content_type = ContentInfo.CONTENT_TYPE_WORD
+                content_stats.save()
+
+                # rating stats
+                rating_stats = RatingStats()
+                rating_stats.content_id = word_id
+                rating_stats.content_type = ContentInfo.CONTENT_TYPE_WORD
+                rating_stats.save()
 
                 log_info = ManageLog()
                 log_info.admin_id = request.user.id
