@@ -6,15 +6,17 @@ name = "pypi"
 [packages]
 asgiref = "*"
 autopep8 = "*"
+django = "==2.2.10"
 pycodestyle = "*"
 pytz = "*"
 sqlparse = "*"
+unipath = "*"
 dj-database-url = "*"
 python-decouple = "*"
 gunicorn = "*"
 whitenoise = "*"
-Django = "==2.2.10"
-Unipath = "*"
+pytesseract = "*"
+easyocr = "*"
 
 [dev-packages]
 

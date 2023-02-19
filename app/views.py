@@ -70,37 +70,68 @@ def liquorList(request):
     context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
 
     # load data
+    keyword = request.GET.get('keyword', "")
+    keyword = '%%' + keyword + '%%'
     page = int(request.GET.get('page', 1))
     perPage = int(request.GET.get('perPage', 10))
 
+
+    print(keyword)
+
     # TODO: join에 대한 내용을 model에 반영해서 조회하기
-    liquorList = JoinedLiquor.objects.order_by('-liquor_id').raw('''
-        SELECT 
-            raw_liquor.*,
-            categ1.name as category1_name,
-            categ2.name as category2_name,
-            categ3.name as category3_name,
-            categ4.name as category4_name,
-            country.name as country_name,
-            reg_user.username as reg_admin_name,
-            update_user.username as update_admin_name,
-            if(image.path is null, 'default', image.path) as rep_img
-        FROM tipsy_raw.raw_liquor
-        LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = raw_liquor.category1_id
-        LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = raw_liquor.category2_id
-        LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON categ3.id = raw_liquor.category3_id
-        LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON categ4.id = raw_liquor.category4_id
-        LEFT OUTER JOIN tipsy_raw.country ON country.country_id = raw_liquor.country_id
-        LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = raw_liquor.reg_admin
-        LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin
-        LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0
-        ORDER BY liquor_id DESC
-    ''')
+    # liquorList = JoinedLiquor.objects.order_by('-liquor_id').raw('''
+    #     SELECT 
+    #         raw_liquor.*,
+    #         categ1.name as category1_name,
+    #         categ2.name as category2_name,
+    #         categ3.name as category3_name,
+    #         categ4.name as category4_name,
+    #         country.name as country_name,
+    #         reg_user.username as reg_admin_name,
+    #         update_user.username as update_admin_name,
+    #         if(image.path is null, 'default', image.path) as rep_img
+    #     FROM tipsy_raw.raw_liquor
+    #     LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = raw_liquor.category1_id
+    #     LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = raw_liquor.category2_id
+    #     LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON categ3.id = raw_liquor.category3_id
+    #     LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON categ4.id = raw_liquor.category4_id
+    #     LEFT OUTER JOIN tipsy_raw.country ON country.country_id = raw_liquor.country_id
+    #     LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = raw_liquor.reg_admin
+    #     LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin
+    #     LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0
+    #     WHERE raw_liquor.name_kr like %s or raw_liquor.name_en like %%s%
+    #     ORDER BY liquor_id DESC
+    # ''' % keyword, keyword)
+
+    liquorList = JoinedLiquor.objects.order_by('-liquor_id').raw("" +
+        "SELECT "+
+        "    raw_liquor.*, "+
+        "    categ1.name as category1_name, "+
+        "    categ2.name as category2_name, "+
+        "    categ3.name as category3_name, "+
+        "    categ4.name as category4_name, "+
+        "    country.name as country_name, "+
+        "    reg_user.username as reg_admin_name, "+
+        "    update_user.username as update_admin_name, "+
+        "    if(image.path is null, 'default', image.path) as rep_img "+
+        "FROM tipsy_raw.raw_liquor "+
+        "LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = raw_liquor.category1_id "+
+        "LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = raw_liquor.category2_id "+
+        "LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON categ3.id = raw_liquor.category3_id "+
+        "LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON categ4.id = raw_liquor.category4_id "+
+        "LEFT OUTER JOIN tipsy_raw.country ON country.country_id = raw_liquor.country_id "+
+        "LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = raw_liquor.reg_admin "+
+        "LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin "+
+        "LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0 "+
+        "WHERE raw_liquor.name_kr like '" + keyword + "' or raw_liquor.name_en like '" + keyword + "' " +
+        "ORDER BY liquor_id DESC")
 
     paginator = Paginator(liquorList, perPage)  # 페이지당 10개씩 보여주기
     page_obj = paginator.get_page(page)
 
     context['liquor_list'] = page_obj
+    keyword = keyword.replace('%', '')
+    context['keyword'] = keyword
 
     html_template = loader.get_template( 'list_liquor.html' )
     return HttpResponse(html_template.render(context, request))
