@@ -705,12 +705,12 @@
 			$('#regionInput').change(function(){
 				isModified = true;
 				// 영어만
-				if( englishRegex.test($("#regionInput").val()) ) {
-					setSuccessOrError($(this), false)
-					alert("영어만 입력해주세요");
-					$("#regionInput").val('')
-					return;
-				}
+				// if( englishRegex.test($("#regionInput").val()) ) {
+				// 	setSuccessOrError($(this), false)
+				// 	alert("영어만 입력해주세요");
+				// 	$("#regionInput").val('')
+				// 	return;
+				// }
 
 				if($("#regionInput").val() != null && $("#regionInput").val().length > 0) {
 					setSuccessOrError($(this), true)
