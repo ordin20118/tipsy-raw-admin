@@ -626,6 +626,10 @@
 				}
 			}, 300);
 			
+			// 지역
+			if(liquor['region'] != null && liquor['region'].length > 0){
+				$('#regionInput').val(liquor['region']);
+			}
 
 			// 년산
 			if(liquor['vintage'] != null){

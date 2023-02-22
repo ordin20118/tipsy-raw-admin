@@ -565,12 +565,14 @@
 
 			let desc = $('#descInput').val();
 			if(desc != null && desc.length > 0){
-				formData.append("description", JSON.stringify(desc));
+				//formData.append("description", JSON.stringify(desc));
+				formData.append("description", desc);
 			}			
 
 			let history = $('#historyInput').val();
 			if(history != null && history.length > 0){
-				formData.append("history", JSON.stringify(history));
+				//formData.append("history", JSON.stringify(history));
+				formData.append("history", history);
 			}
 			
 
@@ -709,6 +711,9 @@
 
 							}
 						}
+
+						console.log("[categMap]")
+						console.log(categMap);
 
 						printCategSelect(0)
 
