@@ -314,25 +314,48 @@
 
 		var nowModifyImgId = null;
 
+		const urlParams = new URL(location.href).searchParams;
+		const liquorId = urlParams.get('liquorId');
+
 		$(document).ready(function(){
 			
 			// |escapejs	
-			liquor = '{{liquor|safe}}';
-			console.log(liquor);
-			var tmpLiquor = liquor;
-			liquor = JSON.parse(tmpLiquor);
-
-			images = JSON.parse('{{images|safe}}');
-
+			// liquor = '{{liquor|safe}}';
+			// console.log(liquor);
+			// var tmpLiquor = liquor;
+			// liquor = JSON.parse(tmpLiquor);
+			// setLiquorData(liquor);
+			
 			// set images
+			images = JSON.parse('{{images|safe}}');
 			printImages(images);
+
+			loadLiquor(liquorId);
 
 			loadCategTree();
 			loadCountryData();
 			setEvent();	
-			setLiquorData(liquor);
+			
     
     	});
+
+
+		function loadLiquor(liquorId) {
+			var url = "/admin/raw_data_manager/api/liquor?liquorId=" + liquorId;
+			$.ajax({
+				url:url,
+				type:"get",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				success:function(data){
+					liquor = data;
+					setLiquorData(data);					
+				},
+				error:function(request, status, error){
+				}
+			});
+		}
 
 		function openImgModifyModal(imageId) {
 			nowModifyImgId = imageId;
