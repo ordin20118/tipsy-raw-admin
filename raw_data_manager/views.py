@@ -486,28 +486,28 @@ def liquor(request):
         
         # return Response(serializer.data)
 
-        liquor = JoinedLiquor.objects.raw('''
-            SELECT 
-                raw_liquor.*,
-                categ1.name as category1_name,
-                categ2.name as category2_name,
-                categ3.name as category3_name,
-                categ4.name as category4_name,
-                country.name as country_name,
-                reg_user.username as reg_admin_name,
-                update_user.username as update_admin_name,
-                if(image.path is null, 'default', image.path) as rep_img
-            FROM raw_liquor
-            LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = raw_liquor.category1_id
-            LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = raw_liquor.category2_id
-            LEFT OUTER JOIN tipsy_raw.raw_category categ3 ON categ3.id = raw_liquor.category3_id
-            LEFT OUTER JOIN tipsy_raw.raw_category categ4 ON categ4.id = raw_liquor.category4_id
-            LEFT OUTER JOIN tipsy_raw.country ON country.country_id = raw_liquor.country_id
-            LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = raw_liquor.reg_admin
-            LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin
-            LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0
-            WHERE raw_liquor.liquor_id = 1
-        ''')[0]
+        select_qry =  'SELECT '
+        select_qry += ' raw_liquor.*, '
+        select_qry += ' categ1.name as category1_name, '
+        select_qry += ' categ2.name as category2_name, '
+        select_qry += ' categ3.name as category3_name, '
+        select_qry += ' categ4.name as category4_name, '
+        select_qry += ' country.name as country_name, '
+        select_qry += ' reg_user.username as reg_admin_name, '
+        select_qry += ' update_user.username as update_admin_name, '
+        select_qry += ' if(image.path is null, "default", image.path) as rep_img '
+        select_qry += 'FROM raw_liquor '
+        select_qry += 'LEFT OUTER JOIN raw_category categ1 ON categ1.id = raw_liquor.category1_id '
+        select_qry += 'LEFT OUTER JOIN raw_category categ2 ON categ2.id = raw_liquor.category2_id '
+        select_qry += 'LEFT OUTER JOIN raw_category categ3 ON categ3.id = raw_liquor.category3_id '
+        select_qry += 'LEFT OUTER JOIN raw_category categ4 ON categ4.id = raw_liquor.category4_id '
+        select_qry += 'LEFT OUTER JOIN country ON country.country_id = raw_liquor.country_id '
+        select_qry += 'LEFT OUTER JOIN auth_user reg_user ON reg_user.id = raw_liquor.reg_admin '
+        select_qry += 'LEFT OUTER JOIN auth_user update_user ON update_user.id = raw_liquor.update_admin '
+        select_qry += 'LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0 '
+        select_qry += 'WHERE raw_liquor.liquor_id = %d' % liquor_id
+
+        liquor = JoinedLiquor.objects.raw(select_qry)[0]
         
         serializer = JoinedLiquorSerializer(liquor, many=False)
         return Response(serializer.data)
