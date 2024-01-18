@@ -95,7 +95,7 @@
 															{% if 'default' in liquor.rep_img %}
 															<img src="{{ imgprefix }}/{{liquor.rep_img}}_image.jpg" style='width:80px; height:80px;'>
 															{% else %}
-															<img src="{{ imgprefix }}/{{liquor.rep_img}}_300.png" style='width:70px;'>
+															<img src="{{ imgprefix }}/{{liquor.s3_key}}" style='width:70px;'>
 															{% endif %}
 														</td>
 														<td style="font-size: 11px;">															
@@ -456,12 +456,7 @@
 					regDateStr = moment(liquor['update_date']).format("YYYY-MM-DD");
 				}
 
-				var imgPath = imgprefix + "/" + liquor['rep_img']
-				if(liquor['rep_img'].indexOf('default') >= 0) {
-					imgPath += ".png"
-				} else {
-					imgPath += "_300.png"
-				}	
+				var repImgUrl = imgprefix + "/" + liquor['s3_key']
 				
 				var countryName = "-";
 				if(liquor['country_name'] != null){
@@ -472,7 +467,7 @@
 				var item = 	"<tr onclick='/admin/modify_liquor.html?liquorId="+liquor['liquor_id']+"'>" + 
 							"	<td>" + liquor['liquor_id'] + "</td>" + 
 							"	<td>" +
-							"		<img src='" + imgPath + "' style='width:80px; height:80px;'>" +
+							"		<img src='" + repImgUrl + "' style='width:80px; height:80px;'>" +
 							"	</td>" + 
 							"	<td>" + category + "</td>" + 
 							"	<td>" + liquor['name_kr'] + "<br>" + liquor['name_en'] + "</td>" + 

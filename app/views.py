@@ -30,7 +30,7 @@ def index(request):
     context['segment'] = 'index'
     # context['prefix'] = 'http://211.37.150.105:8000'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
     html_template = loader.get_template( 'index.html' )
     return HttpResponse(html_template.render(context, request))
@@ -40,7 +40,7 @@ def pages(request):
 
     context = {}
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
     # All resource paths end in .html.
     # Pick out the html file name from the url. And load that template.
     try:
@@ -67,7 +67,7 @@ def liquorList(request):
     context = {}
     context['segment'] = 'list_liquor'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
     # load data
     keyword = request.GET.get('keyword', "")
@@ -113,7 +113,7 @@ def liquorList(request):
         "    country.name as country_name, "+
         "    reg_user.username as reg_admin_name, "+
         "    update_user.username as update_admin_name, "+
-        "    if(image.path is null, 'default', image.path) as rep_img "+
+        "    if(image.s3_key is null, 'image/liquor/default_image.png', image.s3_key) as s3_key "+
         "FROM tipsy_raw.raw_liquor "+
         "LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = raw_liquor.category1_id "+
         "LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = raw_liquor.category2_id "+
@@ -145,7 +145,7 @@ def modifyLiquor(request):
     context = {}
     context['segment'] = 'modifyLiquor'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
     # check permission
     # perm = request.user.has_perm('raw_data_manager.modify_liquor')
@@ -226,7 +226,7 @@ def ingredientList(request):
     context = {}
     context['segment'] = 'list_ingredient'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
     # load data
     page = int(request.GET.get('page', 1))
@@ -269,7 +269,7 @@ def equipmentList(request):
     context = {}
     context['segment'] = 'list_equipment'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
     # load data
     page = int(request.GET.get('page', 1))
@@ -314,7 +314,7 @@ def modifyIngredient(request):
     context = {}
     context['segment'] = 'modifyIngredient'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
     # check permission
     # perm = request.user.has_perm('raw_data_manager.modify_ingredient')
@@ -388,7 +388,7 @@ def modifyEquipment(request):
     context = {}
     context['segment'] = 'modifyEquipment'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
 
     # check permission
@@ -463,7 +463,7 @@ def wordList(request):
     context = {}
     context['segment'] = 'wordList'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
     # load data
     page = int(request.GET.get('page', 1))
@@ -500,7 +500,7 @@ def modifyWord(request):
     context = {}
     context['segment'] = 'modifyWord'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
 
     # check permission
@@ -565,7 +565,7 @@ def cocktailList(request):
     context = {}
     context['segment'] = 'list_cocktail'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
     # load data
     page = int(request.GET.get('page', 1))
@@ -598,7 +598,7 @@ def modifyCocktail(request):
     context = {}
     context['segment'] = 'modifyCocktail'
     context['prefix'] = 'http://tipsy.co.kr/admin'
-    context['imgprefix'] = 'http://tipsy.co.kr/admin/raw_data_manager/image'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
 
     # check permission
     # perm = request.user.has_perm('raw_data_manager.modify_cocktail')
