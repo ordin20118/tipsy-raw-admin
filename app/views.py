@@ -657,3 +657,15 @@ def modifyCocktail(request):
 
     html_template = loader.get_template( 'modify_cocktail.html' )   
     return HttpResponse(html_template.render(context, request))
+
+
+@login_required(login_url="/admin/login/")
+def recommandTest(request):
+    
+    context = {}
+    context['segment'] = 'recommand_test'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = 'https://tipsy-pro.s3.ap-northeast-2.amazonaws.com'
+
+    html_template = loader.get_template( 'recommand/recommand.html' )
+    return HttpResponse(html_template.render(context, request))

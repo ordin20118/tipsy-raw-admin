@@ -22,6 +22,9 @@ urlpatterns = [
     path('modify_equipment.html', views.modifyEquipment, name='modifyEquipment'),
     path('modify_word.html', views.modifyWord, name='modifyWord'),
 
+    path('recommand.html', views.recommandTest, name='recommandTest'),
+    
+
     # Matches any html file
     re_path(r'^.*\.*', views.pages, name='pages'),
 

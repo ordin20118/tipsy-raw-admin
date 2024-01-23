@@ -1,0 +1,380 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Datatables {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+  .product-card {
+    grid-template-columns: 100px 1fr 100px;
+  }
+  .product-image {
+    width: 100px;
+    height: 100px;
+    background-color: #E4E4E4;
+  }
+  .rating-star {
+    color: #FFD700; /* Gold color for the star */
+  }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="content">
+  <div class="page-inner">
+    <div class="page-header">
+      <h4 class="page-title">주류 추천</h4>
+      <ul class="breadcrumbs">
+        <li class="nav-home">
+          <a href="#">
+            <i class="flaticon-home"></i>
+          </a>
+        </li>
+        <li class="separator">
+          <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+          <a href="#">주류</a>
+        </li>
+        <li class="separator">
+          <i class="flaticon-right-arrow"></i>
+        </li>
+        <li class="nav-item">
+          <a href="#">주류 추천</a>
+        </li>
+      </ul>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <div class="d-flex align-items-center">
+              <h4 class="card-title">주류 추천 테스트</h4>
+            </div>
+          </div>
+          <div class="card-body">
+
+            <div id="step1" class="min-h-screen flex items-center justify-center">
+              <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+                <h1 class="text-2xl font-semibold mb-6">어떤 종류의 술을 찾으시나요?</h1>
+                <div class="space-y-4">
+                  <button class="w-full py-2 px-4 border border-black-300 rounded text-left step-1-sel" categLv=2 categId="3" selectNum=1 onclick="toggleSelection(1, 1)">맥주</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-1-sel" categLv=2 categId="13" selectNum=2 onclick="toggleSelection(1, 2)">위스키</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-1-sel" categLv=2 categId="14" selectNum=3 onclick="toggleSelection(1, 3)">보드카</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-1-sel" categLv=2 categId="15" selectNum=4 onclick="toggleSelection(1, 4)">테킬라</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-1-sel" categLv=2 categId="16" selectNum=5 onclick="toggleSelection(1, 5)">럼</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-1-sel" categLv=2 categId="17" selectNum=6 onclick="toggleSelection(1, 6)">진</button>
+                </div>
+                <div class="mt-8">
+                  <button class="w-full py-2 px-4 bg-green-600 text-white rounded" onclick="goToNextStep()">다음</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="step2" class="min-h-screen flex items-center justify-center" style="display: none;">
+              <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+                <h1 class="text-2xl font-semibold mb-6">당신의 주량은 어떻게 되나요?</h1>
+                <div class="space-y-4">
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-2-sel" min=1 max=5 selectNum=1 onclick="toggleSelection(2, 1)">맥주 1캔</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-2-sel" min=1 max=15 selectNum=2 onclick="toggleSelection(2, 2)">소주 1병</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-2-sel" min=10 max=35 selectNum=3 onclick="toggleSelection(2, 3)">소주 2병</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-2-sel" min=10 max=50 selectNum=4 onclick="toggleSelection(2, 4)">소주 3병</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-2-sel" min=15 max=100 selectNum=5 onclick="toggleSelection(2, 5)">무한대</button>
+                </div>
+                <div class="mt-8">
+                  <button class="w-full py-2 px-4 bg-green-600 text-white rounded" onclick="goToNextStep()">다음</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="step3" class="min-h-screen flex items-center justify-center" style="display: none;">
+              <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+                <h1 class="text-2xl font-semibold mb-6">원하는 주류의 가격대를 선택해주세요.</h1>
+                <div class="space-y-4">
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-3-sel" min=1 max=10000 selectNum=1 onclick="toggleSelection(3, 1)">만원 이하</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-3-sel" min=10000 max=30000 selectNum=2 onclick="toggleSelection(3, 2)">1 ~ 3만원</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-3-sel" min=30000 max=50000 selectNum=3 onclick="toggleSelection(3, 3)">3 ~ 5만원</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-3-sel" min=50000 max=90000 selectNum=4 onclick="toggleSelection(3, 4)">5 ~ 9만원</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-3-sel" min=100000 max=200000 selectNum=5 onclick="toggleSelection(3, 5)">10 ~ 20만원</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-3-sel" min=200000 max=10000000 selectNum=6 onclick="toggleSelection(3, 6)">20만원 이상</button>
+                </div>
+                <div class="mt-8">
+                  <button class="w-full py-2 px-4 bg-green-600 text-white rounded" onclick="goToNextStep()">다음</button>
+                </div>
+              </div>
+            </div>
+
+
+            <div id="step4" class="min-h-screen flex items-center justify-center" style="display: none;">
+              <div class="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+                <h1 class="text-2xl font-semibold mb-6">어떤 향을 좋아하시나요?</h1>
+                <div class="space-y-4">
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-4-sel" selectNum=1 onclick="toggleSelection(4, 1)">꽃 향</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-4-sel" selectNum=2 onclick="toggleSelection(4, 2)">과일 향</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-4-sel" selectNum=3 onclick="toggleSelection(4, 3)">나무 향</button>
+                  <button class="w-full py-2 px-4 border border-gray-300 rounded text-left step-4-sel" selectNum=4 onclick="toggleSelection(4, 4)">스파이시 향</button>
+                </div>
+                <div class="mt-8">
+                  <button class="w-full py-2 px-4 bg-green-600 text-white rounded" onclick="goToNextStep()">다음</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="card-body">
+            <div class="container mx-auto px-4 py-8">
+              <div id="productList" class="grid gap-4">
+                <!-- Product Card 1 -->
+                <!-- <div class="product-card grid">
+                  <div class="product-image"></div>
+                  <div class="flex flex-col justify-center ml-4">
+                    <h2 class="text-lg font-semibold">Whiskey</h2>
+                    <div class="flex items-center">
+                      <span class="ml-1 text-sm">카테고리 입니다만</span>
+                    </div>
+                    <div class="flex items-center">
+                      <svg class="rating-star w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.396-1.068 1.954-1.068 2.35 0l1.562 4.218a1.5 1.5 0 001.423 1.034h4.416c1.18 0 1.668 1.522.805 2.293l-3.576 3.194a1.5 1.5 0 00-.431 1.678l1.34 4.293c.24 1.18-1.031 2.073-2.011 1.437l-3.659-2.377a1.5 1.5 0 00-1.76 0l-3.659 2.377c-.98.636-2.251-.256-2.011-1.437l1.34-4.293a1.5 1.5 0 00-.431-1.678l-3.576-3.194c-.863-.771-.375-2.293.805-2.293h4.416a1.5 1.5 0 001.423-1.034l1.562-4.218z"></path></svg>
+                      <span class="ml-1 text-sm">5.0</span>
+                    </div>
+                  </div>
+                  <div class="flex items-center justify-end">
+                    <span class="text-lg font-semibold">2,000₩</span>
+                  </div>
+                </div> -->
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+	<script >
+		
+    var step = 1;
+    var endStep = 4;
+
+    var categ1Id = null;
+    var categ2Id = null;
+    var categ3Id = null;
+    var categ4Id = null;
+    var priceMin = null;
+    var priceMax = null;
+    var abvMin = null;
+    var abvMax = null;
+
+
+		$(document).ready(function() {
+		});
+
+    function toggleSelection(step, select) {
+      console.log("[toggleSelection] step:" + step + "/select:" + select);
+
+      var selectItems = $('.step-' + step + '-sel');
+
+      selectItems.each(function(index, element) {
+        if((index + 1) == select) {
+          element.classList.add('selected');
+          $(element).css({
+            'background-color': '#005766',
+            'color': '#ffffff'
+          });
+
+          // category
+          if(step == 1) {
+            var categLv = $(element).attr("categLv");
+            if(categLv == 1) {
+              categ1Id = $(element).attr("categId");
+            } else if(categLv == 2) {
+              categ2Id = $(element).attr("categId");
+            } else if(categLv == 3) {
+              categ3Id = $(element).attr("categId");
+            } else if(categLv == 4) {
+              categ4Id = $(element).attr("categId");
+            }
+          }
+
+          // abv
+          if(step == 2) {
+            var min = $(element).attr("min");
+            var max = $(element).attr("max");
+            abvMin = min;
+            abvMax = max;
+          }
+
+          // price
+          if(step == 3) {
+            var min = $(element).attr("min");
+            var max = $(element).attr("max");
+            priceMin = min;
+            priceMax = max;
+          }
+
+          // tasting_notes
+          if(step == 4) {
+
+          }
+
+
+
+        } else {
+          element.classList.remove('selected');
+          $(element).css({
+            'background-color': '#ffffff',
+            'color': '#6c757d'
+          });
+        }
+        //console.log('['+index+']클래스를 가진 요소:' + $(element).text() );
+      });
+    }
+
+    function goToNextStep() {
+      if(step != endStep) {
+        $('#step'+step).hide();
+        step = step + 1;
+        $('#step'+step).show();
+      } else {
+        requestRecommandLiquor();
+      }
+    } 
+
+    function requestRecommandLiquor() {
+      
+      var url = "/admin/raw_data_manager/api/recommand/liquor?t=tipsy";
+
+      if(categ1Id != null) {
+        url += "&categ1Id=" + categ1Id;
+      }
+
+      if(categ2Id != null) {
+        url += "&categ2Id=" + categ2Id;
+      }
+
+      if(categ3Id != null) {
+        url += "&categ3Id=" + categ3Id;
+      }
+
+      if(categ4Id != null) {
+        url += "&categ4Id=" + categ4Id;
+      }
+
+      if(priceMin != null) {
+        url += "&priceMin=" + priceMin;
+      }
+
+      if(priceMax != null) {
+        url += "&priceMax=" + priceMax;
+      }
+
+      if(abvMin != null) {
+        url += "&abvMin=" + abvMin;
+      }
+
+      if(abvMax != null) {
+        url += "&abvMax=" + abvMax;
+      }
+
+			$.ajax({
+				url:url,
+				type:"get",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				success:function(data){
+					console.log("recommand liquor result")
+          console.log(JSON.parse(data))
+
+					// print result data
+          printRecommandList(JSON.parse(data));
+				},
+				error:function(request, status, error){					
+					if(error == 'Forbidden') {
+						printDangerPanel('권한 없음', '요청 권한이 없습니다.');
+					}
+				}
+			});
+    }
+
+    function printRecommandList(data) {
+
+      var liquorList = data['data']['liquor_list']
+
+      $('#productList').empty();
+
+      for(var i=0; i<liquorList.length; i++) {
+        var liquor = liquorList[i];
+
+
+        var categName = "";
+        if(liquor['category1_name'] != null && liquor['category1_name'].length > 0) {
+          categName += liquor['category1_name'];
+        }
+
+        if(liquor['category2_name'] != null && liquor['category2_name'].length > 0) {
+          categName += " > " + liquor['category2_name'];
+        }
+
+        if(liquor['category3_name'] != null && liquor['category3_name'].length > 0) {
+          categName += " > " + liquor['category3_name'];
+        }
+
+        if(liquor['category4_name'] != null && liquor['category4_name'].length > 0) {
+          categName += " > " + liquor['category4_name'];
+        }
+
+        var liquorNameKr = liquor['name_kr'];
+
+        var repImgUrl = liquor['rep_img_url'];
+
+        var ratingAvg = liquor['rating_avg'];
+
+        var abv = liquor['abv'];
+
+        // var price = liquor['price'];
+        // price = price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        var price = 0;
+
+        var item = '<div class="product-card grid">' +
+                '  <div class="product-image"><img src="'+repImgUrl+'" /></div>' +
+                '  <div class="flex flex-col justify-center ml-4">' +
+                '    <h2 class="text-lg font-semibold">'+liquorNameKr+'</h2>' +
+                '    <div class="flex items-center">' +
+                '      <span class="ml-1 text-sm">'+categName+'</span>' +
+                '    </div>' +
+                '    <div class="flex items-center">' +
+                '      <svg class="rating-star w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.396-1.068 1.954-1.068 2.35 0l1.562 4.218a1.5 1.5 0 001.423 1.034h4.416c1.18 0 1.668 1.522.805 2.293l-3.576 3.194a1.5 1.5 0 00-.431 1.678l1.34 4.293c.24 1.18-1.031 2.073-2.011 1.437l-3.659-2.377a1.5 1.5 0 00-1.76 0l-3.659 2.377c-.98.636-2.251-.256-2.011-1.437l1.34-4.293a1.5 1.5 0 00-.431-1.678l-3.576-3.194c-.863-.771-.375-2.293.805-2.293h4.416a1.5 1.5 0 001.423-1.034l1.562-4.218z"></path></svg>' +
+                '      <span class="ml-1 text-sm">'+ratingAvg+'</span>' +
+                '    </div>' +
+                '    <div class="flex items-center">' +
+                '      <span class="ml-1 text-sm">'+abv+'%</span>' +
+                '    </div>' +
+                '  </div>' +
+                '  <div class="flex items-center justify-end">' +
+                '    <span class="text-lg font-semibold">'+price+'₩</span>' +
+                '  </div>' +
+                '</div>';
+        $('#productList').append(item);
+      }
+
+      
+
+
+
+    }
+
+	</script>
+
+{% endblock javascripts %}
+

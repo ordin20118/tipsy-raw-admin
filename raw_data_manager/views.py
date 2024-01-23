@@ -1741,3 +1741,79 @@ def ocr(request):
     #     confidence = item[2]
     #     logger.info("%s => %s" % (item[1], item[2]))
     #     logger.info("\n")
+
+
+@api_view(['GET'])
+def recommand(request):
+    
+    print("[Recommnad Liquor Test]")
+
+    categ1_id = request.GET.get('categ1Id')
+    categ2_id = request.GET.get('categ2Id')
+    categ3_id = request.GET.get('categ3Id')
+    categ4_id = request.GET.get('categ4Id')
+    price_min = request.GET.get('priceMin')
+    price_max = request.GET.get('priceMax')
+    abv_min = request.GET.get('abvMin')
+    abv_max = request.GET.get('abvMax')
+    age = request.GET.get('age')
+    pop = request.GET.get('pop')
+    
+    logger.info("categ1_id => %s" % (categ1_id))
+    logger.info("categ2_id => %s" % (categ2_id))
+    logger.info("categ3_id => %s" % (categ3_id))
+    logger.info("categ4_id => %s" % (categ4_id))
+    logger.info("price_min => %s" % (price_min))
+    logger.info("price_max => %s" % (price_max))
+    logger.info("abv_min => %s" % (abv_min))
+    logger.info("abv_max => %s" % (abv_max))
+    logger.info("age => %s" % (age))
+    logger.info("pop => %s" % (pop))
+
+    recommand_url = SVC_MGR_URL + "/api/recommand/liquor.tipsy?t=tipsy"
+
+    
+    if categ1_id != None:
+        recommand_url += '&categ1Id=%s'%categ1_id
+
+    if categ2_id != None:
+        recommand_url += '&categ2Id=%s'%categ2_id
+
+    if categ3_id != None:
+        recommand_url += '&categ3Id=%s'%categ3_id
+
+    if categ4_id != None:
+        recommand_url += '&categ4Id=%s'%categ4_id
+    
+    if price_min != None:
+        recommand_url += '&priceMin=%s'%price_min
+            
+    if price_max != None:
+        recommand_url += '&priceMax=%s'%price_max
+            
+    if abv_min != None:
+        recommand_url += '&abvMin=%s'%abv_min
+            
+    if abv_max != None:
+        recommand_url += '&abvMax=%s'%abv_max
+            
+    if pop != None:
+        recommand_url += '&pop=%s'%pop
+            
+    if age != None:
+        recommand_url += '&age=%s'%age
+
+    try:
+        recommand_request = requests.get(recommand_url)
+        print("\n[status]:%s"%recommand_request.status_code)
+        print("\n[url]:%s"%recommand_request.url)
+        if recommand_request.status_code == 200:
+            return Response(recommand_request.text)
+        else:
+            return Response("ERROR!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except:
+        return Response("ERROR!", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+       
+    #return Response(json.dumps(res, ensure_ascii=False))
+    
+            

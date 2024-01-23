@@ -20,7 +20,8 @@ urlpatterns = [
     path('api/word_dup_chck', views.word_dup_chck, name='wordDupChck'),
     path('api/cocktail_dup_chck', views.cocktail_dup_chck, name='cocktailDupChck'),
     path('api/search', views.search, name='search'),
-    path('api/ocr', views.ocr, name='ocr'),    
+    path('api/ocr', views.ocr, name='ocr'),
+    path('api/recommand/liquor', views.recommand, name='recommand'),
 
     path('api/dashboard/timeline/new', view_dashboard.newContentTimeline, name='newTimeline'),
     path('api/dashboard/timeline/managelog', view_dashboard.manageTimeline, name='manageTimeline'),    
