@@ -60,36 +60,52 @@
 							<h4 class="text-section">Menu</h4>
 						</li>
 						<li class="nav-item {% if 'list_' in segment %} active {% endif %}">
-							<a data-toggle="collapse" href="#add">
+							<a data-toggle="collapse" href="#add" aria-expanded="{% if 'list_' in segment %}true{% endif %}">
 								<i class="fas fa-layer-group"></i>
 								<p>데이터 관리</p>
 								<span class="caret"></span>
 							</a>
-							<div class="collapse" id="add">
+							<div class="collapse {% if 'list_' in segment %}show{% endif %}" id="add">
 								<ul class="nav nav-collapse">
-									<li>
-										<a href="list_liquor.html">
+									<li class="{% if 'list_liquor' in segment %} active {% endif %}">
+										<a href="/admin/list_liquor.html">
 											<span class="sub-item">주류</span>
 										</a>
 									</li>
-									<li>
-										<a href="list_cocktail.html">
+									<li class="{% if 'list_cocktail' in segment %} active {% endif %}">
+										<a href="/admin/list_cocktail.html">
 											<span class="sub-item">칵테일</span>
 										</a>
 									</li>
-									<li>
-										<a href="list_ingredient.html">
+									<li class="{% if 'list_ingredient' in segment %} active {% endif %}">
+										<a href="/admin/list_ingredient.html">
 											<span class="sub-item">재료</span>
 										</a>
 									</li>
-									<li>
-										<a href="list_equipment.html">
+									<li class="{% if 'list_equipment' in segment %} active {% endif %}">
+										<a href="/admin/list_equipment.html">
 											<span class="sub-item">도구</span>
 										</a>
 									</li>
-									<li>
-										<a href="list_word.html">
+									<li class="{% if 'list_word' in segment %} active {% endif %}">
+										<a href="/admin/list_word.html">
 											<span class="sub-item">용어</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+						<li class="nav-item {% if 'test' in segment %} active {% endif %}">
+							<a data-toggle="collapse" href="#test">
+								<i class="fas fa-layer-group"></i>
+								<p>기능 테스트</p>
+								<span class="caret"></span>
+							</a>
+							<div class="collapse" id="test">
+								<ul class="nav nav-collapse">
+									<li class="{% if 'recommand' in segment %} active {% endif %}">
+										<a href="/admin/test/recommand.html">
+											<span class="sub-item">술 추천</span>
 										</a>
 									</li>
 								</ul>
