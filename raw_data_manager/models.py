@@ -394,7 +394,9 @@ class Image(models.Model):
     image_type = models.IntegerField(blank=True, null=True)
     content_id = models.IntegerField(blank=True, null=True)
     content_type = models.IntegerField(blank=True, null=True)
-    path = models.CharField(max_length=200, blank=True, null=True)
+    s3_key = models.CharField(max_length=500, blank=True, null=True)
+    extension = models.CharField(max_length=20, blank=True, null=True)
+    seq = models.IntegerField(blank=True, null=True)
     is_open = models.IntegerField(blank=True, null=True)
     reg_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
 
@@ -439,3 +441,36 @@ class ManageLog(models.Model):
         managed = False
         db_table = 'manage_log'
 
+
+class CrawledLiquorImage(models.Model):
+    
+    STATE_USABLE = 0
+    STATE_UNUSABLE = 1
+    STATE_WAITING = 2
+
+    id = models.AutoField(primary_key=True)
+    liquor_id = models.IntegerField(blank=True, null=False)
+    query = models.CharField(max_length=200, blank=True, null=False)
+    is_use = models.IntegerField(blank=True, null=False)
+    org_img_url = models.CharField(max_length=500, blank=True, null=False)
+    img_url = models.CharField(max_length=500, blank=True, null=False)
+    s3_key = models.CharField(max_length=300, blank=True, null=False)
+    reg_date = models.DateTimeField(blank=True, null=False)
+    update_date = models.DateTimeField(blank=True, null=False)
+
+    class Meta:
+        managed = False
+        db_table = 'crawled_liquor_image'
+
+class GroupedCrawledLiquorImage(models.Model):
+    id = models.AutoField(primary_key=True)
+    liquor_id = models.IntegerField(blank=True, null=False)
+    name_kr = models.CharField(max_length=200, blank=True, null=False)
+    total_cnt = models.IntegerField(blank=True, null=False)
+    usable = models.IntegerField(blank=True, null=False)
+    unusable = models.IntegerField(blank=True, null=False)
+    waiting = models.IntegerField(blank=True, null=False)
+
+    class Meta:
+        managed = False
+        db_table = 'crawled_liquor_image'

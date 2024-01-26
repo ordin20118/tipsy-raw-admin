@@ -89,11 +89,7 @@
 													<tr>
 														<td>{{equip.equip_id}}</td>
 														<td>
-															{% if 'default' in equip.rep_img %}
-															<img src="{{ imgprefix }}/{{equip.rep_img}}_image.jpg" style='width:80px; height:80px;'>
-															{% else %}
-															<img src="{{ imgprefix }}/{{equip.rep_img}}_300.png" style='width:70px;'>
-															{% endif %}
+															<img src="{{ imgprefix }}/{{equip.s3_key}}" style='width:80px;'>
 														</td>
 														<td style="font-size: 11px;">															
 															{% if equip.category1_name != None %}

@@ -1,7 +1,7 @@
 from email.contentmanager import raw_data_manager
 from re import L
 from django.utils import timezone
-from core.settings import DATA_ROOT, IMAGE_PATH, SVC_MGR_URL
+from core.settings import DATA_ROOT, IMAGE_PATH, SVC_MGR_URL, S3_URL
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from django.shortcuts import render
@@ -16,6 +16,7 @@ from rest_framework import status
 from django.db import transaction
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.db import connection
 import mimetypes
 import PIL.Image as pilimg
 import pytesseract
@@ -160,9 +161,9 @@ def image(request):
 
         if image_form.is_valid():
             image = image_form.save(False)
-            imageFile = request.FILES.get('image_file', False)
+            image_file = request.FILES.get('image_file', False)
 
-            if imageFile == False:
+            if image_file == False:
                 raise Exception("No Image File")
             else:
                 try:
@@ -180,18 +181,27 @@ def image(request):
                             image.save()
 
                             # save image file
-                            img_path = imageIdToPath(image.image_id)
-                            saveImgToPath(imageFile, image.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
+                            s3_key = saveImgToS3(image_file, 'image/liquor')
+
+                            img = pilimg.open(image_file)
+                            extension = img.format.lower()
             
                             # update image's path to DB
-                            image.path = img_path + "/" + str(image.image_id)
-                            image.save(update_fields=['path'])
+                            img_data.s3_key = s3_key
+                            img_data.extension = extension
+                            img_data.save(update_fields=['s3_key', 'extension'])
                         else:
                             image.save()
-                            img_path = imageIdToPath(image.image_id)
-                            saveImgToPath(imageFile, image.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
-                            image.path = img_path + "/" + str(image.image_id)
-                            image.save(update_fields=['path'])
+                            # 2. save image to S3
+                            s3_key = saveImgToS3(image_file, 'image/liquor')
+
+                            img = pilimg.open(image_file)
+                            extension = img.format.lower()
+
+                            # 3. DB에 이미지 경로 업데이트
+                            img_data.s3_key = s3_key
+                            img_data.extension = extension
+                            img_data.save(update_fields=['s3_key', 'extension'])
 
                         return Response("success")
 
@@ -458,7 +468,7 @@ def liquor(request):
         #         country.name as country_name,
         #         reg_user.username as reg_admin_name,
         #         update_user.username as update_admin_name,
-        #         if(image.path is null, 'default', image.path) as rep_img
+        #         if(image.s3_key is null, 'image/liquor/default_image.png', image.s3_key) as s3_key
         #     FROM tipsy_raw.raw_liquor
         #     LEFT OUTER JOIN tipsy_raw.raw_category categ1 ON categ1.id = raw_liquor.category1_id
         #     LEFT OUTER JOIN tipsy_raw.raw_category categ2 ON categ2.id = raw_liquor.category2_id
@@ -495,7 +505,7 @@ def liquor(request):
         select_qry += ' country.name as country_name, '
         select_qry += ' reg_user.username as reg_admin_name, '
         select_qry += ' update_user.username as update_admin_name, '
-        select_qry += ' if(image.path is null, "default", image.path) as rep_img '
+        select_qry += ' if(image.s3_key is null, "image/liquor/default_image.png", image.s3_key) as s3_key '
         select_qry += 'FROM raw_liquor '
         select_qry += 'LEFT OUTER JOIN raw_category categ1 ON categ1.id = raw_liquor.category1_id '
         select_qry += 'LEFT OUTER JOIN raw_category categ2 ON categ2.id = raw_liquor.category2_id '
@@ -553,36 +563,40 @@ def liquor(request):
                 rating_stats.save()
 
 
-                logInfo = ManageLog()
-                logInfo.admin_id = request.user.id
-                logInfo.job_code = JobInfo.JOB_ADD_SPIRITS
-                logInfo.job_name = JobInfo.JOBN_ADD_SPIRITS
-                logInfo.content_id = liquorId
-                logInfo.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
-                logInfo.save()
+                log_info = ManageLog()
+                log_info.admin_id = request.user.id
+                log_info.job_code = JobInfo.JOB_ADD_SPIRITS
+                log_info.job_name = JobInfo.JOBN_ADD_SPIRITS
+                log_info.content_id = liquorId
+                log_info.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
+                log_info.save()
                 
                 # save img data
-                imageFile = request.FILES.get('image_file', False)
+                image_file = request.FILES.get('image_file', False)
 
-                if imageFile == False:
+                if image_file == False:
                     raise Exception("No Image File")
                 else:          
                     
                     # 1. 이미지 데이터 DB 저장
-                    imgData = Image()
-                    imgData.image_type = Image.IMG_TYPE_REP
-                    imgData.content_id = liquorId
-                    imgData.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
-                    imgData.is_open = Image.IMG_STATUS_PUB
-                    imgData.save()
+                    img_data = Image()
+                    img_data.image_type = Image.IMG_TYPE_REP
+                    img_data.content_id = liquorId
+                    img_data.content_type = ContentInfo.CONTENT_TYPE_LIQUOR
+                    img_data.is_open = Image.IMG_STATUS_PUB
+                    img_data.save()
 
-                    # 2. 이미지 ID를 이용한 경로 생성
-                    img_path = imageIdToPath(imgData.image_id)
-                    saveImgToPath(imageFile, imgData.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
+                    # 2. save image to S3
+                    s3_key = saveImgToS3(image_file, 'image/liquor')
 
-                    # DB에 이미지 경로 업데이트
-                    imgData.path = img_path + "/" + str(imgData.image_id)
-                    imgData.save(update_fields=['path'])
+                    img = pilimg.open(image_file)
+                    extension = img.format.lower()
+
+                    # 3. DB에 이미지 경로 업데이트
+                    img_data.s3_key = s3_key
+                    img_data.extension = extension
+                    img_data.save(update_fields=['s3_key', 'extension'])
+
 
                     # 임시 파일 저장 이름
                     #length_of_string = 8
@@ -658,13 +672,13 @@ def liquor(request):
                 updated_info['country_id'] = liquor.country_id
                 prev_liquor.country_id = liquor.country_id
 
-            # region
+            # _region
             if prev_liquor.region != liquor.region:
                 prev_info['region'] = prev_liquor.region
                 updated_info['region'] = liquor.region
                 prev_liquor.region = liquor.region
 
-            # region_id
+            # _region_id
             if prev_liquor.region_id != liquor.region_id:
                 prev_info['region_id'] = prev_liquor.region_id
                 updated_info['region_id'] = liquor.region_id
@@ -754,7 +768,7 @@ def cocktail(request):
                 null as category4_name,
                 reg_user.username as reg_admin_name,
                 update_user.username as update_admin_name,
-                if(image.path is null, 'default', image.path) as rep_img
+                if(image.s3_key is null, 'image/liquor/default_image.png', image.s3_key) as s3_key
             FROM tipsy_raw.cocktail
             LEFT OUTER JOIN tipsy_raw.auth_user reg_user ON reg_user.id = cocktail.reg_admin
             LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = cocktail.update_admin
@@ -799,31 +813,30 @@ def cocktail(request):
                 logInfo.save()
                 
                 # save img data
-                imageFile = request.FILES.get('image_file', False)
+                image_file = request.FILES.get('image_file', False)
 
-                if imageFile == False:
+                if image_file == False:
                     raise Exception("No Image File")
                 else:          
                     
                     # 1. 이미지 데이터 DB 저장
-                    imgData = Image()
-                    imgData.image_type = Image.IMG_TYPE_REP
-                    imgData.content_id = cocktailId
-                    imgData.content_type = ContentInfo.CONTENT_TYPE_COCTAIL
-                    imgData.is_open = Image.IMG_STATUS_PUB
-                    imgData.save()
+                    img_data = Image()
+                    img_data.image_type = Image.IMG_TYPE_REP
+                    img_data.content_id = cocktailId
+                    img_data.content_type = ContentInfo.CONTENT_TYPE_COCTAIL
+                    img_data.is_open = Image.IMG_STATUS_PUB
+                    img_data.save()
 
-                    # 2. 이미지 ID를 이용한 경로 생성
-                    img_path = imageIdToPath(imgData.image_id)
-                    saveImgToPath(imageFile, imgData.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
+                    # 2. save image to S3
+                    s3_key = saveImgToS3(image_file, 'image/cocktail')
 
-                    # DB에 이미지 경로 업데이트
-                    imgData.path = img_path + "/" + str(imgData.image_id)
-                    imgData.save(update_fields=['path'])
+                    img = pilimg.open(image_file)
+                    extension = img.format.lower()
 
-                    # 임시 파일 저장 이름
-                    #length_of_string = 8
-                    #tmpName = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length_of_string))
+                    # 3. DB에 이미지 경로 업데이트
+                    img_data.s3_key = s3_key
+                    img_data.extension = extension
+                    img_data.save(update_fields=['s3_key', 'extension'])
 
                 return Response(respone, status=status.HTTP_200_OK)
             else:
@@ -887,7 +900,6 @@ def cocktail(request):
                     image_set = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_COCTAIL, content_id=cocktail_id)
 
                     for image in image_set:
-                        print(image.path)
                         # 이미지 파일 제거
                         # 이미지 데이터 제거
                         imgPath = imageIdToPath(image.image_id)
@@ -982,31 +994,30 @@ def ingredient(request):
                 logInfo.save()
                 
                 # save img data
-                imageFile = request.FILES.get('image_file', False)
+                image_file = request.FILES.get('image_file', False)
 
-                if imageFile == False:
+                if image_file == False:
                     raise Exception("No Image File")
                 else:          
                     
                     # 1. 이미지 데이터 DB 저장
-                    imgData = Image()
-                    imgData.image_type = Image.IMG_TYPE_REP
-                    imgData.content_id = ingdId
-                    imgData.content_type = ContentInfo.CONTENT_TYPE_INGREDIENT
-                    imgData.is_open = Image.IMG_STATUS_PUB
-                    imgData.save()
+                    img_data = Image()
+                    img_data.image_type = Image.IMG_TYPE_REP
+                    img_data.content_id = ingdId
+                    img_data.content_type = ContentInfo.CONTENT_TYPE_INGREDIENT
+                    img_data.is_open = Image.IMG_STATUS_PUB
+                    img_data.save()
 
-                    # 2. 이미지 ID를 이용한 경로 생성
-                    img_path = imageIdToPath(imgData.image_id)
-                    saveImgToPath(imageFile, imgData.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
+                    # 2. save image to S3
+                    s3_key = saveImgToS3(image_file, 'image/ingredient')
 
-                    # DB에 이미지 경로 업데이트
-                    imgData.path = img_path + "/" + str(imgData.image_id)
-                    imgData.save(update_fields=['path'])
+                    img = pilimg.open(image_file)
+                    extension = img.format.lower()
 
-                    # 임시 파일 저장 이름
-                    #length_of_string = 8
-                    #tmpName = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length_of_string))
+                    # 3. DB에 이미지 경로 업데이트
+                    img_data.s3_key = s3_key
+                    img_data.extension = extension
+                    img_data.save(update_fields=['s3_key', 'extension'])
 
                 return Response(respone, status=status.HTTP_200_OK)
             else:
@@ -1183,31 +1194,30 @@ def equipment(request):
                 logInfo.save()
                 
                 # save img data
-                imageFile = request.FILES.get('image_file', False)
+                image_file = request.FILES.get('image_file', False)
 
-                if imageFile == False:
+                if image_file == False:
                     raise Exception("No Image File")
                 else:          
                     
                     # 1. 이미지 데이터 DB 저장
-                    imgData = Image()
-                    imgData.image_type = Image.IMG_TYPE_REP
-                    imgData.content_id = equip_id
-                    imgData.content_type = ContentInfo.CONTENT_TYPE_EQUIP
-                    imgData.is_open = Image.IMG_STATUS_PUB
-                    imgData.save()
+                    img_data = Image()
+                    img_data.image_type = Image.IMG_TYPE_REP
+                    img_data.content_id = equip_id
+                    img_data.content_type = ContentInfo.CONTENT_TYPE_EQUIP
+                    img_data.is_open = Image.IMG_STATUS_PUB
+                    img_data.save()
 
-                    # 2. 이미지 ID를 이용한 경로 생성
-                    img_path = imageIdToPath(imgData.image_id)
-                    saveImgToPath(imageFile, imgData.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
+                    # 2. save image to S3
+                    s3_key = saveImgToS3(image_file, 'image/liquor')
 
-                    # DB에 이미지 경로 업데이트
-                    imgData.path = img_path + "/" + str(imgData.image_id)
-                    imgData.save(update_fields=['path'])
+                    img = pilimg.open(image_file)
+                    extension = img.format.lower()
 
-                    # 임시 파일 저장 이름
-                    #length_of_string = 8
-                    #tmpName = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length_of_string))
+                    # 3. DB에 이미지 경로 업데이트
+                    img_data.s3_key = s3_key
+                    img_data.extension = extension
+                    img_data.save(update_fields=['s3_key', 'extension'])
 
                 return Response(respone, status=status.HTTP_200_OK)
             else:
@@ -1383,13 +1393,16 @@ def word(request):
                     img_data.is_open = Image.IMG_STATUS_PUB
                     img_data.save()
 
-                    # save image to DB
-                    img_path = imageIdToPath(img_data.image_id)
-                    saveImgToPath(image_file, img_data.image_id, DATA_ROOT+ IMAGE_PATH + "/" + img_path + "/")
+                    img = pilimg.open(image_file)
+                    extension = img.format.lower()
+
+                    # save image to S3
+                    s3_key = saveImgToS3(image_file, 'image/word')
 
                     # DB에 이미지 경로 업데이트
-                    img_data.path = img_path + "/" + str(img_data.image_id)
-                    img_data.save(update_fields=['path'])
+                    img_data.s3_key = s3_key
+                    img_data.extension = extension
+                    img_data.save(update_fields=['s3_key', 'extension'])
 
                 return Response(respone, status=status.HTTP_200_OK)
             else:
@@ -1687,6 +1700,62 @@ def country(request):
         return Response(serializer.data)
 
     elif request.method == 'POST':
+       pass 
+
+@api_view(['PUT'])
+def crawled_liquor_image(request):
+    
+    if request.method == 'PUT':
+        data = request.data
+        form = CrawledLiquorImageForm(request.POST)
+            
+        if form.is_valid():
+            crawled_image = CrawledLiquorImage()
+            crawled_image.id = data['id']
+            crawled_image.is_use = data['is_use']
+            crawled_image.save(update_fields=['is_use'])
+        else:
+            return Response("Invalid parameters!", status=status.HTTP_400_BAD_REQUEST)
+
+        serialized_image = CrawledLiquorImageSerializer(crawled_image) 
+        return Response(serialized_image.data, status=status.HTTP_200_OK)
+    else:
+       pass 
+
+
+@api_view(['GET'])
+def crawled_liquor_image_list(request):
+    
+    if request.method == 'GET':
+
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('perPage', 10))
+        offset = (page - 1) * per_page
+        order_by_field = 'id'
+        ascending = False
+
+        liquor_id = int(request.GET.get('liquorId', 0))
+        is_use = request.GET.get('isUse', None)
+
+        if liquor_id == 0:
+            return Response('Not founded data.')
+
+        # set liquor_id filter
+        queryset = CrawledLiquorImage.objects.filter(liquor_id=liquor_id)
+
+        # set is_use filter
+        if is_use is not None:
+            is_use = int(is_use)
+            if  is_use >= 0 and is_use < 3:
+                queryset = queryset.filter(is_use=is_use)
+
+        # set order_by, offset, limit
+        queryset = queryset.order_by(f'{order_by_field}' if ascending else f'-{order_by_field}')[offset:offset+per_page]
+
+        serialized = CrawledLiquorImageSerializer(queryset, many=True) 
+
+        return Response(serialized.data)
+    else:
        pass 
        
 

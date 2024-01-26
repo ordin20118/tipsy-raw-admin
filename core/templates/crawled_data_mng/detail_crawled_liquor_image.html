@@ -1,0 +1,409 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Forms {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+    /* 스크롤이 가능한 div에 스타일 적용 */
+    #scrollableDiv {
+		width: 650px;
+		height: 550px;
+      	overflow-y: scroll;
+      	border: 1px solid #ccc;
+    }
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+	
+	<!-- Image Add Modal -->
+	<div id="imgModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="imgAddTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="imgAddTitle">이미지 크게 보기</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="form-group" style="text-align: center;">
+					<img id="previewImg" class="" height="70%" width="70%" alt="이미지 크게 보기">
+				</div>			
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="content">
+		<div class="page-inner">
+			<div class="page-header">
+				<h4 class="page-title">수집된 술 이미지</h4>
+				<ul class="breadcrumbs">
+					<li class="nav-home">
+						<a href="#">
+							<i class="flaticon-home"></i>
+						</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">술 이미지</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">이미지 활성.비활성</a>
+					</li>
+				</ul>
+			</div>
+			
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title"></div>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-6 col-lg-3">
+								
+									<div class="form-group">
+										<h3>{{liquor.name_kr}}</h3>
+										<label>{{liquor.name_en}}</label>
+										<br><br>	
+										{% if liquor.category1_name != None %}
+											<label>{{liquor.category1_name}}</label>
+											<br>
+										{% endif %}		
+										{% if liquor.category2_name != None %}
+											<label>{{liquor.category2_name}}</label>
+											<br>
+										{% endif %}		
+										{% if liquor.category3_name != None %}
+											<label>{{liquor.category3_name}}</label>
+											<br>
+										{% endif %}		
+										{% if liquor.category4_name != None %}
+											<label>{{liquor.category4_name}}</label>
+											<br>
+										{% endif %}																					
+									</div>
+								</div>
+								
+								<div class="col-md-6 col-lg-8">
+									<div style="width: 650px; display: flex; justify-content: space-between; align-items: center;">
+										<label id="imgCntLabel" style="font-weight: bold; margin-right: auto;">이미지 수:</label>
+										<select name="is_use" id="isUse" style="margin-left: auto;">
+											<option value=>전체</option>
+											<option value=0>사용가능</option>
+											<option value=1>사용불가</option>
+											<option value=2>사용대기</option>
+										</select>
+									</div>
+									<br>
+									<div id="scrollableDiv">
+										<table class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info">
+											<thead>
+												<!-- <tr>
+													<th style="width: 6%">술<br>번호</th>
+													<th style="width: 10%">이미지</th>
+													<th style="width: 20%">이름(ko/en)</th>
+													<th style="width: 15%">수집된 이미지</th>
+													<th style="width: 6%">Action</th>
+												</tr> -->
+											</thead>
+											<!-- <tfoot>
+												<tr>
+													<th>술<br>번호</th>
+													<th>이미지</th>
+													<th>이름(ko/en)</th>
+													<th>수집된 이미지</th>
+													<th>Action</th>
+												</tr>
+											</tfoot> -->
+											<tbody id="crawledImgTable">
+												
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- <div class="card-action">
+							<button class="btn btn-success" onclick="javascript:sendData()">수정</button>
+							<button class="btn btn-danger" onclick="javascript:cancelModify()">취소</button>
+						</div> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+
+		var s3Url = ""
+		var page = 1;
+		var perPage = 10;
+		var liquorId = 0;
+		var isLoading = false;
+		var loadedCnt = 0;
+		var isUse = null;
+
+		$(document).ready(function(){
+
+			liquorId = "{{liquor.liquor_id}}";
+			s3Url = "{{imgprefix}}";
+
+
+			setEvent();	
+			loadCrawledImages(liquorId, true);
+    
+    	});
+
+
+		// 스크롤이 끝까지 도달했을 때 호출될 함수
+		function onScrollEnd() {
+			if(!isLoading)
+				loadCrawledImages(liquorId, false);
+		}
+
+		// 스크롤 이벤트를 처리하는 함수
+		function checkScroll() {
+			var $scrollableDiv = $("#scrollableDiv");
+			//console.log(($scrollableDiv[0].scrollHeight - $scrollableDiv.scrollTop()) + " <= " + ($scrollableDiv.outerHeight() - 0));
+			// 스크롤이 끝까지 도달했는지 확인
+			if ($scrollableDiv[0].scrollHeight - $scrollableDiv.scrollTop() <= $scrollableDiv.outerHeight()) {
+				// 스크롤이 끝까지 도달했을 때 호출할 함수
+				onScrollEnd();
+			}
+		}
+
+		function openImgModal(imgUrl) {
+			console.log(imgUrl);
+			previewImage(imgUrl);
+			$("#imgModal").modal("show");
+		}
+
+		function previewImage(imgUrl) {
+			$('#previewImg').attr('src', imgUrl);
+		}
+
+		function clearImgModal() {
+			// 이미지 제거
+			$('#newImageInput').val('');
+			previewNewImage();
+			// 활성, 비활성
+			// 대표 설정 => 일반 이미지			
+			
+		}
+	
+
+		function cancelModify() {
+			if(isModified) {
+				swal({
+					title: '페이지를 나가시겠습니까?수정 사항은 적용되지 않습니다.',
+					text: "",
+					type: 'warning',
+					buttons:{
+						cancel: {
+							visible: true,
+							text : '취소',
+							className: 'btn btn-danger'
+						},        			
+						confirm: {
+							text : '확인',
+							className : 'btn btn-success'
+						}
+					}
+				}).then((isOk) => {
+					if (isOk) {
+						history.back();	
+					}
+				});
+			} else {
+				history.back();
+			}
+		}
+
+		function setEvent() {
+			$("#scrollableDiv").on("scroll", checkScroll);
+			$("#isUse").change(function(){
+				isUse = $(this).val();
+				if(isUse == "") {
+					isUse = null;
+				}
+				page = 1;
+				loadCrawledImages(liquorId, true);
+			});
+		}
+
+		// 신규 이미지 썸네일 설정
+		function previewNewImage() {
+			
+			console.log("previewNewImage()")
+
+			//var preview = document.querySelector('img');
+			var preview = document.getElementById('newImgThumb');
+			var file	= document.querySelector('#newImageInput').files[0];
+			var reader	= new FileReader();
+
+			reader.addEventListener("load", function() {
+				preview.src = reader.result;
+			}, false);
+
+			if(file) {
+				reader.readAsDataURL(file);
+			} else {
+				$("#newImgThumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
+			}			
+		} 
+
+		function loadCrawledImages(liquorId, isInit) {
+			isLoading = true;
+			//console.log("[loadCrawledImages] liquorId:" + liquorId);
+			var url = "/admin/raw_data_manager/api/liquor/crawled/image_list?liquorId=" + liquorId + "&page=" + page + "&perPage=" + perPage ;
+
+			if(isUse != null) {
+				url += "&isUse=" + isUse;
+			}
+
+			// send
+			$.ajax({
+				url:url,
+				type:"get",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				success:function(data){
+					//console.log(data)
+					page = page + 1;
+					printCrawledImages(data, isInit);
+					printLoadedCnt(data, isInit);
+					isLoading = false;
+				},
+				error:function(request, status, error){
+				}
+			});
+		}
+
+		function printCrawledImages(images, isInit) {
+
+			if(isInit)
+				$('#crawledImgTable').empty();
+
+			for(var i=0; i<images.length; i++) {
+				var imageId = images[i]['id'];
+				var s3Key = images[i]['s3_key'];
+				var imgUrl = s3Url + "/" + s3Key;
+
+				var isUse = images[i]['is_use'];
+				var stateUi = '';
+				if(isUse == 0) {
+					stateUi = '<span id="img_'+imageId+'_state" class="label success">사용가능</span>';
+				} else if(isUse == 1) {
+					stateUi = '<span id="img_'+imageId+'_state" class="label danger">사용불가</span>';
+				} else if(isUse == 2) {
+					stateUi = '<span id="img_'+imageId+'_state" class="label other">사용대기</span>';
+				}
+
+				var item = '<tr id="img_'+imageId+'_tr">' +
+							'	<td>'+imageId+'</td>' +
+							'	<td>' +
+							'		<img src="'+imgUrl+'" onclick="openImgModal(\''+imgUrl+'\')" style="width:80px;">' +
+							'	</td>' +
+							'	<td>' +
+							'		' + stateUi + '' +
+							'	</td>' +
+							'	<td>' +
+							'		<div style="text-align: center;">' +
+							'			<button type="button" onclick="changeImgState('+imageId+', 0)" data-toggle="tooltip" title="" class="btn btn-success btn-md" data-original-title="데이터 수정">' +
+							'				사용' +
+							'			</button>' +
+							'			<button type="button" onclick="changeImgState('+imageId+', 1)" data-toggle="tooltip" title="" class="btn btn-danger btn-md" data-original-title="데이터 수정">' +
+							'				미사용' +
+							'			</button>' +
+							'		</div>' +
+							'	</td>' +
+							'</tr>';						   
+				$('#crawledImgTable').append(item);
+			}
+		}
+
+		function changeImgState(imageId, isUse) {
+
+			let formData = new FormData;
+			formData.append("is_use", isUse);
+
+			let data = {
+				'id': imageId,
+				'is_use': isUse
+			}
+
+			console.log(data)
+
+			data = JSON.stringify(data)
+
+			var url = "/admin/raw_data_manager/api/liquor/crawled/image";
+
+			// send
+			$.ajax({
+				url:url,
+				type:"put",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:"application/json",
+				processData:false,
+				data:data,
+				success:function(data){
+					console.log("Update image is_use result.");
+					console.log(data)
+					// TODO: alert result
+					//alert("이미지 상태값 변경 완료")
+					updateImgState(data['id'], data['is_use']);
+				},
+				error:function(request, status, error){
+				}
+			});
+
+		}
+
+		function updateImgState(imageId, isUse) {
+			if(isUse == 0) {
+				console.log("0")
+				$('#img_'+imageId+'_state').text("사용가능");
+				$('#img_'+imageId+'_state').removeClass("danger other").addClass("success");
+			} else if(isUse == 1) {
+				console.log("1")
+				$('#img_'+imageId+'_state').text("사용불가");
+				$('#img_'+imageId+'_state').removeClass("success other").addClass("danger");
+			}
+		}
+
+		function printLoadedCnt(images, isInit) {
+			if(isInit)
+				loadedCnt = 0;
+
+			loadedCnt += images.length;
+			$('#imgCntLabel').text('이미지 개수 :       ' + loadedCnt);
+		}
+	
+	</script>
+{% endblock content %}
+
+
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+
+{% endblock javascripts %}	

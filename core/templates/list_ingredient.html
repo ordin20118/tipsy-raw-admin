@@ -89,11 +89,7 @@
 													<tr>
 														<td>{{ingredient.ingd_id}}</td>
 														<td>
-															{% if 'default' in ingredient.rep_img %}
-															<img src="{{ imgprefix }}/{{ingredient.rep_img}}.png" style='width:80px; height:80px;'>
-															{% else %}
-															<img src="{{ imgprefix }}/{{ingredient.rep_img}}_300.png" style='width:70px;'>
-															{% endif %}
+															<img src="{{ imgprefix }}/{{ingredient.s3_key}}" style='width:80px;'>
 														</td>
 														<td style="font-size: 11px;">															
 															{% if ingredient.category1_name != None %}

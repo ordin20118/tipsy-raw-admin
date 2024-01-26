@@ -52,6 +52,16 @@ class JoinedCocktailSerializer(serializers.ModelSerializer):
         model = JoinedCocktail
         fields = '__all__'
 
+class CrawledLiquorImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CrawledLiquorImage
+        fields = '__all__'
+
+class GroupedCrawledLiquorImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GroupedCrawledLiquorImage
+        fields = '__all__'
+
 
 class RawCategorySerializer(serializers.ModelSerializer):
     class Meta:

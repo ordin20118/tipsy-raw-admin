@@ -126,3 +126,14 @@ class ImageForm(forms.Form):
 		if commit:
 			image.save()
 		return image
+
+class CrawledLiquorImageForm(forms.Form):
+	id = forms.IntegerField(required=False)
+	liquor_id = forms.IntegerField(required=False)
+	is_use = forms.IntegerField(required=False)
+
+	def save(self, commit=True):
+		image = CrawledLiquorImage(**self.cleaned_data)
+		if commit:
+			image.save()
+		return image

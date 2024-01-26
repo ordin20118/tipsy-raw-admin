@@ -22,6 +22,9 @@ urlpatterns = [
     path('modify_equipment.html', views.modifyEquipment, name='modifyEquipment'),
     path('modify_word.html', views.modifyWord, name='modifyWord'),
 
+    path('crawled_data_mng/list_crawled_liquor_image.html', views.crawledLiquorImageList, name='crawledLiquorImageList'),
+    path('crawled_data_mng/detail_crawled_liquor_image.html', views.crawledLiquorImageDetail, name='crawledLiquorImageDetail'),
+    
     path('test/recommand.html', views.recommandTest, name='recommandTest'),
     
 

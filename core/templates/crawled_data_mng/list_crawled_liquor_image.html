@@ -10,7 +10,7 @@
 	<div class="content">
 		<div class="page-inner">
 			<div class="page-header">
-				<h4 class="page-title">용어</h4>
+				<h4 class="page-title">수집된 술 이미지</h4>
 				<ul class="breadcrumbs">
 					<li class="nav-home">
 						<a href="#">
@@ -21,13 +21,13 @@
 						<i class="flaticon-right-arrow"></i>
 					</li>
 					<li class="nav-item">
-						<a href="#">용어</a>
+						<a href="#">수집된 술 이미지</a>
 					</li>
 					<li class="separator">
 						<i class="flaticon-right-arrow"></i>
 					</li>
 					<li class="nav-item">
-						<a href="#">데이터 조회</a>
+						<a href="#">목록</a>
 					</li>
 				</ul>
 			</div>
@@ -37,11 +37,7 @@
 					<div class="card">
 						<div class="card-header">
 							<div class="d-flex align-items-center">
-								<h4 class="card-title">용어 데이터 조회</h4>
-								<button class="btn btn-primary btn-round ml-auto" onclick="javascript:moveToInsert()">
-									<i class="fa fa-plus"></i>
-									데이터 추가
-								</button>
+								<h4 class="card-title">수집된 이미지가 있는 술 목록</h4>
 							</div>
 						</div>
 						<div class="card-body">
@@ -60,60 +56,45 @@
 											<table id="add-row" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info">
 												<thead>
 													<tr>
-														<th style="width: 6%">용어<br>번호</th>
+														<th style="width: 6%">술<br>번호</th>
 														<th style="width: 10%">이미지</th>
 														<th style="width: 20%">이름(ko/en)</th>
-														<th style="width: 8%">등록자</th>
-														<th style="width: 15%">등록일</th>
+														<th style="width: 15%">수집된 이미지</th>
 														<th style="width: 6%">Action</th>
 													</tr>
 												</thead>
-												<tfoot>
+												<!-- <tfoot>
 													<tr>
-														<th>용어<br>번호</th>
+														<th>술<br>번호</th>
 														<th>이미지</th>
 														<th>이름(ko/en)</th>
-														<th>등록자</th>
-														<th>등록일</th>
+														<th>수집된 이미지</th>
 														<th>Action</th>
 													</tr>
-												</tfoot>
-												<tbody id="wordTable">
-													{% for word in word_list %}
+												</tfoot> -->
+												<tbody id="liquorTable">
+													{% for liquor in liquor_list %}
 													<tr>
-														<td>{{word.word_id}}</td>
+														<td>{{liquor.liquor_id}}</td>
 														<td>
 															<img src="{{ imgprefix }}/{{word.s3_key}}" style='width:80px;'>
 														</td>
 														<td>
-															{% if word.name_kr != None %}
-																{{word.name_kr}}<br>
+															{% if liquor.name_kr != None %}
+																{{liquor.name_kr}}<br>
 															{% endif %}
-															{% if word.name_en != None %}
-																{{word.name_en}}<br>
-															{% endif %}
-														</td>
-														<td>
-															{% if word.update_admin_name != None %}
-															{{ word.update_admin_name }}
-															{% elif word.reg_admin_name != None %}
-															{{ word.reg_admin_name }}
-															{% else %}
-															-
+															{% if liquor.name_en != None %}
+																{{liquor.name_en}}<br>
 															{% endif %}
 														</td>
 														<td>
-															{% if word.update_date != None %}
-															{{ word.update_date|date:"Y-m-d" }}
-															{% elif word.reg_date != None %}
-															{{ word.reg_date|date:"Y-m-d" }}
-															{% else %}
-															-
-															{% endif %}
+															사용가능: {{liquor.usable}}<br>
+															사용불가: {{liquor.unusable}}<br>
+															사용대기: {{liquor.waiting}}<br>
 														</td>
 														<td>
 															<div class="form-button-action">
-																<button type="button" onclick="javascript:moveToModifyPage('{{word.word_id}}')" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="데이터 수정">
+																<button type="button" onclick="javascript:moveToDetailPage('{{liquor.liquor_id}}')" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="데이터 수정">
 																	<i class="fa fa-edit"></i>
 																</button>
 															</div>
@@ -134,14 +115,14 @@
 										<div class="col-sm-12 col-md-7">
 											<div class="dataTables_paginate paging_simple_numbers" id="basic-datatables_paginate">
 												<ul class="pagination">
-													{% if word_list.has_previous %}
+													{% if liquor_list.has_previous %}
 													<li class="paginate_button page-item previous" id="basic-datatables_previous">
-														<a href="?page={{ word_list.previous_page_number }}" aria-controls="basic-datatables" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
+														<a href="?page={{ liquor_list.previous_page_number }}" aria-controls="basic-datatables" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
 													</li>
 													{% endif %}
-													{% for page_number in word_list.paginator.page_range %}
-													{% if page_number >= word_list.number|add:-3 and page_number <= word_list.number|add:3 %}
-													{% if page_number == word_list.number %}
+													{% for page_number in liquor_list.paginator.page_range %}
+													{% if page_number >= liquor_list.number|add:-3 and page_number <= liquor_list.number|add:3 %}
+													{% if page_number == liquor_list.number %}
 													<li class="paginate_button page-item active">
 														<a href="?page={{ page_number }}" aria-controls="basic-datatables" data-dt-idx="1" tabindex="0" class="page-link">{{ page_number }}</a>
 													</li>
@@ -154,7 +135,7 @@
         											{% endfor %}													
 													{% if equipment_list.has_next %}
 													<li class="paginate_button page-item next" id="basic-datatables_next">
-														<a href="?page={{ word_list.next_page_number }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
+														<a href="?page={{ liquor_list.next_page_number }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
 													</li>
 													{% endif %}
 												</ul>
@@ -189,8 +170,8 @@
 			console.log(segment);
 		});
 
-		function moveToModifyPage(wordId) {
-			location.href = "modify_word.html?wordId="+wordId;
+		function moveToDetailPage(liquorId) {
+			location.href = "detail_crawled_liquor_image.html?liquorId="+liquorId;
 		}
 
 

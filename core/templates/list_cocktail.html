@@ -88,11 +88,7 @@
 													<tr>
 														<td>{{cocktail.cocktail_id}}</td>
 														<td>
-															{% if 'default' in cocktail.rep_img %}
-															<img src="{{ imgprefix }}/{{cocktail.rep_img}}_image.jpg" style='width:80px; height:80px;'>
-															{% else %}
-															<img src="{{ imgprefix }}/{{cocktail.rep_img}}_300.png" style='width:70px;'>
-															{% endif %}
+															<img src="{{ imgprefix }}/{{cocktail.s3_key}}" style='width:80px; height:80px;'>
 														</td>
 														<td>
 															{% if cocktail.name_kr != None %}

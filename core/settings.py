@@ -30,6 +30,8 @@ ALLOWED_HOSTS = ['*', '192.168.219.106']
 
 SVC_MGR_URL = "http://192.168.219.104:8080/svcmgr"
 
+S3_URL = "https://tipsy-pro.s3.ap-northeast-2.amazonaws.com"
+
 # Application definition
 
 INSTALLED_APPS = [

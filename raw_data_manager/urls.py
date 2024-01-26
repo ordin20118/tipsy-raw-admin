@@ -23,6 +23,10 @@ urlpatterns = [
     path('api/ocr', views.ocr, name='ocr'),
     path('api/recommand/liquor', views.recommand, name='recommand'),
 
+    path('api/liquor/crawled/image', views.crawled_liquor_image, name='crawled_liquor_image'),
+    path('api/liquor/crawled/image_list', views.crawled_liquor_image_list, name='crawled_liquor_image_list'),
+    
+
     path('api/dashboard/timeline/new', view_dashboard.newContentTimeline, name='newTimeline'),
     path('api/dashboard/timeline/managelog', view_dashboard.manageTimeline, name='manageTimeline'),    
 
