@@ -1,6 +1,6 @@
 FROM python:3.8
 
-COPY manage.py gunicorn-cfg.py requirements.txt .env ./
+COPY manage.py gunicorn-cfg.py requirements.txt ./
 COPY app app
 COPY authentication authentication
 COPY core core

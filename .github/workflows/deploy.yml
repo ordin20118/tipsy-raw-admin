@@ -38,6 +38,5 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         script_stop: true
         script: |
-          chmod +x /home/ubuntu/deploy/test.sh && sh /home/ubuntu/deploy/test.sh
-          chmod +x /home/ubuntu/deploy/slack_alert.sh && sh /home/ubuntu/deploy/slack_alert.sh
+          chmod +x /home/ubuntu/deploy/deploy_tipsy_admin.sh && sh /home/ubuntu/deploy/deploy_tipsy_admin.sh
 
