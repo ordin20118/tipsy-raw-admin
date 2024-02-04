@@ -1,6 +1,6 @@
 FROM python:3.8
 
-COPY manage.py gunicorn-cfg.py requirements.txt ./
+COPY manage.py gunicorn-cfg.py requirements.txt requirements_tipsyraw.txt ./
 COPY app app
 COPY authentication authentication
 COPY core core
@@ -8,7 +8,7 @@ COPY raw_data_manager raw_data_manager
 COPY utils utils
 COPY logs logs
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements_tipsyraw.txt
 
 #RUN python manage.py makemigrations
 #RUN python manage.py migrate
