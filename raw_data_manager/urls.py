@@ -29,6 +29,8 @@ urlpatterns = [
 
     path('api/dashboard/timeline/new', view_dashboard.newContentTimeline, name='newTimeline'),
     path('api/dashboard/timeline/managelog', view_dashboard.manageTimeline, name='manageTimeline'),    
+    path('api/dashboard/stats/crawled', view_dashboard.crawledDataStats, name='crawledDataStats'),    
+    path('api/dashboard/stats/liquor', view_dashboard.liquorDataStats, name='liquorDataStats'),    
 
     path('permission/create_permissions', views.createPermissions, name='createPermissions'),    
     

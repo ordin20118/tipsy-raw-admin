@@ -1,6 +1,17 @@
 from django.db import models
 from .validators import *
 
+class RawCategory(models.Model):
+    id = models.IntegerField(primary_key=True)
+    parent = models.IntegerField(blank=True, null=True)
+    name = models.CharField(max_length=45, blank=True, null=True)
+    name_en = models.CharField(max_length=45, blank=True, null=True)
+    reg_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'raw_category'
+
 class RawLiquor(models.Model):
 
     UPLOAD_STATE_NOT_YET = 0
@@ -26,7 +37,8 @@ class RawLiquor(models.Model):
     region = models.CharField(max_length=45, blank=True, null=True)
     region_id = models.IntegerField(blank=True, null=True)
     category1_id = models.IntegerField(blank=False, null=False)
-    category2_id = models.IntegerField(blank=False, null=False)
+    #category2_id = models.IntegerField(blank=False, null=False)
+    category2 = models.ForeignKey(RawCategory, on_delete=models.SET_NULL, null=True)
     category3_id = models.IntegerField(blank=True, null=True)
     category4_id = models.IntegerField(blank=True, null=True)
     category_id = models.IntegerField(blank=True, null=True)
@@ -320,16 +332,7 @@ class ContentStats(models.Model):
         unique_together = (('content_id', 'content_type'),)
 
 
-class RawCategory(models.Model):
-    id = models.IntegerField(primary_key=True)
-    parent = models.IntegerField(blank=True, null=True)
-    name = models.CharField(max_length=45, blank=True, null=True)
-    name_en = models.CharField(max_length=45, blank=True, null=True)
-    reg_date = models.DateTimeField(blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = 'raw_category'
 
 
 class CategoryTree(models.Model):
@@ -474,3 +477,72 @@ class GroupedCrawledLiquorImage(models.Model):
     class Meta:
         managed = False
         db_table = 'crawled_liquor_image'
+
+
+class CrawledLiquor(models.Model):
+    
+    # 0:크롤링 대기, 1:크롤링 완료, 2:크롤링 에러, 3:크롤링 업데이트 필요, 4:데이터 중복, 5:업로드 완료, 6:업로드 실패, 7:업로드 대기, 99: 더 이상 크롤링 불가
+    STATE_CRAWL_WAIT = 0
+    STATE_CRAWL_SUCCESS = 1
+    STATE_CRAWL_FAIL = 2
+    STATE_CRAWL_NEED_UPDATE = 3
+    STATE_CRAWL_DUP = 4
+    STATE_UPLOAD_SUCCESS = 5
+    STATE_UPLOAD_FAIL = 6
+    STATE_UPLOAD_WAIT = 7
+    STATE_CRAWL_CANT = 99
+
+    # 봇이 판단한 업로드 가능 여부\n0:사용 가능, 1:사용 불가
+    AUTO_INGEST_USABLE = 0
+    AUTO_INGEST_UNUSABLE = 1
+    
+
+    id = models.AutoField(primary_key=True)
+    liquor_id = models.IntegerField(blank=True, null=False)
+    name_kr = models.CharField(max_length=200, blank=True, null=False)
+    name_en = models.CharField(max_length=200, blank=True, null=False)
+    name_en_dup_chck = models.CharField(max_length=200, blank=True, null=False)
+    site = models.IntegerField(blank=True, null=False)
+    url = models.CharField(max_length=500, blank=True, null=False)
+    
+    vintage = models.IntegerField(blank=True, null=False)
+    abv = models.FloatField(blank=True, null=False)
+
+    auto_state = models.IntegerField(blank=True, null=False)
+    state = models.IntegerField(blank=True, null=False)
+    is_use = models.IntegerField(blank=True, null=False)
+    country_id = models.IntegerField(blank=True, null=False)
+    country_name = models.CharField(max_length=50, blank=True, null=False)
+    region_id = models.IntegerField(blank=True, null=False)
+    region_name = models.CharField(max_length=50, blank=True, null=False)
+    category_name = models.CharField(max_length=45, blank=True, null=False)
+    variety = models.CharField(max_length=100, blank=True, null=False)
+
+    category1_id = models.IntegerField(blank=True, null=False)
+    #category2_id = models.IntegerField(blank=True, null=False)
+    category2 = models.ForeignKey(RawCategory, on_delete=models.SET_NULL, null=True)
+    category3_id = models.IntegerField(blank=True, null=False)
+    category4_id = models.IntegerField(blank=True, null=False)
+
+    rating_avg = models.FloatField(blank=True, null=False)
+    rating_count = models.IntegerField(blank=True, null=False)
+
+    description = models.TextField(blank=True, null=False)
+    img_url = models.CharField(max_length=300, blank=True, null=False)
+    detail_json = models.TextField(blank=True, null=False)
+    u_name_kr = models.CharField(max_length=200, blank=True, null=False)
+    u_name_en = models.CharField(max_length=200, blank=True, null=False)
+    u_country_name = models.CharField(max_length=50, blank=True, null=False)
+    u_region_name = models.CharField(max_length=50, blank=True, null=False)
+
+    
+    last_crawled_date = models.DateTimeField(blank=True, null=False)
+    upload_date = models.DateTimeField(blank=True, null=False)
+    reg_date = models.DateTimeField(blank=True, null=False)
+    update_date = models.DateTimeField(blank=True, null=False)
+
+    
+
+    class Meta:
+        managed = False
+        db_table = 'crawled_liquor'

@@ -17,7 +17,8 @@ from django.http import HttpResponse
 from rest_framework import status
 from django.db import transaction
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count, F
+from django.core import serializers
 import mimetypes
 import PIL.Image as pilimg
 import os
@@ -96,6 +97,55 @@ def manageTimeline(request):
         log_list = ManageLog.objects.order_by('-id').select_related('admin')[:7]
         res = ManageLogSerializer(log_list, many=True)
         return Response(res.data)
+
+    else:
+        return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def crawledDataStats(request):
+    
+    if request.method == 'GET':
+        agg_qset = (
+            CrawledLiquor.objects
+            .filter(category2_id__isnull=False)         # where 
+            .values('category2_id', 'category2__name')  # select
+            .annotate(cnt=Count('category2__name'))     # group by count
+            .annotate(name=F('category2__name'))        # set field
+            .annotate(category_id=F('category2_id'))    # set field
+            .values('category_id', 'name', 'cnt')       # select
+        )
+
+        res = []
+        for qset in agg_qset:
+            res.append(qset)
+
+
+        return HttpResponse(json.dumps({'result': res}), content_type="application/json")
+
+    else:
+        return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def liquorDataStats(request):
+    
+    if request.method == 'GET':
+        agg_qset = (
+            RawLiquor.objects
+            .filter(category2_id__isnull=False)         # where 
+            .values('category2_id', 'category2__name')  # select
+            .annotate(cnt=Count('category2__name'))     # group by count
+            .annotate(name=F('category2__name'))        # set field
+            .annotate(category_id=F('category2_id'))    # set field
+            .values('category_id', 'name', 'cnt')       # select
+        )
+
+        res = []
+        for qset in agg_qset:
+            res.append(qset)
+
+
+        return HttpResponse(json.dumps({'result': res}), content_type="application/json")
 
     else:
         return Response("NOT FOUND", status=status.HTTP_404_NOT_FOUND)

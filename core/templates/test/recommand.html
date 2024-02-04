@@ -254,21 +254,21 @@
       
       var url = "/admin/raw_data_manager/api/recommand/liquor?t=tipsy";
 
-      if(categ1Id != null) {
-        url += "&categ1Id=" + categ1Id;
-      }
+      // if(categ1Id != null) {
+      //   url += "&categ1Id=" + categ1Id;
+      // }
 
-      if(categ2Id != null) {
-        url += "&categ2Id=" + categ2Id;
-      }
+      // if(categ2Id != null) {
+      //   url += "&categ2Id=" + categ2Id;
+      // }
 
-      if(categ3Id != null) {
-        url += "&categ3Id=" + categ3Id;
-      }
+      // if(categ3Id != null) {
+      //   url += "&categ3Id=" + categ3Id;
+      // }
 
-      if(categ4Id != null) {
-        url += "&categ4Id=" + categ4Id;
-      }
+      // if(categ4Id != null) {
+      //   url += "&categ4Id=" + categ4Id;
+      // }
 
       if(priceMin != null) {
         url += "&priceMin=" + priceMin;
@@ -311,7 +311,9 @@
 
     function printRecommandList(data) {
 
-      var liquorList = data['data']['liquor_list']
+      console.log("[printRecommandList]");
+
+      var liquorList = data['data']['liquor_list'];
 
       $('#productList').empty();
 
