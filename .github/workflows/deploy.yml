@@ -23,10 +23,10 @@ jobs:
         cp .env .env
     - name: Run test
       uses: appleboy/ssh-action@master
-        with:
-          username: ubuntu
-          host: ${{ secrets.HOST }}
-          key: ${{ secrets.PRIVATE_KEY }}
-          script_stop: true
-          script: chmod +x /home/ubuntu/deploy/test.sh && sh /home/ubuntu/deploy/test.sh
+      with:
+        username: ubuntu
+        host: ${{ secrets.HOST }}
+        key: ${{ secrets.PRIVATE_KEY }}
+        script_stop: true
+        script: chmod +x /home/ubuntu/deploy/test.sh && sh /home/ubuntu/deploy/test.sh
 
