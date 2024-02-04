@@ -25,5 +25,7 @@ jobs:
         host: ${{ secrets.HOST }}
         key: ${{ secrets.PRIVATE_KEY }}
         script_stop: true
-        script: chmod +x /home/ubuntu/deploy/test.sh && sh /home/ubuntu/deploy/test.sh
+        script: |
+          chmod +x /home/ubuntu/deploy/test.sh && sh /home/ubuntu/deploy/test.sh
+          chmod +x /home/ubuntu/deploy/slack_alert.sh && sh /home/ubuntu/deploy/slack_alert.sh
 
