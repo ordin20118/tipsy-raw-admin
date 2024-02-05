@@ -17,4 +17,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 #RUN python manage.py migrate
 
 EXPOSE 8000
-#CMD ["gunicorn", "--config", "gunicorn-cfg.py", "core.wsgi"]
+CMD ["gunicorn", "--config", "gunicorn-cfg.py", "core.wsgi"]
