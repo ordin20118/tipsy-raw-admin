@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['*', '192.168.219.106']
 
 CORS_ALLOWED_ORIGINS = [
     "https://tipsy.co.kr",
+    "https://www.tipsy.co.kr",
 ]
 
 #SVC_MGR_URL = "http://localhost:8080/svcmgr"
