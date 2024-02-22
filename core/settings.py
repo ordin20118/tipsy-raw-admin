@@ -25,13 +25,15 @@ SECRET_KEY = config('SECRET_KEY', default='S#perS3crEt_1122')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # load production server from .env
-#ALLOWED_HOSTS = ['localhost', '127.0.0.1', config('SERVER', default='127.0.0.1'), '172.30.1.32', '', '192.168.25.11', '172.20.10.3']
+#ALLOWED_HOSTS = ['localhost', '127.0.0.1', config('SERVER', default='127.0.0.1')]
 ALLOWED_HOSTS = ['*', '192.168.219.106', 'tipsy.co.kr', 'www.tipsy.co.kr']
 
 CORS_ALLOWED_ORIGINS = [
     "https://*.tipsy.co.kr",
     "http://*.tipsy.co.kr",
 ]
+
+CSRF_COOKIE_DOMAIN = '.tipsy.co.kr'
 
 #SVC_MGR_URL = "http://localhost:8080/svcmgr"
 #SVC_MGR_URL = "http://192.168.219.104:8080/svcmgr"
@@ -50,7 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'app', 
-    'raw_data_manager'
+    'raw_data_manager',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
