@@ -29,7 +29,8 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = ['*', '192.168.219.106', 'tipsy.co.kr', 'www.tipsy.co.kr']
 
 CORS_ALLOWED_ORIGINS = [
-    "https://*.tipsy.co.kr",
+    "https://tipsy.co.kr",
+    "https://www.tipsy.co.kr",
     "http://*.tipsy.co.kr",
 ]
 
