@@ -12,9 +12,9 @@ from django.contrib.auth.models import User
 from django.forms.utils import ErrorList
 from django.http import HttpResponse
 from .forms import LoginForm, SignUpForm
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_exempt
 
-@csrf_protect
+@csrf_exempt
 def login_view(request):
 
     form = LoginForm(request.POST or None)
@@ -37,6 +37,7 @@ def login_view(request):
 
     return render(request, "accounts/login.html", {"form": form, "msg" : msg})
 
+@csrf_exempt
 def register_user(request):
 
     msg     = None

@@ -367,7 +367,7 @@
 					// set modify modal					
 					$('#modifyImageType').val(item['image_type']);					
 					modifyImgChangeActive(item['is_open']);
-					var imgPath = imgprefix + "/" + item['path'] + '_300.png';
+					var imgPath = imgprefix + "/" + item['s3_key'];
 					$('#modifyThumb').attr("src", imgPath);
 				}
 			}
@@ -389,13 +389,15 @@
 			$('#imgListDiv').empty();
 			for(var i=0; i<images.length; i++) {
 				var imageId = images[i]['image_id'];
-				var path = images[i]['path'];
+				var s3Key = images[i]['s3_key'];
+				var imgUrl = imgprefix + "/" + s3Key;
+				console.log(imgUrl);
 				var item = '<div style="width: 80px; display: inline-block; border: dashed 1px gray;">' +
 						   '	<div style="padding: 0px 5px 0px 0px; text-align: right;">' +
 						   '		<span onclick="openImgModifyModal('+imageId+')">수정</span>' +
 						   '	</div>' +
 						   '	<div style="text-align: center;">' +
-						   '		<img src="http://tipsy.co.kr/admin/raw_data_manager/image/'+path+'_300.png" style="width: 60px;">' +
+						   '		<img src="'+imgUrl+'" style="width: 60px;">' +
 						   '	</div>' +
 						   '</div>';						   
 				$('#imgListDiv').append(item);
@@ -602,9 +604,9 @@
 
 
 			// set image => 이미지는 따로 리스트 형태로 받음
-			if(liquor['rep_img'] != null && liquor['rep_img'].lenght > 0) {
+			// if(liquor['rep_img'] != null && liquor['rep_img'].lenght > 0) {
 
-			}
+			// }
 
 			// 한글 이름 korNameInput
 			$('#korNameInput').val(liquor['name_kr']);
