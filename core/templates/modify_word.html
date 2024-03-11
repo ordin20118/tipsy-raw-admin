@@ -151,7 +151,7 @@
 												<span onclick="">x</span>
 											</div>
 											<div style="text-align: center;">
-												<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg" style="width: 60px;">
+												<img src="{{ imgprefix }}/image/ingredient/default_image.png" style="width: 60px;">
 											</div>
 										</div>	
 									</div>
@@ -202,7 +202,7 @@
 							</div>
 						</div>
 						<div class="card-action">
-							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
+							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.png"> -->
 							<button class="btn btn-success" onclick="javascript:sendData()">수정</button>
 							<button class="btn btn-danger" onclick="javascript:cancelModify()">취소</button>
 						</div>
@@ -561,7 +561,7 @@
 			if(file) {
 				reader.readAsDataURL(file);
 			} else {
-				$("#newImgThumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
+				$("#newImgThumb").attr("src", imgprefix + "/image/ingredient/default_image.png");
 			}			
 		} 
 

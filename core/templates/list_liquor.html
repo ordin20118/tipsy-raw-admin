@@ -93,6 +93,7 @@
 														<td>{{liquor.liquor_id}}</td>
 														<td>
 															<img src="{{ imgprefix }}/{{liquor.s3_key}}" style='width:80px;'>
+															
 														</td>
 														<td style="font-size: 11px;">															
 															{% if liquor.category1_name != None %}
@@ -311,6 +312,37 @@
 
 		function moveToModifyPage(liquorId) {
 			location.href = "/admin/modify_liquor.html?liquorId="+liquorId;
+		}
+
+
+		// 이미지 배경 제거 요청 큐 추가 
+		function addRembgQueue(imageId) {
+			console.log("addRembgQueue:" + imageId)
+
+			let formData = new FormData;
+			formData.append("org_image_id", imageId);
+
+			var url = "/admin/raw_data_manager/api/rembg_queue";
+
+			// send
+			$.ajax({
+				url:url,
+				type:"POST",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("Add Rembg Queue.")
+					console.log(data)
+					alert("배경 제거 요청 완료.\n잠시만 기다려주세요.\n배경이 제거된 이미지는 신규 이미지로 저장됩니다.");
+					location.reload();
+				},
+				error:function(request, status, error){
+				}
+			});
 		}
 		
 		function loadLiqourList(page) {

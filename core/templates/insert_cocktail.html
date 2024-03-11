@@ -491,7 +491,7 @@
 												<span onclick="">x</span>
 											</div>
 											<div style="text-align: center;">
-												<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg" style="width: 60px;">
+												<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.png" style="width: 60px;">
 											</div>
 											<div style="text-align: center; padding: 3px;">
 												<span><b>이름</b></span>
@@ -518,7 +518,7 @@
 							</div>
 						</div>
 						<div class="card-action">
-							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
+							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.png"> -->
 							<button class="btn btn-success" onclick="javascript:sendCocktailData()">등록</button>
 							<button class="btn btn-danger">취소</button>
 						</div>
@@ -763,11 +763,7 @@
 			if(file) {
 				reader.readAsDataURL(file);
 			} else {
-
-				console.log(prefix + "/raw_data_manager/image/default_image.jpg")
-
-				$("#thumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
-
+				$("#thumb").attr("src", imgprefix + "/image/cocktail/default_image.png");
 			}			
 		}
 
@@ -1735,14 +1731,14 @@
 						<span onclick="">x</span>
 					</div>
 					<div style="text-align: center;">
-						<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg" style="width: 60px;">
+						<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.png" style="width: 60px;">
 					</div>
 					<div style="text-align: center; padding: 3px;">
 						<span><b>이름</b></span>
 					</div>
 				</div>
 				*/
-				var repImgUrl = "http://tipsy.co.kr/admin/raw_data_manager/image/default_image.jpg";
+				var repImgUrl = imgprefix + "/image/cocktail/default_image.png";
 				if(ingredient['rep_img'] != null && ingredient['rep_img'].length > 0) {
 					repImgUrl = imgprefix + "/" + ingredient['rep_img'] + "_300.png";
 				}

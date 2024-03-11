@@ -224,7 +224,7 @@
 							</div>
 						</div>
 						<div class="card-action">
-							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.jpg"> -->
+							<!-- <img src="http://localhost:8000/raw_data_manager/page/test?filename=default_image.png"> -->
 							<button class="btn btn-success" onclick="javascript:sendLiquorData()">등록</button>
 							<button class="btn btn-danger">취소</button>
 						</div>
@@ -457,11 +457,7 @@
 			if(file) {
 				reader.readAsDataURL(file);
 			} else {
-
-				console.log(prefix + "/raw_data_manager/image/default_image.jpg")
-
-				$("#thumb").attr("src", prefix + "/raw_data_manager/image/default_image.jpg");
-
+				$("#thumb").attr("src", imgprefix + "/image/liquor/default_image.png");
 			}			
 		}
 

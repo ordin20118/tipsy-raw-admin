@@ -212,7 +212,7 @@ STATICFILES_DIRS = (
 # Batch settings
 APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
-SCHEDULER_DEFAULT = True # apps.py 참고
+SCHEDULER_DEFAULT = False # apps.py 참고
 
 #############################################################
 #############################################################
