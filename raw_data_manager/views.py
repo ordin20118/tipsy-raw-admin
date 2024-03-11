@@ -33,7 +33,7 @@ logger = logging.getLogger('django')
 @api_view(['GET'])
 def createPermissions(request):
     logger.info("[[Create Permissions ]]");
-   
+    # ORM을 이용한 관리자 권한 생성 - 수동으로 DB의 auth_permission 테이블에 추가해도 된다.
     # # equipment
     # content_type = ContentType.objects.get_for_model(Equipment)
     # permission = Permission.objects.create(

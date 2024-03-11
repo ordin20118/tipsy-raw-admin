@@ -17,7 +17,7 @@ def start():
 
     scheduler.add_job(
         rembg_job,
-        trigger=CronTrigger(second="*/20"),  # 20초마다 실행
+        trigger=CronTrigger(second="*/10"),  # 10초마다 실행
         id="rembg",  # 고유 id
         max_instances=1,
         replace_existing=True,

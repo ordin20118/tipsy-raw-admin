@@ -75,6 +75,9 @@ def get_and_process_queue():
         queue = queryset.first()
         queue.state = RembgQueue.STATE_PROCESS
         queue.save(update_fields=['state'])
+        
+        logger.info("[Process Queue]")
+        logger.info(queue)
         process_rembg(queue)
     else:
         # 큐가 없는 경우

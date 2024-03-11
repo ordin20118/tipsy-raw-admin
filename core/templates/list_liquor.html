@@ -91,9 +91,9 @@
 													{% for liquor in liquor_list %}
 													<tr onclick="javascript:moveToModifyPage('{{liquor.liquor_id}}')">
 														<td>{{liquor.liquor_id}}</td>
-														<td>
+														<td style="text-align: center;">
 															<img src="{{ imgprefix }}/{{liquor.s3_key}}" style='width:80px;'>
-															
+															<button type="button" class="btn btn-warning" onclick="addRembgQueue('{{ liquor.rep_image_id }}')">배경 제거 및 대표 설정</button>
 														</td>
 														<td style="font-size: 11px;">															
 															{% if liquor.category1_name != None %}
@@ -232,25 +232,25 @@
 												<ul class="pagination">
 													{% if liquor_list.has_previous %}
 													<li class="paginate_button page-item previous" id="basic-datatables_previous">
-														<a href="?page={{ liquor_list.previous_page_number }}" aria-controls="basic-datatables" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
+														<a href="?page={{ liquor_list.previous_page_number }}&keyword={{ keyword }}" aria-controls="basic-datatables" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
 													</li>
 													{% endif %}
 													{% for page_number in liquor_list.paginator.page_range %}
 													{% if page_number >= liquor_list.number|add:-3 and page_number <= liquor_list.number|add:3 %}
 													{% if page_number == liquor_list.number %}
 													<li class="paginate_button page-item active">
-														<a href="?page={{ page_number }}" aria-controls="basic-datatables" data-dt-idx="1" tabindex="0" class="page-link">{{ page_number }}</a>
+														<a href="?page={{ page_number }}&keyword={{ keyword }}" aria-controls="basic-datatables" data-dt-idx="1" tabindex="0" class="page-link">{{ page_number }}</a>
 													</li>
 													{% else %}
 													<li class="paginate_button page-item ">
-														<a href="?page={{ page_number }}" aria-controls="basic-datatables" data-dt-idx="2" tabindex="0" class="page-link">{{ page_number }}</a>
+														<a href="?page={{ page_number }}&keyword={{ keyword }}" aria-controls="basic-datatables" data-dt-idx="2" tabindex="0" class="page-link">{{ page_number }}</a>
 													</li>
 													{% endif %}	
 													{% endif %}													
         											{% endfor %}													
 													{% if liquor_list.has_next %}
 													<li class="paginate_button page-item next" id="basic-datatables_next">
-														<a href="?page={{ liquor_list.next_page_number }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
+														<a href="?page={{ liquor_list.next_page_number }}&keyword={{ keyword }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
 													</li>
 													{% endif %}
 												</ul>
@@ -276,6 +276,7 @@
 		var gPage = 1;
 		var perPage = 10;
 		var prevSearchInput = "";
+		var canMove = true;
 
 		function moveToInsertLiquor() {
 			location.href = "/admin/insert_liquor.html"
@@ -307,17 +308,23 @@
 		}
 
 		function moveToLiquorListPage(page, keyword) {
-			location.href = "/admin/list_liquor.html?page=2&keyword=" + keyword;
+			location.href = "/admin/list_liquor.html?page=1&keyword=" + keyword;
 		}
 
 		function moveToModifyPage(liquorId) {
-			location.href = "/admin/modify_liquor.html?liquorId="+liquorId;
+			if(canMove) {
+				location.href = "/admin/modify_liquor.html?liquorId="+liquorId;
+			}
 		}
 
 
 		// 이미지 배경 제거 요청 큐 추가 
 		function addRembgQueue(imageId) {
-			console.log("addRembgQueue:" + imageId)
+			canMove = false;
+
+			if(imageId == 'None' || imageId == 0) {
+				return;
+			}
 
 			let formData = new FormData;
 			formData.append("org_image_id", imageId);
@@ -336,11 +343,13 @@
 				data:formData,
 				success:function(data){
 					console.log("Add Rembg Queue.")
-					console.log(data)
 					alert("배경 제거 요청 완료.\n잠시만 기다려주세요.\n배경이 제거된 이미지는 신규 이미지로 저장됩니다.");
-					location.reload();
 				},
 				error:function(request, status, error){
+					
+				},
+				complete: function () {
+					canMove = true;
 				}
 			});
 		}
