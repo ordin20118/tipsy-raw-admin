@@ -26,15 +26,17 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 # load production server from .env
 #ALLOWED_HOSTS = ['localhost', '127.0.0.1', config('SERVER', default='127.0.0.1')]
-ALLOWED_HOSTS = ['*', '192.168.219.106', 'tipsy.co.kr', 'www.tipsy.co.kr']
+ALLOWED_HOSTS = ['*', '192.168.219.106', 'tipsy.co.kr', 'www.tipsy.co.kr', 'localhost']
 
 CORS_ALLOWED_ORIGINS = [
     "https://tipsy.co.kr",
     "https://www.tipsy.co.kr",
     "http://*.tipsy.co.kr",
+    "http://localhost:8000",
+    "https://localhost:8000",
 ]
 
-CSRF_COOKIE_DOMAIN = '.tipsy.co.kr'
+#CSRF_COOKIE_DOMAIN = 'tipsy.co.kr'
 
 #SVC_MGR_URL = "http://localhost:8080/svcmgr"
 #SVC_MGR_URL = "http://192.168.219.104:8080/svcmgr"
