@@ -88,6 +88,11 @@ class ImageSerializer(serializers.ModelSerializer):
         model = Image
         fields = '__all__'
 
+class RembgQueueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RembgQueue
+        fields = '__all__'
+
 class SearchParamSerializer(serializers.Serializer):
     page = serializers.IntegerField()
     per_page = serializers.IntegerField()

@@ -136,6 +136,7 @@ def search(request):
 
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
+@transaction.atomic
 def image(request):
 
     if request.method == 'GET':
@@ -171,11 +172,15 @@ def image(request):
 
                         if image.image_type == Image.IMG_TYPE_REP:
                             # 기존에 존재하는 이미지중에 대표 이미지 조회 후 수정
-                            rep_img = Image.objects.get(image_type=Image.IMG_TYPE_REP, 
+                            try:
+                                rep_img = Image.objects.get(image_type=Image.IMG_TYPE_REP, 
                                                         content_type=image.content_type,
                                                         content_id=image.content_id)
-                            rep_img.image_type = Image.IMG_TYPE_NORMAL
-                            rep_img.save(update_fields=['image_type'])
+                                rep_img.image_type = Image.IMG_TYPE_NORMAL
+                                rep_img.save(update_fields=['image_type'])
+                            except Image.DoesNotExist as e:
+                                pass
+                                #logger.error("There is no rep_img.")  
 
                             # save image to DB
                             image.save()
@@ -187,11 +192,15 @@ def image(request):
                             extension = img.format.lower()
             
                             # update image's path to DB
-                            img_data.s3_key = s3_key
-                            img_data.extension = extension
-                            img_data.save(update_fields=['s3_key', 'extension'])
+                            image.s3_key = s3_key
+                            image.extension = extension
+                            image.save(update_fields=['s3_key', 'extension'])
                         else:
                             image.save()
+
+                            logger.info("[#### 신규 이미지 파일 타입 ###]")
+                            logger.info(type(image_file))
+
                             # 2. save image to S3
                             s3_key = saveImgToS3(image_file, 'image/liquor')
 
@@ -199,14 +208,12 @@ def image(request):
                             extension = img.format.lower()
 
                             # 3. DB에 이미지 경로 업데이트
-                            img_data.s3_key = s3_key
-                            img_data.extension = extension
-                            img_data.save(update_fields=['s3_key', 'extension'])
+                            image.s3_key = s3_key
+                            image.extension = extension
+                            image.save(update_fields=['s3_key', 'extension'])
 
                         return Response("success")
 
-                except Image.DoesNotExist as e:
-                    logger.error("There is no rep_img.")   # change to log...
                 except Image.MultipleObjectsReturned as e:
                     logger.error("There is multiple rep_img. content_id:%s, content_type:%s" % (image.content_id, image.content_type)) # change to log...
         else:
@@ -276,10 +283,10 @@ def image(request):
                 # 대표 이미지라면 다른 이미지를 대표 이미지로 설정
                 if img_data.image_type == Image.IMG_TYPE_REP:
                     images = Image.objects.filter(
-                                                    content_id=img_data.content_id,
-                                                    content_type=img_data.content_type,
-                                                    image_type=Image.IMG_TYPE_NORMAL                   
-                                                )
+                                                content_id=img_data.content_id,
+                                                content_type=img_data.content_type,
+                                                image_type=Image.IMG_TYPE_NORMAL                   
+                                            )
 
                     if len(images) <= 0:
                         return Response("Last image can't delete.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -290,14 +297,11 @@ def image(request):
                             image.save(update_fields=['image_type'])
                             break
                 
+                s3_key = img_data.s3_key
                 img_data.delete()
 
-                # 이미지 파일 제거
-                imgPath = imageIdToPath(image_id)
-                imgDir = DATA_ROOT + IMAGE_PATH + "/" + imgPath + "/"
-                os.remove(imgDir + str(image_id) + '.' + 'png')
-                os.remove(imgDir + str(image_id) + '_300.' + 'png')
-                os.remove(imgDir + str(image_id) + '_600.' + 'png')
+                # 이미지 s3 객체 제거 
+                deleteObjectFromS3(s3_key)
 
         return Response("This is image DELETE return")
 

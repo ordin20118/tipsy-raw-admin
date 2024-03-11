@@ -137,3 +137,15 @@ class CrawledLiquorImageForm(forms.Form):
 		if commit:
 			image.save()
 		return image
+
+class RembgQueueForm(forms.Form):
+	id = forms.IntegerField(required=False)
+	org_image_id = forms.IntegerField(required=True)
+	out_image_id = forms.IntegerField(required=False)
+	state = forms.IntegerField(required=False)
+
+	def save(self, commit=True):
+		queue = RembgQueue(**self.cleaned_data)
+		if commit:
+			queue.save()
+		return queue

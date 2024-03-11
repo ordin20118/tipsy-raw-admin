@@ -2,6 +2,7 @@
 from django.urls import path, re_path
 from raw_data_manager import views
 from raw_data_manager import view_dashboard
+from raw_data_manager.view.rembg import rembg
 
 urlpatterns = [
 
@@ -31,6 +32,8 @@ urlpatterns = [
     path('api/dashboard/timeline/managelog', view_dashboard.manageTimeline, name='manageTimeline'),    
     path('api/dashboard/stats/crawled', view_dashboard.crawledDataStats, name='crawledDataStats'),    
     path('api/dashboard/stats/liquor', view_dashboard.liquorDataStats, name='liquorDataStats'),    
+
+    path('api/rembg_queue', rembg, name='rembg'),    
 
     path('permission/create_permissions', views.createPermissions, name='createPermissions'),    
     

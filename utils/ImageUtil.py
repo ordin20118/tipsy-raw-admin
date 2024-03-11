@@ -106,15 +106,24 @@ def saveImgToPath(image_file, image_id, img_dir):
 # 저장된 s3 key 반환
 # param -image_file : 이미지 파일 객체
 # param -s3_path : 이미지를 저장할 s3 경로
-def saveImgToS3(image_file, path):
-
+def saveImgToS3(image_file, path, ext = None):
     try:
         # s3 client 연결
         s3_client = boto3.resource('s3', aws_access_key_id=s3_settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=s3_settings.AWS_SECRET_ACCESS_KEY)
 
         # 확장자 얻기
-        img = pilimg.open(image_file)
-        extension = img.format.lower()
+        img = None
+        if isinstance(image_file, pilimg.Image):
+            img = image_file
+        else:
+            img = pilimg.open(image_file)
+        
+        if img.format is None and ext is None:
+            raise Exception('Can\'t findl image\'s extension.' )
+        elif img.format is not None:
+            extension = img.format.lower()
+        else:
+            extension = ext
 
         # 랜덤 키 생성
         random_key = uuid.uuid1().hex
@@ -143,6 +152,27 @@ def saveImgToS3(image_file, path):
     except Exception as e: 
          print('[save image to s3 error]', e)
          raise
+
+
+def deleteObjectFromS3(s3_key):
+    try:
+        # s3 client 연결
+        s3_client = boto3.resource('s3', aws_access_key_id=s3_settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=s3_settings.AWS_SECRET_ACCESS_KEY)
+
+        # S3 버킷 이름과 객체 키를 지정하여 객체 제거
+        s3_client.Bucket(s3_settings.AWS_S3_BUCKET_NAME).delete_objects(
+            Delete={
+                'Objects': [
+                    {'Key': s3_key}
+                ],
+                'Quiet': False  # 실패한 객체 삭제 여부 설정 (True: 실패 시 메시지 없음, False: 실패 시 메시지 출력)
+            }
+        )
+
+        print(f'Successfully deleted object: {s3_key}')
+    
+    except Exception as e:
+        print(f'Error deleting s3 object: {e}')
 
 
 def calculate_md5(file_path):

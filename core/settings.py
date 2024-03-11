@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'app', 
     'raw_data_manager',
     'corsheaders',
+    'django_apscheduler',
 ]
 
 MIDDLEWARE = [
@@ -207,5 +208,11 @@ DATA_ROOT = "/Users/gwanga/datastore"
 STATICFILES_DIRS = (
     os.path.join(CORE_DIR, 'core/static'),
 )
+
+# Batch settings
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+SCHEDULER_DEFAULT = True # apps.py 참고
+
 #############################################################
 #############################################################

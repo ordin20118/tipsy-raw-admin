@@ -45,6 +45,7 @@
 				</div>
 
 				<div class="form-group">
+					<button type="button" class="btn btn-warning" onclick="addRembgQueue()">배경 제거 및 대표 설정</button>
 					<button type="button" class="btn btn-danger" onclick="deleteImage()">영구 제거</button>
 				</div>
 				
@@ -520,7 +521,6 @@
 			//clearImgAddModal();
 		}
 
-
 		// 이미지 제거 요청
 		function deleteImage() {
 
@@ -565,6 +565,36 @@
 						error:function(request, status, error){
 						}
 					});
+				}
+			});
+		}
+
+		// 이미지 배경 제거 요청 큐 추가 
+		function addRembgQueue() {
+			console.log("addRembgQueue")
+
+			let formData = new FormData;
+			formData.append("org_image_id", nowModifyImgId);
+
+			var url = "/admin/raw_data_manager/api/rembg_queue";
+
+			// send
+			$.ajax({
+				url:url,
+				type:"POST",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("Add Rembg Queue.")
+					console.log(data)
+					alert("배경 제거 요청 완료.\n잠시만 기다려주세요.\n배경이 제거된 이미지는 신규 이미지로 저장됩니다.");
+					location.reload();
+				},
+				error:function(request, status, error){
 				}
 			});
 		}
@@ -1238,7 +1268,7 @@
 			
 			for(var i=0; i<countryList.length; i++) {   
 				var country = countryList[i];             
-				var option = '<a class="dropdown-item" href="javascript:selectCountry('+country['country_id']+')"><img src="'+country['image']+'" style="margin: 0px 9px 0px 0px;">'+country['name']+'</a>';
+				var option = '<a class="dropdown-item" href="javascript:selectCountry('+country['country_id']+')"><img src="'+country['image']+'" style="width: 30px; margin: 0px 9px 0px 0px;">'+country['name']+'</a>';
 				
 				$('#country').append(option);
 			}
@@ -1257,7 +1287,7 @@
 			for(var i=0; i<countryList.length; i++) {
 				if(countryList[i]['country_id'] == id) {
 					// 텍스트 설정
-					$("#countrySelectButton").html('<img src="'+countryList[i]['image']+'" style="margin: 0px 9px 0px 0px;">' + countryList[i]['name']);
+					$("#countrySelectButton").html('<img src="'+countryList[i]['image']+'" style="width: 30px; margin: 0px 9px 0px 0px;">' + countryList[i]['name']);
 					// 선택된 아이디 설정
 					selCountry = id;
 				}

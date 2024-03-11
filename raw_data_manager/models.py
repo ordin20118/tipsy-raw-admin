@@ -546,3 +546,22 @@ class CrawledLiquor(models.Model):
     class Meta:
         managed = False
         db_table = 'crawled_liquor'
+
+
+class RembgQueue(models.Model):
+    
+    STATE_STANDBY = 0
+    STATE_FINISH = 1
+    STATE_FAIL = 2
+    STATE_PROCESS = 3
+
+    id = models.AutoField(primary_key=True)
+    org_image_id = models.IntegerField(blank=True, null=False)
+    out_image_id = models.IntegerField(blank=True, null=True)
+    state = models.IntegerField(blank=True, null=False)
+    reg_date = models.DateTimeField(blank=True, null=False)
+    update_date = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'rembg_queue'
