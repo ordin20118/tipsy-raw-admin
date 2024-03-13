@@ -133,16 +133,17 @@ def process_rembg(queue):
 
             # 큐 상태 업데이트
             queue.state = RembgQueue.STATE_FINISH
-            queue.save(update_fields=['state'])
+            queue.out_image_id = rembg_image.image_id
+            queue.save(update_fields=['state', 'out_image_id', 'update_date'])
             
         else:
             logger.error("배경을 제거할 이미지를 다운로드할 수 없습니다.")
             queue.state = RembgQueue.STATE_FAIL
-            queue.save(update_fields=['state'])
+            queue.save(update_fields=['state', 'update_date'])
     except Exception as e:
         logger.error(e)
         queue.state = RembgQueue.STATE_FAIL
-        queue.save(update_fields=['state'])
+        queue.save(update_fields=['state', 'update_date'])
         raise e
 
 

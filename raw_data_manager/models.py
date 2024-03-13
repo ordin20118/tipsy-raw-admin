@@ -559,8 +559,8 @@ class RembgQueue(models.Model):
     org_image_id = models.IntegerField(blank=True, null=False)
     out_image_id = models.IntegerField(blank=True, null=True)
     state = models.IntegerField(blank=True, null=False)
-    reg_date = models.DateTimeField(blank=True, null=False)
-    update_date = models.DateTimeField(blank=True, null=True)
+    reg_date = models.DateTimeField(blank=True, null=False, auto_now_add=True,)
+    update_date = models.DateTimeField(blank=True, null=True, auto_now=True,)
 
     class Meta:
         managed = False
