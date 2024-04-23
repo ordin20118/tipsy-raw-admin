@@ -127,7 +127,7 @@ def liquorList(request):
         "LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin "+
         "LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0 "+
         "WHERE raw_liquor.name_kr like '" + keyword + "' or raw_liquor.name_en like '" + keyword + "' " +
-        "ORDER BY liquor_id DESC")
+        "ORDER BY liquor_id ASC")
 
     paginator = Paginator(liquorList, perPage)  # 페이지당 10개씩 보여주기
     page_obj = paginator.get_page(page)

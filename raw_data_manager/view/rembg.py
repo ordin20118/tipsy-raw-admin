@@ -87,6 +87,8 @@ def get_and_process_queue():
 def process_rembg(queue):
     try:
         # 변경 대상 이미지 조회
+        logger.info("변경 대상 이미지 ID:%d" % queue.org_image_id)
+
         target_image = Image.objects.get(image_id=queue.org_image_id)
         
         # 원본 이미지 url을 이용해서 조회
@@ -140,6 +142,8 @@ def process_rembg(queue):
             logger.error("배경을 제거할 이미지를 다운로드할 수 없습니다.")
             queue.state = RembgQueue.STATE_FAIL
             queue.save(update_fields=['state', 'update_date'])
+    except Image.DoesNotExist:
+        logger.info("해당하는 이미지를 찾을 수 없습니다.[%d]" % queue.org_image_id)
     except Exception as e:
         logger.error(e)
         queue.state = RembgQueue.STATE_FAIL

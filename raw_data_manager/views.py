@@ -233,11 +233,15 @@ def image(request):
 
                     if image.image_type == Image.IMG_TYPE_REP:
                         # 기존에 존재하는 이미지중에 대표 이미지 조회 후 수정
-                        rep_img = Image.objects.get(image_type=Image.IMG_TYPE_REP, 
+                        try:
+                            rep_img = Image.objects.get(image_type=Image.IMG_TYPE_REP, 
                                                     content_type=image.content_type,
                                                     content_id=image.content_id)
-                        rep_img.image_type = Image.IMG_TYPE_NORMAL
-                        rep_img.save(update_fields=['image_type'])
+                            rep_img.image_type = Image.IMG_TYPE_NORMAL
+                            rep_img.save(update_fields=['image_type'])
+                        except Image.DoesNotExist:  # 이미지가 존재하지 않는 경우
+                            # 에러 처리 코드 작성
+                            pass
                     else:
                         images = Image.objects.filter(
                                                     content_id=image.content_id,
