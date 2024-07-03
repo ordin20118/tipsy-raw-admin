@@ -117,7 +117,7 @@ def saveImgToS3(image_file, path, ext = None):
             img = image_file
         else:
             img = pilimg.open(image_file)
-        
+
         if img.format is None and ext is None:
             raise Exception('Can\'t findl image\'s extension.' )
         elif img.format is not None:
@@ -133,8 +133,22 @@ def saveImgToS3(image_file, path, ext = None):
         temp_path = ''
         with tempfile.NamedTemporaryFile(delete=False, suffix=extension) as temp_file:
             temp_path = temp_file.name
-            # PIL을 사용하여 이미지 저장
-            img.save(temp_path, format=extension)
+            try:
+                # PIL을 사용하여 이미지 저장
+                img.save(temp_path, format=extension)
+            except OSError as e:
+                # RGBA 모드 이미지를 JPEG로 저장할 수 없는 경우
+                if "cannot write mode RGBA as JPEG" in str(e):
+                    print("이미지를 JPEG로 저장할 수 없습니다. RGBA 모드 이미지를 다른 형식으로 변환하세요.")
+                    # 아래의 코드로 저장할 수는 있지만 배경이 투명이 될 수 없기에 검정색으로 변함 
+                    # # RGBA 모드 이미지를 RGB 모드로 변환
+                    # rgb_img = img.convert("RGB")
+                    # # 변환된 이미지를 JPEG로 저장
+                    # rgb_img.save(temp_path, format=extension)
+                else:
+                    raise e
+            
+            
 
         # 파일 데이터 가져오기
         data = open(temp_path,'rb')

@@ -24,7 +24,10 @@ urlpatterns = [
 
     path('crawled_data_mng/list_crawled_liquor_image.html', views.crawledLiquorImageList, name='crawledLiquorImageList'),
     path('crawled_data_mng/detail_crawled_liquor_image.html', views.crawledLiquorImageDetail, name='crawledLiquorImageDetail'),
-    
+    path('crawled_data_mng/list_crawled_liquor.html', views.crawled_liquor_list, name='crawled_liquor_list'),
+    path('crawled_data_mng/modify_crawled_liquor.html', views.modify_crawled_liquor, name='modify_crawled_liquor'),
+
+
     path('test/recommand.html', views.recommandTest, name='recommandTest'),
     
 

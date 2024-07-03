@@ -3,6 +3,7 @@ from django.urls import path, re_path
 from raw_data_manager import views
 from raw_data_manager import view_dashboard
 from raw_data_manager.view.rembg import rembg
+from raw_data_manager.view.ai_view import ana_description_with_chatgpt
 
 urlpatterns = [
 
@@ -33,7 +34,8 @@ urlpatterns = [
     path('api/dashboard/stats/crawled', view_dashboard.crawledDataStats, name='crawledDataStats'),    
     path('api/dashboard/stats/liquor', view_dashboard.liquorDataStats, name='liquorDataStats'),    
 
-    path('api/rembg_queue', rembg, name='rembg'),    
+    path('api/rembg_queue', rembg, name='rembg'),
+    path('api/openai/ana_desc', ana_description_with_chatgpt, name='ana_description_with_chatgpt'),
 
     path('permission/create_permissions', views.createPermissions, name='createPermissions'),    
     

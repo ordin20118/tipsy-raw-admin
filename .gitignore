@@ -195,5 +195,6 @@ cython_debug/
 
 db_settings.py
 s3_settings.py
+openai_settings.py
 *.csv
 

@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from django.db import connection
 
 from django.shortcuts import get_object_or_404
-
+from django.db.models import Q
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 
@@ -67,7 +67,7 @@ def pages(request):
 def liquorList(request):
     
     context = {}
-    context['segment'] = 'list_liquor'
+    context['segment'] = 'svc_data_mng/list_liquor'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = S3_URL
 
@@ -146,7 +146,7 @@ def liquorList(request):
 def modifyLiquor(request):
    
     context = {}
-    context['segment'] = 'modifyLiquor'
+    context['segment'] = 'svc_data_mng/modifyLiquor'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = S3_URL
 
@@ -227,7 +227,7 @@ def modifyLiquor(request):
 def ingredientList(request):
     
     context = {}
-    context['segment'] = 'list_ingredient'
+    context['segment'] = 'svc_data_mng/list_ingredient'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = S3_URL
 
@@ -270,7 +270,7 @@ def ingredientList(request):
 def equipmentList(request):
     
     context = {}
-    context['segment'] = 'list_equipment'
+    context['segment'] = 'svc_data_mng/list_equipment'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = S3_URL
 
@@ -315,7 +315,7 @@ def modifyIngredient(request):
     #logger.debug("This is modifyIngredient View ... ")
 
     context = {}
-    context['segment'] = 'modifyIngredient'
+    context['segment'] = 'svc_data_mng/modifyIngredient'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = S3_URL
 
@@ -389,7 +389,7 @@ def modifyEquipment(request):
     logger.debug("This is modifyEquipment View ... ")
 
     context = {}
-    context['segment'] = 'modifyEquipment'
+    context['segment'] = 'svc_data_mng/modifyEquipment'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = S3_URL
 
@@ -464,7 +464,7 @@ def modifyEquipment(request):
 def wordList(request):
     
     context = {}
-    context['segment'] = 'list_word'
+    context['segment'] = 'svc_data_mng/list_word'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = S3_URL
 
@@ -501,7 +501,7 @@ def modifyWord(request):
     logger.debug("This is modifyWord View ... ")
 
     context = {}
-    context['segment'] = 'modifyWord'
+    context['segment'] = 'svc_data_mng/modifyWord'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = S3_URL
 
@@ -566,7 +566,7 @@ def modifyWord(request):
 def cocktailList(request):
     
     context = {}
-    context['segment'] = 'list_cocktail'
+    context['segment'] = 'svc_data_mng/list_cocktail'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = S3_URL
 
@@ -599,7 +599,7 @@ def cocktailList(request):
 def modifyCocktail(request):   
 
     context = {}
-    context['segment'] = 'modifyCocktail'
+    context['segment'] = 'svc_data_mng/modifyCocktail'
     context['prefix'] = 'http://tipsy.co.kr/admin'
     context['imgprefix'] = S3_URL
 
@@ -744,6 +744,129 @@ def crawledLiquorImageDetail(request):
 
     html_template = loader.get_template( 'crawled_data_mng/detail_crawled_liquor_image.html' )
     return HttpResponse(html_template.render(context, request))
+
+@login_required(login_url="/admin/login/")
+def crawled_liquor_list(request):
+    
+    context = {}
+    context['segment'] = 'crawled_data_mng/list_crawled_liquor'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = S3_URL
+
+    # load data
+    keyword = request.GET.get('keyword', "")
+    page = int(request.GET.get('page', 1))
+    perPage = int(request.GET.get('perPage', 10))
+    
+    abv_min = int(request.GET.get('abvMin', -1))
+    abv_max = int(request.GET.get('abvMax', -1))
+
+    auto_state = int(request.GET.get('autoState', -1))
+    is_use = int(request.GET.get('isUse', -1))
+    state = int(request.GET.get('state', -1))
+    
+    category1_id = int(request.GET.get('category1Id', -1))
+    category2_id = int(request.GET.get('category2Id', -1))
+    category3_id = int(request.GET.get('category3Id', -1))
+    category4_id = int(request.GET.get('category4Id', -1))
+
+    liquor_id = int(request.GET.get('liquorId', -1))
+    
+    # 기본 쿼리셋
+    filtered_qset = CrawledLiquor.objects.all()
+
+    # keyword에 대한 필터
+    if len(keyword) > 0:
+        print("키워드 설정:", keyword)
+        filtered_qset = filtered_qset.filter(Q(name_kr__icontains=keyword) | Q(name_en__icontains=keyword))
+
+    # liquor_id에 대한 필터
+    if liquor_id is not None and liquor_id > 0:
+        print("liquor_id 설정")
+        filtered_qset = filtered_qset.filter(liquor_id=liquor_id)
+
+    # abv_min과 abv_max에 대한 범위 필터
+    if abv_min is not None and abv_min > 0 \
+        and abv_max is not None and abv_max > 0:
+        print("abv_min, abv_max 설정")
+        filtered_qset = filtered_qset.filter(abv__gte=abv_min, abv__lte=abv_max)
+    elif abv_min is not None and abv_min > 0:
+        print("abv_min 설정")
+        filtered_qset = filtered_qset.filter(abv__gte=abv_min)
+    elif abv_max is not None and abv_max > 0:
+        print("abv_max 설정")
+        filtered_qset = filtered_qset.filter(abv__lte=abv_max)
+
+    # vintage가 null 여부에 대한 필터
+    # if vintage_is_null is not None:
+    #     if vintage_is_null:
+    #         filtered_qset = filtered_qset.filter(vintage__isnull=True)
+    #     else:
+    #         filtered_qset = filtered_qset.filter(vintage__isnull=False)
+
+
+    # 정렬
+    filtered_qset = filtered_qset.order_by('-id')
+
+    paginator = Paginator(filtered_qset, perPage)  # 페이지당 10개씩 보여주기
+    page_obj = paginator.get_page(page)
+
+    context['crawled_liquor_list'] = page_obj
+    keyword = keyword.replace('%', '')
+    context['keyword'] = keyword
+
+    html_template = loader.get_template( 'list_crawled_liquor.html' )
+    return HttpResponse(html_template.render(context, request))
+
+
+
+@login_required(login_url="/admin/login/")
+def modify_crawled_liquor(request):
+   
+    context = {}
+    context['segment'] = 'crawled_data_mng/modify_crawled_liquor'
+    context['prefix'] = 'http://tipsy.co.kr/admin'
+    context['imgprefix'] = S3_URL
+
+    # load data
+    id = request.GET.get('id')
+    print("cralwed liquor id:", id)
+
+    if id == None or id == 0:
+        html_template = loader.get_template( 'page-404.html' )
+        return HttpResponse(html_template.render(context, request))
+    else:
+        id = int(id)
+
+    crawled_liquor = CrawledLiquor.objects.get(id=id)
+
+    if crawled_liquor == None:
+        html_template = loader.get_template( 'page-404.html' )
+        return HttpResponse(html_template.render(context, request))
+
+    
+    if crawled_liquor.liquor_id != None:
+        liquor = RawLiquor.objects.get(liquor_id=crawled_liquor.liquor_id)
+        context['liquor'] = liquor
+        images = Image.objects.filter(content_type=ContentInfo.CONTENT_TYPE_LIQUOR, content_id=crawled_liquor.liquor_id)   
+        context['liquor_images'] = images
+
+    context['crawled_liquor'] = crawled_liquor
+
+    # serialize_liquor = JoinedLiquorSerializer(crawled_liquor[0]) 
+    # liquor_bjson = JSONRenderer().render(serialize_liquor.data)    
+    # stream = io.BytesIO(liquor_bjson)
+    # liquor_dict = JSONParser().parse(stream)    
+    # liquor_json = json.dumps(liquor_dict, ensure_ascii=False)
+    # context['liquor'] = liquor_json
+
+    # TODO: 해당 술에 대한 관리 로그 조회 
+
+
+    html_template = loader.get_template( 'modify_crawled_liquor.html' )   
+    return HttpResponse(html_template.render(context, request))
+
+
 
 
 @login_required(login_url="/admin/login/")

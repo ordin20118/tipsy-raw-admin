@@ -90,16 +90,20 @@ def process_rembg(queue):
         logger.info("변경 대상 이미지 ID:%d" % queue.org_image_id)
 
         target_image = Image.objects.get(image_id=queue.org_image_id)
+
+        logger.info("대상 이미지 가져옴:%s"%target_image)
         
         # 원본 이미지 url을 이용해서 조회
         image_url = S3_URL + '/' + target_image.s3_key
         response = requests.get(image_url)
         if response.status_code == 200:
             # PIL을 사용하여 이미지 열기
+            logger.info("이미지 열기")
             input_image = pilimg.open(BytesIO(response.content))
 
             # 배경 제거된 이미지
             output_image = remove(input_image)
+            logger.info("이미지 배경 제거 완료")
             # 임시 파일로 저장 - 확장자 설정을 위해서
             output_image.format = target_image.extension
 
@@ -114,13 +118,18 @@ def process_rembg(queue):
                 target_image.is_open = Image.IMG_STATUS_PRV
                 target_image.save(update_fields=['image_type', 'is_open'])
 
-                rep_image = Image.objects.get(image_type=Image.IMG_TYPE_REP, 
+                try:
+                    rep_image = Image.objects.get(image_type=Image.IMG_TYPE_REP, 
                                                         content_type=target_image.content_type,
                                                         content_id=target_image.content_id)
-                rep_image.image_type = Image.IMG_TYPE_NORMAL
-                rep_image.save(update_fields=['image_type'])
+                    rep_image.image_type = Image.IMG_TYPE_NORMAL
+                    rep_image.save(update_fields=['image_type'])
+                except Image.DoesNotExist:
+                    pass
+                
         
             # s3 저장
+            logger.info("이미지 s3 저장")
             s3_key = saveImgToS3(image_file=output_image, path='image/liquor', ext=target_image.extension)
 
             # 이미지 정보 db 저장 (대표로 설정)

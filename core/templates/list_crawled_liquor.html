@@ -1,0 +1,304 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Datatables {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+	<div class="content">
+		<div class="page-inner">
+			<div class="page-header">
+				<h4 class="page-title">주류</h4>
+				<ul class="breadcrumbs">
+					<li class="nav-home">
+						<a href="#">
+							<i class="flaticon-home"></i>
+						</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">수집 데이터 관리</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">주류</a>
+					</li>
+				</ul>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="d-flex align-items-center">
+								<h4 class="card-title">수집된 주류 데이터 조회</h4>
+								<button class="btn btn-primary btn-round ml-auto" onclick="javascript:moveToInsertLiquor()">
+									<i class="fa fa-plus"></i>
+									데이터 추가
+								</button>
+							</div>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								<div id="basic-datatables_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+									<div class="row">
+										<div class="col-sm-12 col-md-6">
+											<div id="basic-datatables_filter" class="dataTables_filter">
+												<label>Search:<input type="search" id="searchInput" class="form-control form-control-sm" value="{{ keyword }}" placeholder="" aria-controls="basic-datatables"></label>
+											</div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-sm-12">
+											<!-- <table id="basic-datatables" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info"> -->
+											<table id="add-row" class="display table table-striped table-hover dataTable" role="grid" aria-describedby="basic-datatables_info">
+												<thead>
+													<tr>
+														<th style="width: 6%">수집<br>번호</th>
+														<th style="width: 7%">이미지</th>
+														<th style="width: 10%">카테고리</th>
+														<th style="width: 20%">이름(ko/en)</th>
+														<th style="width: 10%">상태</th>
+														<th style="width: 10%">등록일</th>
+														<th style="width: 5%">Action</th>
+													</tr>
+												</thead>
+												<tfoot>
+													<tr>
+														<th>주류<br>번호</th>
+														<th>이미지</th>
+														<th>카테고리</th>
+														<th>이름(ko/en)</th>
+														<th>상태</th>
+														<th>등록일</th>
+														<th>Action</th>
+													</tr>
+												</tfoot>
+												<tbody id="liquorTable">
+													{% for liquor in crawled_liquor_list %}
+													<tr onclick="javascript:moveToModifyPage('{{liquor.id}}')">
+														<td>{{liquor.id}}</td>
+														<td style="text-align: center;">
+															<img src="{{liquor.img_url}}" style='width:80px;'>
+														</td>
+														<td style="font-size: 11px;">															
+															{% if liquor.category1.name != None %}
+																{{liquor.category1.name}}<br>
+															{% endif %}
+															{% if liquor.category2.name != None %}
+																{{liquor.category2.name}}<br>
+															{% endif %}
+															{% if liquor.category3.name != None %}
+																{{liquor.category3.name}}<br>
+															{% endif %}
+															{% if liquor.category4.name != None %}
+																{{liquor.category4.name}}<br>
+															{% endif %}
+														</td>
+														<td>
+															{% if liquor.name_kr != None %}
+																{{liquor.name_kr}}<br>
+															{% endif %}
+															{% if liquor.name_en != None %}
+																{{liquor.name_en}}<br>
+															{% endif %}
+														</td>
+														<td>
+															{% if liquor.auto_state == 0 %}
+																자동: <span class="text-success">사용 가능</span>
+															{% elif liquor.auto_state == 1 %}
+																자동: <span class="text-danger" data-toggle="tooltip" title="{{ liquor.process_log }}">사용 불가</span>
+															{% else %}
+															{% endif %}
+															<br>
+															{% if liquor.auto_state == 0 %}
+																상태: <span class="text-dark">수집 대기</span>
+															{% elif liquor.auto_state == 1 %}
+																상태: <span class="text-success">수집 완료</span>
+															{% elif liquor.auto_state == 2 %}
+																상태: <span class="text-danger">수집 에러</span>
+															{% elif liquor.auto_state == 3 %}
+																상태: <span class="text-warning">수집 업데이트 필요</span>
+															{% elif liquor.auto_state == 4 %}
+																상태: <span class="text-danger">데이터 중복</span>
+															{% elif liquor.auto_state == 5 %}
+																상태: <span class="text-success">업로드 완료</span>
+															{% elif liquor.auto_state == 6 %}
+																상태: <span class="text-danger">업로드 실패</span>
+															{% elif liquor.auto_state == 7 %}
+																상태: <span class="text-dark">업로드 대기</span>
+															{% elif liquor.auto_state == 8 %}
+																상태: <span class="text-danger">사용 금지</span>
+															{% elif liquor.auto_state == 99 %}
+																상태: <span class="text-danger">수집 불가</span>
+															{% else %}
+															{% endif %}
+														</td>
+														<td>
+															{% if liquor.update_date != None %}
+															{{ liquor.update_date|date:"Y-m-d" }}
+															{% elif liquor.reg_date != None %}
+															{{ liquor.reg_date|date:"Y-m-d" }}
+															{% else %}
+															-
+															{% endif %}
+														</td>
+														<td>
+															<div class="form-button-action">
+																<button type="button" onclick="javascript:moveToModifyPage('{{liquor.id}}')" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="데이터 수정">
+																	<i class="fa fa-edit"></i>
+																</button>
+															</div>
+														</td>
+													</tr>
+													{% endfor %}
+												</tbody>
+											</table>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-sm-12 col-md-5">
+											<div class="dataTables_info" id="basic-datatables_info" role="status" aria-live="polite">
+												<span class="current">
+													페이지 {{ crawled_liquor_list.number }} / {{ crawled_liquor_list.paginator.num_pages }}
+												</span>
+											</div>
+										</div>
+										<div class="col-sm-12 col-md-7">
+											<div class="dataTables_paginate paging_simple_numbers" id="basic-datatables_paginate">
+												<ul class="pagination">
+													{% if crawled_liquor_list.has_previous %}
+													<li class="paginate_button page-item previous" id="basic-datatables_previous">
+														<a href="?page={{ crawled_liquor_list.previous_page_number }}&keyword={{ keyword }}" aria-controls="basic-datatables" data-dt-idx="0" tabindex="0" class="page-link">Previous</a>
+													</li>
+													{% endif %}
+													{% for page_number in crawled_liquor_list.paginator.page_range %}
+													{% if page_number >= crawled_liquor_list.number|add:-3 and page_number <= crawled_liquor_list.number|add:3 %}
+													{% if page_number == crawled_liquor_list.number %}
+													<li class="paginate_button page-item active">
+														<a href="?page={{ page_number }}&keyword={{ keyword }}" aria-controls="basic-datatables" data-dt-idx="1" tabindex="0" class="page-link">{{ page_number }}</a>
+													</li>
+													{% else %}
+													<li class="paginate_button page-item ">
+														<a href="?page={{ page_number }}&keyword={{ keyword }}" aria-controls="basic-datatables" data-dt-idx="2" tabindex="0" class="page-link">{{ page_number }}</a>
+													</li>
+													{% endif %}	
+													{% endif %}													
+        											{% endfor %}													
+													{% if crawled_liquor_list.has_next %}
+													<li class="paginate_button page-item next" id="basic-datatables_next">
+														<a href="?page={{ crawled_liquor_list.next_page_number }}&keyword={{ keyword }}" aria-controls="basic-datatables" data-dt-idx="7" tabindex="0" class="page-link">Next</a>
+													</li>
+													{% endif %}
+												</ul>
+											</div>
+										</div>
+									</div>
+
+
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+	<script >
+		
+		var gPage = 1;
+		var perPage = 10;
+		var prevSearchInput = "";
+		var canMove = true;
+
+		$(document).ready(function() {
+
+			segment = '{{segment}}';
+			console.log(segment);
+
+			setEvent();
+
+		});
+
+		function setEvent() {
+			$("#searchInput").on("change", function() {
+				var currentVal = $(this).val();
+				if(currentVal == prevSearchInput) {
+					return;
+				}
+
+				prevSearchInput = currentVal;
+				moveToLiquorListPage(1, currentVal);
+				
+			});
+
+		}
+
+		function moveToLiquorListPage(page, keyword) {
+			location.href = "/admin/crawled_data_mng/list_crawled_liquor.html?page=1&keyword=" + keyword;
+		}
+
+		function moveToModifyPage(liquorId) {
+			if(canMove) {
+				location.href = "/admin/crawled_data_mng/modify_crawled_liquor.html?id="+liquorId;
+			}
+		}
+
+		function convertProcessLog(log) {
+			var formattedLog = log.replace(/\./g, '.<br>');
+			return formattedLog
+		}
+
+
+		// 이미지 배경 제거 요청 큐 추가 
+		function addRembgQueue(imageId) {
+			canMove = false;
+
+			if(imageId == 'None' || imageId == 0) {
+				return;
+			}
+
+			let formData = new FormData;
+			formData.append("org_image_id", imageId);
+
+			var url = "/admin/raw_data_manager/api/rembg_queue";
+
+			// send
+			$.ajax({
+				url:url,
+				type:"POST",
+				headers: {
+					'X-CSRFTOKEN' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("Add Rembg Queue.")
+					alert("배경 제거 요청 완료.\n잠시만 기다려주세요.\n배경이 제거된 이미지는 신규 이미지로 저장됩니다.");
+				},
+				error:function(request, status, error){
+					
+				},
+				complete: function () {
+					canMove = true;
+				}
+			});
+		}
+
+	</script>
+
+{% endblock javascripts %}

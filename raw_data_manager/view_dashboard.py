@@ -108,12 +108,12 @@ def crawledDataStats(request):
     if request.method == 'GET':
         agg_qset = (
             CrawledLiquor.objects
-            .filter(category2_id__isnull=False)         # where 
-            .values('category2_id', 'category2__name')  # select
-            .annotate(cnt=Count('category2__name'))     # group by count
-            .annotate(name=F('category2__name'))        # set field
-            .annotate(category_id=F('category2_id'))    # set field
-            .values('category_id', 'name', 'cnt')       # select
+            .filter(category2__isnull=False)            # where : category2 외래 키가 있는 경우 필터링
+            .values('category2_id', 'category2__name')  # select : category2 외래 키와 그의 name 필드를 선택
+            .annotate(cnt=Count('category2__name'))     # group by count : category2__name 필드를 기준으로 그룹화하여 개수 세기
+            .annotate(name=F('category2__name'))        # set field : 필드 설정
+            .annotate(category_id=F('category2_id'))    # set field : 필드 설정
+            .values('category_id', 'name', 'cnt')       # select : 필요한 필드들만 선택
         )
 
         res = []
