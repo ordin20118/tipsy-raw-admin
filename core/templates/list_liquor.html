@@ -93,7 +93,6 @@
 														<td>{{liquor.liquor_id}}</td>
 														<td style="text-align: center;">
 															<img src="{{ imgprefix }}/{{liquor.s3_key}}" style='width:80px;'>
-															<button type="button" class="btn btn-warning" onclick="addRembgQueue('{{ liquor.rep_image_id }}')">배경 제거 및 대표 설정</button>
 														</td>
 														<td style="font-size: 11px;">															
 															{% if liquor.category1_name != None %}
@@ -176,6 +175,8 @@
 																<button type="button" onclick="javascript:moveToModifyPage('{{liquor.liquor_id}}')" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="데이터 수정">
 																	<i class="fa fa-edit"></i>
 																</button>
+																<br>
+																<button type="button" class="btn btn-warning" onclick="addRembgQueue('{{ liquor.rep_image_id }}')">배경 제거</button>
 															</div>
 														</td>
 													</tr>

@@ -784,7 +784,8 @@
 		
 
 		function moveToLiquorPage(liquorId) {
-			location.href = "/admin/modify_liquor.html?liquorId="+liquorId;
+			//location.href = "/admin/modify_liquor.html?liquorId="+liquorId;
+			window.open("/admin/modify_liquor.html?liquorId="+liquorId, '_blank');
 		}
 	</script>
 {% endblock content %}
