@@ -34,4 +34,4 @@ jobs:
                   key: ${{ secrets.SERVER_SSH_KEY }}
                   script_stop: true
                   script: |
-                      chmod +x /home/ec2-user/deploy/deploy_tipsy_admin.sh && sh /home/ubuntu/deploy/deploy_tipsy_admin.sh
+                      chmod +x /home/ec2-user/deploy/deploy_tipsy_admin.sh && sh /home/ec2-user/deploy/deploy_tipsy_admin.sh
