@@ -3,7 +3,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import register_events, DjangoJobStore
 from apscheduler.triggers.cron import CronTrigger
 from core.settings import TIME_ZONE
-from raw_data_manager.view.rembg import get_and_process_queue
+from raw_data_manager.views.rembg import get_and_process_queue
 
 logger = logging.getLogger(__name__)
 

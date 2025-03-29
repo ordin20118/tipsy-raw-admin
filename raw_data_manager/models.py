@@ -495,7 +495,8 @@ class CrawledLiquorTag(models.Model):
 
 class CrawledLiquor(models.Model):
     
-    # 0:크롤링 대기, 1:크롤링 완료, 2:크롤링 에러, 3:크롤링 업데이트 필요, 4:데이터 중복, 5:업로드 완료, 6:업로드 실패, 7:업로드 대기, 99: 더 이상 크롤링 불가
+    # 0:크롤링 대기, 1:크롤링 완료, 2:크롤링 에러, 3:크롤링 업데이트 필요, 4:데이터 중복, 5:업로드 완료, 6:업로드 실패, 7:업로드 대기
+    # 99: 더 이상 크롤링 불가, 999: 데이터가 완벽하여 추가 크롤링 필요 없음
     STATE_CRAWL_WAIT = 0
     STATE_CRAWL_SUCCESS = 1
     STATE_CRAWL_FAIL = 2
@@ -505,6 +506,7 @@ class CrawledLiquor(models.Model):
     STATE_UPLOAD_FAIL = 6
     STATE_UPLOAD_WAIT = 7
     STATE_CRAWL_CANT = 99
+    STATE_CRAWL_PERFECT = 999
 
     # 봇이 판단한 업로드 가능 여부\n0:사용 가능, 1:사용 불가
     AUTO_INGEST_USABLE = 0
@@ -592,3 +594,52 @@ class RembgQueue(models.Model):
     class Meta:
         managed = False
         db_table = 'rembg_queue'
+
+
+class SearchLiquorArticleQueue(models.Model):
+    STATE_CHOICES = [
+        (0, '대기중'),
+        (1, '수집중'),
+        (2, '수집 완료'),
+        (3, '수집 실패'),
+    ]
+    keyword = models.CharField(max_length=200)
+    state = models.IntegerField(choices=STATE_CHOICES, default=0)
+    target_collection_count = models.IntegerField(null=False, default=10)
+    total_collected = models.IntegerField(null=False, default=0)
+    new_collected = models.IntegerField(null=False, default=0)
+    failed_count = models.IntegerField(null=False, default=0)
+    reg_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField(auto_now=True, null=True)
+
+    liquor = models.ForeignKey(RawLiquor, on_delete=models.SET_NULL, null=True, blank=True)
+    class Meta:
+        db_table = 'search_liquor_article_queue'
+
+
+class LiquorArticle(models.Model):
+    liquor_id = models.IntegerField()
+    article_id = models.IntegerField()
+    relation_score = models.FloatField(null=False, blank=True)
+
+    class Meta:
+        db_table = 'liquor_article'
+
+
+class Article(models.Model):
+    STATE_CHOICES = [
+        (0, '수집됨'),
+        (1, '추출됨'),
+        (2, '분석,요약됨'),
+    ]
+    liquor_id = models.IntegerField(null=True, blank=True)
+    title = models.CharField(max_length=45)
+    content = models.TextField()
+    state = models.IntegerField(choices=STATE_CHOICES, default=0)
+    extracted_content = models.TextField(null=True, blank=True)
+    score = models.FloatField(null=True, blank=True)
+    reg_date = models.DateTimeField(auto_now_add=True)
+    update_date = models.DateTimeField(auto_now=True, null=True)
+
+    class Meta:
+        db_table = 'article'

@@ -1,9 +1,10 @@
 # -*- encoding: utf-8 -*-
 from django.urls import path, re_path
-from raw_data_manager import views
+from raw_data_manager import view as views
 from raw_data_manager import view_dashboard
-from raw_data_manager.view.rembg import rembg
-from raw_data_manager.view.ai_view import ana_description_with_chatgpt
+from raw_data_manager.views.rembg import rembg
+from raw_data_manager.views.ai_view import ana_description_with_chatgpt
+from raw_data_manager.views import liquor_article_queue_view
 
 urlpatterns = [
 
@@ -27,7 +28,8 @@ urlpatterns = [
 
     path('api/liquor/crawled/image', views.crawled_liquor_image, name='crawled_liquor_image'),
     path('api/liquor/crawled/image_list', views.crawled_liquor_image_list, name='crawled_liquor_image_list'),
-    
+
+    path('api/liquor/article-queue', liquor_article_queue_view.create_queue, name='createLiquorArticleQueue'),
 
     path('api/dashboard/timeline/new', view_dashboard.newContentTimeline, name='newTimeline'),
     path('api/dashboard/timeline/managelog', view_dashboard.manageTimeline, name='manageTimeline'),    

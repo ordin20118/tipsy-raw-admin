@@ -149,3 +149,16 @@ class RembgQueueForm(forms.Form):
 		if commit:
 			queue.save()
 		return queue
+
+class SearchLiquorArticleQueueForm(forms.ModelForm):
+	target_collection_count = forms.IntegerField(required=True)
+	total_collected = forms.IntegerField(initial=0, required=False)
+	new_collected = forms.IntegerField(initial=0, required=False)
+	failed_count = forms.IntegerField(initial=0, required=False)
+	liquor_id = forms.IntegerField(initial=0, required=False)
+
+	class Meta:
+		model = SearchLiquorArticleQueue
+		fields = ['keyword', 'target_collection_count', 'total_collected', 'new_collected', 'failed_count', 'liquor']
+	
+    
