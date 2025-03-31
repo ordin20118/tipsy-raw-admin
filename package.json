@@ -1,5 +1,5 @@
 {
-    "name": "django-dashboard-atlantis",
+    "name": "tipsy-admin",
     "mastertemplate": "boilerplate-code-django-dashboard",
     "version": "1.0.1",
     "description": "Template project - Django Boilerplate Code",

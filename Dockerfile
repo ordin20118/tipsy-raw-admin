@@ -1,7 +1,7 @@
 FROM python:3.8-slim
 #FROM python:3.8
 
-COPY manage.py gunicorn-cfg.py requirements.txt requirements_tipsyraw.txt ./
+COPY manage.py gunicorn-cfg.py requirements.txt ./
 COPY app app
 COPY authentication authentication
 COPY core core
