@@ -145,7 +145,7 @@ def image(request):
         pathStr = request.path_info
 
         # /raw_data_manager/image/ 까지 제거
-        pathStr = pathStr.replace('/admin/raw_data_manager/image/', '')
+        pathStr = pathStr.replace('/raw_data_manager/image/', '')
 
         filename = pathStr.split('/')[-1]
         fl_path = DATA_ROOT + IMAGE_PATH + '/{}'.format(pathStr)

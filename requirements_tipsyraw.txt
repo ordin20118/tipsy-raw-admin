@@ -1,5 +1,6 @@
 django==4.0.2
 djangorestframework==3.13.1
+numpy==1.22
 Pillow==9.0.1
 PyMySQL==1.0.2
 requests
@@ -14,4 +15,9 @@ pytesseract==0.3.10
 easyocr==1.6.2
 django-cors-headers
 django-apscheduler
-rembg
+onnxruntime==1.19.2
+rembg==2.0.61
+duckduckgo_search
+openai
+trafilatura
+lxml_html_clean

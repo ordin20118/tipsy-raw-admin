@@ -67,6 +67,11 @@
 										</div>
 									</div>
 
+									{% comment %} <label>크롤링 상태</label>
+									<div class="col-md-9 p-0">
+										<a href="{{crawled_liquor.url}}" target="blank">{{crawled_liquor.url}}</a>
+									</div> {% endcomment %}
+
 									<label>수집 URL</label>
 									<div class="col-md-9 p-0">
 										<a href="{{crawled_liquor.url}}" target="blank">{{crawled_liquor.url}}</a>
@@ -260,16 +265,6 @@
 											<option value="3">에러</option>
 										</select>
 									</div>
-
-									<div class="form-group">
-										<label for="selUpdateState">업데이트 상태</label>
-										<select class="form-control" id="selUpdateState">
-											<option value="0">정상</option>
-											<option value="1">수정 불가능</option>
-											<option value="2">컨펌 필요</option>
-											<option value="3">에러</option>
-										</select>
-									</div>
 								</div>
 
 
@@ -330,23 +325,6 @@
     
     	});
 
-
-		function loadLiquor(liquorId) {
-			var url = "/admin/raw_data_manager/api/liquor?liquorId=" + liquorId;
-			$.ajax({
-				url:url,
-				type:"get",
-				headers: {
-					'X-CSRFTOKEN' : '{{ csrf_token }}'
-				},
-				success:function(data){
-					liquor = data;
-					setLiquorData(data);					
-				},
-				error:function(request, status, error){
-				}
-			});
-		}
 
 		function openImgModifyModal(imageId) {
 			nowModifyImgId = imageId;
@@ -727,7 +705,7 @@
 			console.log("보내는 데이터 확인")
 			console.log(formData)
 
-			var url = "/admin/raw_data_manager/api/liquor";
+			var url = "/raw_data_manager/api/liquor";
 
 			console.log("술 등록 API URL : " + url)
 			
@@ -761,7 +739,7 @@
 						}
 					}).then((isOk) => {
 						if (isOk) {
-							//location.replace("/admin/list_liquor.html");		
+							//location.replace("/list_liquor.html");		
 							
 						}
 					});
@@ -784,8 +762,8 @@
 		
 
 		function moveToLiquorPage(liquorId) {
-			//location.href = "/admin/modify_liquor.html?liquorId="+liquorId;
-			window.open("/admin/modify_liquor.html?liquorId="+liquorId, '_blank');
+			//location.href = "/modify_liquor.html?liquorId="+liquorId;
+			window.open("/modify_liquor.html?liquorId="+liquorId, '_blank');
 		}
 	</script>
 {% endblock content %}

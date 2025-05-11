@@ -1,11 +1,14 @@
 from ..models import LiquorArticle
 
 class LiquorArticleRepository:
-    def get_all(self):
+    def find_all(self):
         return LiquorArticle.objects.all()
 
-    def get_by_id(self, article_id):
-        return LiquorArticle.objects.get(id=article_id)
+    def find_by_id(self, liquor_id, article_id):
+        liquor_article = LiquorArticle.objects.filter(liquor_id=liquor_id, article_id=article_id).first()
+        if not liquor_article:
+            return None
+        return liquor_article
 
     def create(self, liquor_id, article_id, relation_score):
         return LiquorArticle.objects.create(

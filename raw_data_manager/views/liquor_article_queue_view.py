@@ -23,3 +23,10 @@ def create_queue(request):
     else:
         # 폼이 유효하지 않으면 오류 메시지 반환
         return Response({'errors': form.errors}, status=400)
+
+@api_view(['POST'])
+def create_queue_by_liquors(request):
+    queue_service = SearchLiquorArticleQueueService()
+    queue_service.create_by_liquors()
+    return Response({'state': 'success'})
+

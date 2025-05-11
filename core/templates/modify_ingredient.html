@@ -282,7 +282,7 @@
 						   '		<span onclick="openImgModifyModal('+imageId+')">수정</span>' +
 						   '	</div>' +
 						   '	<div style="text-align: center;">' +
-						   '		<img src="http://tipsy.co.kr/admin/raw_data_manager/image/'+path+'_300.png" style="width: 60px;">' +
+						   '		<img src="http://tipsy.co.kr/raw_data_manager/image/'+path+'_300.png" style="width: 60px;">' +
 						   '	</div>' +
 						   '</div>';						   
 				$('#imgListDiv').append(item);
@@ -340,7 +340,7 @@
 			formData.append("content_type", CONTENT_TYPE_INGD);
 
 
-			var url = "/admin/raw_data_manager/api/image";
+			var url = "/raw_data_manager/api/image";
 
 			// send
 			$.ajax({
@@ -388,7 +388,7 @@
 				}
 			}).then((isOk) => {
 				if (isOk) {
-					var url = "/admin/raw_data_manager/api/image";
+					var url = "/raw_data_manager/api/image";
 					let formData = new FormData;
 					formData.append("image_id", nowModifyImgId);		
 
@@ -606,7 +606,7 @@
 			console.log("보내는 데이터 확인")
 			console.log(formData)
 
-			var url = "/admin/raw_data_manager/api/ingredient";
+			var url = "/raw_data_manager/api/ingredient";
 
 			console.log("재료 등록 API URL : " + url)
 			
@@ -640,7 +640,7 @@
 						}
 					}).then((isOk) => {
 						if (isOk) {
-							location.replace("/admin/ingredient_list.html");		
+							location.replace("/ingredient_list.html");		
 						}
 					});
 				},

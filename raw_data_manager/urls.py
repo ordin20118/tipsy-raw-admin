@@ -3,7 +3,7 @@ from django.urls import path, re_path
 from raw_data_manager import view
 from raw_data_manager import view_dashboard
 from raw_data_manager.views.rembg import rembg
-from raw_data_manager.views.ai_view import ana_description_with_chatgpt
+from raw_data_manager.views.ai_view import ana_description_with_chatgpt, ana_liquor_articles
 from raw_data_manager.views import liquor_article_queue_view
 
 urlpatterns = [
@@ -30,19 +30,26 @@ urlpatterns = [
     path('api/liquor/crawled/image_list', view.crawled_liquor_image_list, name='crawled_liquor_image_list'),
 
     path('api/liquor/article-queue', liquor_article_queue_view.create_queue, name='createLiquorArticleQueue'),
+    path('api/liquor/bulk-article-queue', liquor_article_queue_view.create_queue_by_liquors, name='bulkLiquorArticleQueue'),
 
+    # dashboard
     path('api/dashboard/timeline/new', view_dashboard.newContentTimeline, name='newTimeline'),
     path('api/dashboard/timeline/managelog', view_dashboard.manageTimeline, name='manageTimeline'),    
     path('api/dashboard/stats/crawled', view_dashboard.crawledDataStats, name='crawledDataStats'),    
     path('api/dashboard/stats/liquor', view_dashboard.liquorDataStats, name='liquorDataStats'),    
 
     path('api/rembg_queue', rembg, name='rembg'),
+
+    # liquor content
+    path('api/liquor/content', view_dashboard.newContentTimeline, name='newTimeline'),
+    # liquor article
+
+    # ai
+    path('api/ai/ana-liquor-articles', ana_liquor_articles, name='ana_liquor_articles'),
     path('api/openai/ana_desc', ana_description_with_chatgpt, name='ana_description_with_chatgpt'),
 
     path('permission/create_permissions', view.createPermissions, name='createPermissions'),    
     
-    
-
     re_path(r'^image/.*\.*', view.image, name='image'),
 
 ]

@@ -25,7 +25,7 @@ from core.settings import S3_URL
 
 logger = logging.getLogger('django')
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def index(request):
     
     context = {}
@@ -63,7 +63,7 @@ def pages(request):
         html_template = loader.get_template( 'page-500.html' )
         return HttpResponse(html_template.render(context, request))
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def liquorList(request):
     
     context = {}
@@ -127,7 +127,7 @@ def liquorList(request):
         "LEFT OUTER JOIN tipsy_raw.auth_user update_user ON update_user.id = raw_liquor.update_admin "+
         "LEFT OUTER JOIN image ON image.content_id = raw_liquor.liquor_id AND image.content_type = 100 AND image.image_type = 0 "+
         "WHERE raw_liquor.name_kr like '" + keyword + "' or raw_liquor.name_en like '" + keyword + "' " +
-        "ORDER BY liquor_id ASC")
+        "ORDER BY liquor_id DESC")
 
     paginator = Paginator(liquorList, perPage)  # 페이지당 10개씩 보여주기
     page_obj = paginator.get_page(page)
@@ -142,7 +142,7 @@ def liquorList(request):
 
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def modifyLiquor(request):
    
     context = {}
@@ -223,7 +223,7 @@ def modifyLiquor(request):
 
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def ingredientList(request):
     
     context = {}
@@ -266,7 +266,7 @@ def ingredientList(request):
     return HttpResponse(html_template.render(context, request))
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def equipmentList(request):
     
     context = {}
@@ -309,7 +309,7 @@ def equipmentList(request):
     return HttpResponse(html_template.render(context, request))
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def modifyIngredient(request):
     
     #logger.debug("This is modifyIngredient View ... ")
@@ -383,7 +383,7 @@ def modifyIngredient(request):
     return HttpResponse(html_template.render(context, request))
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def modifyEquipment(request):
     
     logger.debug("This is modifyEquipment View ... ")
@@ -460,7 +460,7 @@ def modifyEquipment(request):
 
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def wordList(request):
     
     context = {}
@@ -495,7 +495,7 @@ def wordList(request):
     return HttpResponse(html_template.render(context, request))
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def modifyWord(request):
     
     logger.debug("This is modifyWord View ... ")
@@ -562,7 +562,7 @@ def modifyWord(request):
     return HttpResponse(html_template.render(context, request))
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def cocktailList(request):
     
     context = {}
@@ -595,7 +595,7 @@ def cocktailList(request):
     html_template = loader.get_template( 'list_cocktail.html' )
     return HttpResponse(html_template.render(context, request))
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def modifyCocktail(request):   
 
     context = {}
@@ -662,7 +662,7 @@ def modifyCocktail(request):
     return HttpResponse(html_template.render(context, request))
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def crawledLiquorImageList(request):
     context = {}
     context['segment'] = 'crawled_data_mng/list_crawled_liquor_image'
@@ -697,7 +697,7 @@ def crawledLiquorImageList(request):
     html_template = loader.get_template( 'crawled_data_mng/list_crawled_liquor_image.html' )
     return HttpResponse(html_template.render(context, request))
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def crawledLiquorImageDetail(request):
     context = {}
     context['segment'] = 'crawled_data_mng/detail_crawled_liquor_image'
@@ -745,7 +745,7 @@ def crawledLiquorImageDetail(request):
     html_template = loader.get_template( 'crawled_data_mng/detail_crawled_liquor_image.html' )
     return HttpResponse(html_template.render(context, request))
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def crawled_liquor_list(request):
     
     context = {}
@@ -755,13 +755,16 @@ def crawled_liquor_list(request):
 
     # load data
     keyword = request.GET.get('keyword', "")
+    prevKeyword = request.GET.get('prevKeyword', "")
     page = int(request.GET.get('page', 1))
     perPage = int(request.GET.get('perPage', 10))
     
+    categories = request.GET.getlist('category')
     abv_min = int(request.GET.get('abvMin', -1))
     abv_max = int(request.GET.get('abvMax', -1))
 
-    auto_state = int(request.GET.get('autoState', -1))
+    #auto_state = int(request.GET.get('autoState', -1))
+    auto_state = request.GET.get('autoState', '')
     is_use = int(request.GET.get('isUse', -1))
     state = int(request.GET.get('state', -1))
     
@@ -776,9 +779,9 @@ def crawled_liquor_list(request):
     filtered_qset = CrawledLiquor.objects.all()
 
     # keyword에 대한 필터
-    if len(keyword) > 0:
-        print("키워드 설정:", keyword)
-        filtered_qset = filtered_qset.filter(Q(name_kr__icontains=keyword) | Q(name_en__icontains=keyword))
+    # if len(keyword) > 0:
+    #     print("키워드 설정:", keyword)
+    filtered_qset = filtered_qset.filter(Q(name_kr__icontains=keyword) | Q(name_en__icontains=keyword))
 
     # liquor_id에 대한 필터
     if liquor_id is not None and liquor_id > 0:
@@ -804,6 +807,14 @@ def crawled_liquor_list(request):
     #     else:
     #         filtered_qset = filtered_qset.filter(vintage__isnull=False)
 
+    # TODO: auto_state
+    if auto_state != None and auto_state != '':
+        if auto_state == 'CANT_AUTO':
+            filtered_qset = filtered_qset.filter(auto_state=CrawledLiquor.AUTO_INGEST_UNUSABLE)
+
+
+    # TODO: 수집 완료 제외
+
 
     # 정렬
     filtered_qset = filtered_qset.order_by('-id')
@@ -814,13 +825,16 @@ def crawled_liquor_list(request):
     context['crawled_liquor_list'] = page_obj
     keyword = keyword.replace('%', '')
     context['keyword'] = keyword
-
+    context['prevKeyword'] = prevKeyword
+    context['category'] = categories
+    context['autoState'] = auto_state
+    
     html_template = loader.get_template( 'list_crawled_liquor.html' )
     return HttpResponse(html_template.render(context, request))
 
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def modify_crawled_liquor(request):
    
     context = {}
@@ -869,7 +883,7 @@ def modify_crawled_liquor(request):
 
 
 
-@login_required(login_url="/admin/login/")
+@login_required(login_url="/login/")
 def recommandTest(request):
     
     context = {}

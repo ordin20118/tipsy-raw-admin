@@ -61,14 +61,14 @@
 													<tr>
 														<th style="width: 6%">주류<br>번호</th>
 														<th style="width: 10%">이미지</th>
-														<th style="width: 15%">카테고리</th>
+														<th style="width: 10%">카테고리</th>
 														<th style="width: 20%">이름(ko/en)</th>
-														<th style="width: 1%">도수</th>
-														<th style="width: 10%">원산지</th>
+														{% comment %} <th style="width: 1%">도수</th> {% endcomment %}
+														<th style="width: 5%">원산지</th>
 														<th style="width: 7%">상태</th>
-														<th style="width: 8%">업로드</th>
-														<th style="width: 8%">등록자</th>
-														<th style="width: 15%">등록일</th>
+														{% comment %} <th style="width: 8%">업로드</th> {% endcomment %}
+														{% comment %} <th style="width: 8%">등록자</th> {% endcomment %}
+														<th style="width: 10%">등록일</th>
 														<th style="width: 6%">Action</th>
 													</tr>
 												</thead>
@@ -78,11 +78,11 @@
 														<th>이미지</th>
 														<th>카테고리</th>
 														<th>이름(ko/en)</th>
-														<th>도수</th>
+														{% comment %} <th>도수</th> {% endcomment %}
 														<th>원산지</th>
 														<th>상태</th>
-														<th>업로드</th>
-														<th>등록자</th>
+														{% comment %} <th>업로드</th> {% endcomment %}
+														{% comment %} <th>등록자</th> {% endcomment %}
 														<th>등록일</th>
 														<th>Action</th>
 													</tr>
@@ -116,17 +116,17 @@
 																{{liquor.name_en}}<br>
 															{% endif %}
 														</td>															
-														<td style="font-size: 13px;">
+														{% comment %} <td style="font-size: 13px;">
 															{% if liquor.abv != None %}
 																{{liquor.abv}}%
 															{% endif %}
-														</td>															
+														</td> {% endcomment %}
 														<td style="font-size: 13px;">
 															{% if liquor.country_name != None %}
 																{{liquor.country_name}}
 															{% endif %}
 														</td>
-														<td>
+														{% comment %} <td>
 															{% if liquor.update_state == 0 %}
 																<button type="button" class="btn btn-icon btn-round btn-success" title="정상">
 																	<i class="fa fa-check"></i>
@@ -138,21 +138,27 @@
 															{% else %}
 																<div class="btn-success btn-border btn-round" style="padding: 10px;">-</div>
 															{% endif %}
-														</td>
+														</td> {% endcomment %}
 														<td>
 															{% if liquor.upload_state == 0 %}
-																<button type="button" class="btn btn-icon btn-round btn-warning" title="업로드 안됨">
+																{% comment %} <button type="button" class="btn btn-icon btn-round btn-warning" title="업로드 안됨">
 																	<i class="fa fas fa-exclamation"></i>
-																</button>												
+																</button> {% endcomment %}
+																<span style="color: grey;">업로드 대기</span>
 															{% elif liquor.upload_state == 1 %}
-																<button type="button" class="btn btn-icon btn-round btn-success" title="업로드됨">
+																{% comment %} <button type="button" class="btn btn-icon btn-round btn-success" title="업로드됨">
 																	<i class="fa fa-check"></i>
-																</button>
+																</button> {% endcomment %}
+																<span style="color: green;">업로드 완료</span>
+															{% elif liquor.upload_state == 2 %}
+																<span style="color: red;">업로드 금지</span>
+															{% elif liquor.upload_state == 1 %}
+																<span style="color: red;">업로드 실패</span>
 															{% else %}
 																<div class="btn-success btn-border btn-round" style="padding: 10px;">-</div>
 															{% endif %}
 														</td>
-														<td>
+														{% comment %} <td>
 															{% if liquor.update_admin_name != None %}
 															{{ liquor.update_admin_name }}
 															{% elif liquor.reg_admin_name != None %}
@@ -160,7 +166,7 @@
 															{% else %}
 															-
 															{% endif %}
-														</td>
+														</td> {% endcomment %}
 														<td>
 															{% if liquor.update_date != None %}
 															{{ liquor.update_date|date:"Y-m-d" }}
@@ -282,7 +288,7 @@
 		var canMove = true;
 
 		function moveToInsertLiquor() {
-			location.href = "/admin/insert_liquor.html"
+			location.href = "/insert_liquor.html"
 		}   
 
 		$(document).ready(function() {
@@ -311,12 +317,12 @@
 		}
 
 		function moveToLiquorListPage(page, keyword) {
-			location.href = "/admin/list_liquor.html?page=1&keyword=" + keyword;
+			location.href = "/list_liquor.html?page=1&keyword=" + keyword;
 		}
 
 		function moveToModifyPage(liquorId) {
 			if(canMove) {
-				location.href = "/admin/modify_liquor.html?liquorId="+liquorId;
+				location.href = "/modify_liquor.html?liquorId="+liquorId;
 			}
 		}
 
@@ -332,7 +338,7 @@
 			let formData = new FormData;
 			formData.append("org_image_id", imageId);
 
-			var url = "/admin/raw_data_manager/api/rembg_queue";
+			var url = "/raw_data_manager/api/rembg_queue";
 
 			// send
 			$.ajax({
@@ -504,7 +510,7 @@
 				}
 
 				
-				var item = 	"<tr onclick='/admin/modify_liquor.html?liquorId="+liquor['liquor_id']+"'>" + 
+				var item = 	"<tr onclick='/modify_liquor.html?liquorId="+liquor['liquor_id']+"'>" + 
 							"	<td>" + liquor['liquor_id'] + "</td>" + 
 							"	<td>" +
 							"		<img src='" + repImgUrl + "' style='width:80px; height:80px;'>" +

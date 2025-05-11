@@ -403,7 +403,7 @@
 			var nameKr = $('#korNameInput').val();
 			var nameEn = $('#enNameInput').val();
 
-			var url = "/admin/raw_data_manager/api/liquor_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
+			var url = "/raw_data_manager/api/liquor_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
 
 			$.ajax({
 				url: url,
@@ -575,7 +575,7 @@
 			console.log("보내는 데이터 확인")
 			console.log(formData)
 
-			var url = "/admin/raw_data_manager/api/liquor";
+			var url = "/raw_data_manager/api/liquor";
 
 			console.log("술 등록 API URL : " + url)
 			
@@ -592,7 +592,7 @@
 					console.log("insert liquor result")
 					console.log(data)
 					alert("주류 정보 등록 완료.")
-					location.replace("/admin/list_liquor.html")
+					location.replace("/list_liquor.html")
 				},
 				error:function(request, status, error){
 				}
@@ -608,7 +608,7 @@
 		var categLv4Parent = new Map()
 		function loadCategTree() {
 
-			var url = "/admin/raw_data_manager/api/categ_tree"
+			var url = "/raw_data_manager/api/categ_tree"
 			
 			$.ajax({
 				url: url,
@@ -814,7 +814,7 @@
 		var countryList = []
 		function loadCountryData() {
 			
-			var url = "/admin/raw_data_manager/api/country"
+			var url = "/raw_data_manager/api/country"
 			
 			$.ajax({
 				url: url,

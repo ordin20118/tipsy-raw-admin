@@ -268,7 +268,7 @@
 		function loadCrawledImages(liquorId, isInit) {
 			isLoading = true;
 			//console.log("[loadCrawledImages] liquorId:" + liquorId);
-			var url = "/admin/raw_data_manager/api/liquor/crawled/image_list?liquorId=" + liquorId + "&page=" + page + "&perPage=" + perPage ;
+			var url = "/raw_data_manager/api/liquor/crawled/image_list?liquorId=" + liquorId + "&page=" + page + "&perPage=" + perPage ;
 
 			if(isUse != null) {
 				url += "&isUse=" + isUse;
@@ -352,7 +352,7 @@
 
 			data = JSON.stringify(data)
 
-			var url = "/admin/raw_data_manager/api/liquor/crawled/image";
+			var url = "/raw_data_manager/api/liquor/crawled/image";
 
 			// send
 			$.ajax({

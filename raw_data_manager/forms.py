@@ -151,14 +151,57 @@ class RembgQueueForm(forms.Form):
 		return queue
 
 class SearchLiquorArticleQueueForm(forms.ModelForm):
-	target_collection_count = forms.IntegerField(required=True)
-	total_collected = forms.IntegerField(initial=0, required=False)
-	new_collected = forms.IntegerField(initial=0, required=False)
+	target_search_count = forms.IntegerField(required=True)
+	searched_count = forms.IntegerField(initial=0, required=False)
+	collected_count = forms.IntegerField(initial=0, required=False)
+	dup_count = forms.IntegerField(initial=0, required=False)
 	failed_count = forms.IntegerField(initial=0, required=False)
 	liquor_id = forms.IntegerField(initial=0, required=False)
 
 	class Meta:
 		model = SearchLiquorArticleQueue
-		fields = ['keyword', 'target_collection_count', 'total_collected', 'new_collected', 'failed_count', 'liquor']
+		fields = ['keyword', 'target_search_count', 'searched_count', 'collected_count', 'dup_count', 'failed_count', 'liquor']
+
+class ArticleForm(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = ['url', 'title', 'content', 'extracted_content', 'score', 'state']
+
+    # 필요한 경우 custom validation 추가
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        if len(title) < 1:
+            raise forms.ValidationError('제목은 1자 이상이어야 합니다.')
+        return title
+
+    def clean_score(self):
+        score = self.cleaned_data.get('score')
+        if score is not None and (score < 0 or score > 100):
+            raise forms.ValidationError('점수는 0에서 100 사이여야 합니다.')
+        return score
+
+class ArticleTagForm(forms.ModelForm):
+    class Meta:
+        model = ArticleTag
+        fields = ['article', 'tag']
+
+    # 필요한 경우 추가적인 검증 로직을 추가할 수 있습니다.
+    def clean_tag(self):
+        tag = self.cleaned_data.get('tag')
+        if len(tag) < 3:
+            raise forms.ValidationError('태그는 3자 이상이어야 합니다.')
+        return tag
+
+class LiquorContentForm(forms.ModelForm):
+    class Meta:
+        model = LiquorContent
+        fields = [
+            'liquor',
+            'seq',
+            'title',
+            'sub_title',
+            'content',
+            'type'
+        ]
 	
     

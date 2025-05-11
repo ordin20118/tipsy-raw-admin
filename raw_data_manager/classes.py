@@ -82,7 +82,7 @@ class JobInfo():
     JOBN_ACTIVE_WORD = "용어 정보 활성"
 
 
-class SearchParam(models.Model):
+class SearchParam():
     
     STATE_SUCCESS = 0
     STATE_ERROR   = 1
@@ -99,7 +99,7 @@ class SearchParam(models.Model):
         self.paging = Paging()
         self.orderby = OrderBy()
 
-class Paging(models.Model):
+class Paging():
 
     DEF_PER_PAGE = 10
 
@@ -135,7 +135,7 @@ class Paging(models.Model):
         return self.pages
 
 
-class OrderBy(models.Model):
+class OrderBy():
 
     SORT_ASC = "asc"
     SORT_DESC = "desc"

@@ -10,9 +10,9 @@ from core.settings import IMAGE_PATH, DATA_ROOT
 
 urlpatterns = [
     path('admins/', admin.site.urls),            # Django admin route
-    path("admin/raw_data_manager/", include("raw_data_manager.urls")), # Raw Data Manager API
-    path("admin/", include("authentication.urls")),   # Auth routes - login / register
-    path("admin/", include("app.urls")),              # UI Kits Html files
+    path("raw_data_manager/", include("raw_data_manager.urls")), # Raw Data Manager API
+    path("", include("authentication.urls")),   # Auth routes - login / register
+    path("", include("app.urls")),              # UI Kits Html files
 ]
 
 #urlpatterns += static(MEDIA_URL, document_root=DATA_ROOT)

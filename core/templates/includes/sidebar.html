@@ -43,7 +43,7 @@
                     <div class="collapse" id="dashboard">
                         <ul class="nav nav-collapse">
                             <li>
-                                <a href="/admin/index.html">
+                                <a href="/index.html">
                                     <span class="sub-item">Dashboard</span>
                                 </a>
                             </li>
@@ -69,27 +69,27 @@
                     <div class="collapse {% if 'svc_data_mng' in segment %}show{% endif %}" id="add">
                         <ul class="nav nav-collapse">
                             <li class="{% if 'list_liquor' in segment %} active {% endif %}">
-                                <a href="/admin/list_liquor.html">
+                                <a href="/list_liquor.html">
                                     <span class="sub-item">주류</span>
                                 </a>
                             </li>
                             <li class="{% if 'list_cocktail' in segment %} active {% endif %}">
-                                <a href="/admin/list_cocktail.html">
+                                <a href="/list_cocktail.html">
                                     <span class="sub-item">칵테일</span>
                                 </a>
                             </li>
                             <li class="{% if 'list_ingredient' in segment %} active {% endif %}">
-                                <a href="/admin/list_ingredient.html">
+                                <a href="/list_ingredient.html">
                                     <span class="sub-item">재료</span>
                                 </a>
                             </li>
                             <li class="{% if 'list_equipment' in segment %} active {% endif %}">
-                                <a href="/admin/list_equipment.html">
+                                <a href="/list_equipment.html">
                                     <span class="sub-item">도구</span>
                                 </a>
                             </li>
                             <li class="{% if 'list_word' in segment %} active {% endif %}">
-                                <a href="/admin/list_word.html">
+                                <a href="/list_word.html">
                                     <span class="sub-item">용어</span>
                                 </a>
                             </li>
@@ -109,19 +109,19 @@
                     <div class="collapse {% if 'crawled_data_mng' in segment %}show{% endif %}" id="crawled">
                         <ul class="nav nav-collapse">
                             <li class="{% if 'list_crawled_liquor' in segment %} active {% endif %}">
-                                <a href="/admin/crawled_data_mng/list_crawled_liquor.html">
+                                <a href="/crawled_data_mng/list_crawled_liquor.html">
                                     <span class="sub-item">주류</span>
                                 </a>
                             </li>
                             <li class="{% if 'list_crawled_liquor_image' in segment %} active {% endif %}">
-                                <a href="/admin/crawled_data_mng/list_crawled_liquor_image.html">
+                                <a href="/crawled_data_mng/list_crawled_liquor_image.html">
                                     <span class="sub-item">술 이미지</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
                 </li>
-                <li class="nav-item {% if 'test' in segment %} active {% endif %}">
+                {% comment %} <li class="nav-item {% if 'test' in segment %} active {% endif %}">
                     <a data-toggle="collapse" href="#test">
                         <i class="fas fa-layer-group"></i>
                         <p>기능 테스트</p>
@@ -130,13 +130,13 @@
                     <div class="collapse" id="test">
                         <ul class="nav nav-collapse">
                             <li class="{% if 'recommand' in segment %} active {% endif %}">
-                                <a href="/admin/test/recommand.html">
+                                <a href="/test/recommand.html">
                                     <span class="sub-item">술 추천</span>
                                 </a>
                             </li>
                         </ul>
                     </div>
-                </li>
+                </li> {% endcomment %}
             </ul>
             {% else %}
             <ul class="nav nav-primary">

@@ -605,9 +605,10 @@ class SearchLiquorArticleQueue(models.Model):
     ]
     keyword = models.CharField(max_length=200)
     state = models.IntegerField(choices=STATE_CHOICES, default=0)
-    target_collection_count = models.IntegerField(null=False, default=10)
-    total_collected = models.IntegerField(null=False, default=0)
-    new_collected = models.IntegerField(null=False, default=0)
+    target_search_count = models.IntegerField(null=False, default=10)
+    searched_count = models.IntegerField(null=False, default=0)
+    collected_count = models.IntegerField(null=False, default=0)
+    dup_count = models.IntegerField(null=False, default=0)
     failed_count = models.IntegerField(null=False, default=0)
     reg_date = models.DateTimeField(auto_now_add=True)
     end_date = models.DateTimeField(auto_now=True, null=True)
@@ -617,14 +618,20 @@ class SearchLiquorArticleQueue(models.Model):
         db_table = 'search_liquor_article_queue'
 
 
+# class LiquorArticle(models.Model):
+#     liquor_id = models.IntegerField()
+#     article_id = models.IntegerField()
+#     relation_score = models.FloatField(null=False, blank=True)
+
+#     class Meta:
+#         db_table = 'liquor_article'
 class LiquorArticle(models.Model):
-    liquor_id = models.IntegerField()
-    article_id = models.IntegerField()
+    liquor = models.ForeignKey('RawLiquor', on_delete=models.CASCADE, db_column='liquor_id')
+    article = models.ForeignKey('Article', on_delete=models.CASCADE, db_column='article_id')
     relation_score = models.FloatField(null=False, blank=True)
 
     class Meta:
         db_table = 'liquor_article'
-
 
 class Article(models.Model):
     STATE_CHOICES = [
@@ -632,8 +639,8 @@ class Article(models.Model):
         (1, '추출됨'),
         (2, '분석,요약됨'),
     ]
-    liquor_id = models.IntegerField(null=True, blank=True)
-    title = models.CharField(max_length=45)
+    url = models.CharField(max_length=1000)
+    title = models.CharField(max_length=200)
     content = models.TextField()
     state = models.IntegerField(choices=STATE_CHOICES, default=0)
     extracted_content = models.TextField(null=True, blank=True)
@@ -643,3 +650,49 @@ class Article(models.Model):
 
     class Meta:
         db_table = 'article'
+
+class ArticleTag(models.Model):
+    article = models.ForeignKey(Article, related_name='tags', on_delete=models.CASCADE)
+    tag = models.CharField(max_length=45)
+    reg_date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'article_tag'
+        unique_together = ('article', 'tag')
+
+class LiquorContent(models.Model):
+   
+    liquor = models.ForeignKey(RawLiquor, on_delete=models.CASCADE, related_name='contents')
+    seq = models.PositiveIntegerField()
+    title = models.CharField(max_length=255, blank=True, null=True)
+    sub_title = models.CharField(max_length=255, blank=True, null=True)
+    content = models.TextField()
+    type = models.CharField(max_length=50, default='other')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+
+    class Meta:
+        db_table = 'liquor_content'
+        ordering = ['seq']
+
+    def __str__(self):
+        return f"{self.liquor.name_en} - Seq {self.seq}"
+
+class ArticleGenerationQueue(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('failed', 'Failed'),
+    ]
+
+    liquor = models.ForeignKey('RawLiquor', on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    retries = models.IntegerField(default=0)
+    error_message = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'article_generation_queue'

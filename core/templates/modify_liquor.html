@@ -104,6 +104,41 @@
 			</div>
 		</div>
 	</div>
+	
+	<!-- Add Search Queue Modal -->
+	<div id="addSrchQueueModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addSrchQueueTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="addSrchQueueTitle">아티클 수집 큐 생성</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<div class="form-group">
+					<label>검색어</label>
+					<input id="articleQueueKeywordInput" type="text" class="form-control" placeholder="수집할 아티클의 검색어를 입력해주세요.">
+				</div>
+				
+				<div class="form-group">
+					<label for="articleCount">아티클 수집 개수</label>
+					<select class="form-control" id="articleCount">
+						<option value=10>10</option>
+						<option value=20>20</option>
+						<option value=30>30</option>
+					</select>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal" onclick="">취소</button>
+					<button type="button" class="btn btn-primary" onclick="sendSrchArticleQueue();">추가</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End of Modal -->
+
 
 	<div class="content">
 		<div class="page-inner">
@@ -130,6 +165,7 @@
 				</ul>
 			</div>
 			
+			<!-- 주류 수정 -->
 			<div class="row">
 				<div class="col-md-12">
 					<div class="card">
@@ -291,6 +327,68 @@
 					</div>
 				</div>
 			</div>
+			
+			<!-- 아티클, 본문 만들기 -->
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<div class="card-title">아티클 & 본문</div>
+						</div>
+						<div class="card-body" style="height: 30%;">
+							<div class="row">
+								<div class="col-md-6 col-lg-4">
+									<div class="form-group">
+										<button id="searchArticleBtn" class="btn btn-secondary" onclick="openSrchArticleModal()">아티클 수집</button>										
+										<br><br>
+										<label for="searchArticleBtn">관련 아티클</label>
+										<div id="articleList">
+											수집된 아티클이 없습니다.
+											<div class="card shadow">
+												<!--
+												<div class="card-header">
+													<div class="card-title"></div>
+												</div>
+												-->
+												<div class="card-body">
+													<h5 class="card-title mb-3">Card title</h5>
+													<!-- <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6> -->
+													<p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+													<!--
+													<a href="#" class="card-link">Card link</a>
+													<a href="#" class="card-link">Another link</a>
+													-->
+												</div>
+											</div>
+											
+										</div>
+									</div>
+								</div>
+
+								<div class="col-md-6 col-lg-4">		
+									<div class="form-group">
+										<button id="makeDetailBtn" class="btn btn-secondary" onclick="reqMakeContent()">본문 생성</button>										
+										<br><br>
+										<label for="">본문</label>
+										<div class="form-group form-group-default">
+											<!-- TODO: 본문 리스트 -->
+										</div>
+									</div>
+								</div>
+
+
+								<div class="col-md-6 col-lg-4">
+									<div class="form-group">
+										<label for="preview">미리보기</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="card-action">
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -342,7 +440,7 @@
 
 
 		function loadLiquor(liquorId) {
-			var url = "/admin/raw_data_manager/api/liquor?liquorId=" + liquorId;
+			var url = "/raw_data_manager/api/liquor?liquorId=" + liquorId;
 			$.ajax({
 				url:url,
 				type:"get",
@@ -456,7 +554,7 @@
 			formData.append("content_type", CONTENT_TYPE_LIQUOR);
 
 
-			var url = "/admin/raw_data_manager/api/image";
+			var url = "/raw_data_manager/api/image";
 
 			// send
 			$.ajax({
@@ -495,7 +593,7 @@
 			formData.append("content_id", liquor['liquor_id']);
 			formData.append("content_type", CONTENT_TYPE_LIQUOR);
 
-			var url = "/admin/raw_data_manager/api/image";
+			var url = "/raw_data_manager/api/image";
 
 			// send
 			$.ajax({
@@ -543,7 +641,7 @@
 				}
 			}).then((isOk) => {
 				if (isOk) {
-					var url = "/admin/raw_data_manager/api/image";
+					var url = "/raw_data_manager/api/image";
 					let formData = new FormData;
 					formData.append("image_id", nowModifyImgId);		
 
@@ -576,7 +674,7 @@
 			let formData = new FormData;
 			formData.append("org_image_id", nowModifyImgId);
 
-			var url = "/admin/raw_data_manager/api/rembg_queue";
+			var url = "/raw_data_manager/api/rembg_queue";
 
 			// send
 			$.ajax({
@@ -630,8 +728,8 @@
 		// 주류 데이터 설정
 		function setLiquorData(liquor){
 
-			console.log("[setLiquorData]:"+liquor['liquor_id']);
-
+			console.log("[setLiquorData]");
+			console.log(liquor);
 
 			// set image => 이미지는 따로 리스트 형태로 받음
 			// if(liquor['rep_img'] != null && liquor['rep_img'].lenght > 0) {
@@ -982,7 +1080,7 @@
 			console.log("보내는 데이터 확인")
 			console.log(formData)
 
-			var url = "/admin/raw_data_manager/api/liquor";
+			var url = "/raw_data_manager/api/liquor";
 
 			console.log("술 등록 API URL : " + url)
 			
@@ -1016,7 +1114,7 @@
 						}
 					}).then((isOk) => {
 						if (isOk) {
-							//location.replace("/admin/list_liquor.html");		
+							//location.replace("/list_liquor.html");		
 							
 						}
 					});
@@ -1038,7 +1136,7 @@
 		var categLv4Parent = new Map()
 		function loadCategTree() {
 
-			var url = "/admin/raw_data_manager/api/categ_tree"
+			var url = "/raw_data_manager/api/categ_tree"
 			
 			$.ajax({
 				url: url,
@@ -1234,12 +1332,11 @@
 
 
 
-
 		// 국가 데이터 load
 		var countryList = []
 		function loadCountryData() {
 			
-			var url = "/admin/raw_data_manager/api/country"
+			var url = "/raw_data_manager/api/country"
 			
 			$.ajax({
 				url: url,
@@ -1294,6 +1391,91 @@
 				}
 			}
 		}	
+
+		function openSrchArticleModal() {
+			$("#addSrchQueueModal").modal("show");
+		}
+
+		function clearSrchArticleModal() {
+			$("#addSrchQueueModal").modal("hide");
+			$('#articleQueueKeywordInput').val('');
+			$('#articleCount').val(10);
+		}
+
+		function sendSrchArticleQueue() {
+			let formData = new FormData;
+
+			var keyword = $('#articleQueueKeywordInput').val();
+			var searchCount = $('#articleCount').val();
+			
+			if(keyword == null){
+				alert("검색어를 입력해주세요.");
+				return;
+			} else {
+				formData.append("keyword", keyword);
+			}
+
+			if(searchCount <= 0) {
+				alert("수집할 아티클 개수를 지정해주세요.");
+				return;
+			}
+
+			formData.append("liquor_id", liquor['liquor_id']);
+			formData.append("target_search_count", searchCount);
+			formData.append("searched_count", 0);
+			formData.append("collected_count", 0);
+			formData.append("dup_count", 0);
+			formData.append("failed_count", 0);
+
+			var url = "/raw_data_manager/api/liquor/article-queue";
+
+			// send
+			$.ajax({
+				url:url,
+				type:"post",
+				headers: {
+					'X-CSRFToken' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("Add search article queue.");
+					console.log(data);
+					alert("아티클 수집 요청 완료.");
+					clearSrchArticleModal();
+				},
+				error:function(request, status, error){
+				}
+			});
+		}
+
+		function reqMakeContent() {
+
+			let formData = new FormData;
+			formData.append("liquor_id", liquor['liquor_id']);
+
+			var url = "/raw_data_manager/api/ai/ana-liquor-articles";
+
+			// send
+			$.ajax({
+				url:url,
+				type:"post",
+				headers: {
+					'X-CSRFToken' : '{{ csrf_token }}'
+				},
+				contentType:false,
+				processData:false,
+				data:formData,
+				success:function(data){
+					console.log("Request make content.");
+					console.log(data);
+					alert("본문 생성 요청 완료.");
+				},
+				error:function(request, status, error){
+				}
+			});
+		}
 	</script>
 {% endblock content %}
 

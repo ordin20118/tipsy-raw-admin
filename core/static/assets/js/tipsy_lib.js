@@ -40,7 +40,7 @@ function printDangerPanel(title, message) {
 }
 
 function loadCategTree() {
-    var url = "/admin/raw_data_manager/api/categ_tree";
+    var url = "/raw_data_manager/api/categ_tree";
 
     $.ajax({
         url: url,
@@ -222,7 +222,7 @@ function initCategSelect(level) {
 // 국가 데이터 load
 var countryList = [];
 function loadCountryData() {
-    var url = "/admin/raw_data_manager/api/country";
+    var url = "/raw_data_manager/api/country";
 
     $.ajax({
         url: url,

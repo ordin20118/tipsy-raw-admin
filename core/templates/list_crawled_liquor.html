@@ -51,6 +51,28 @@
 											<div id="basic-datatables_filter" class="dataTables_filter">
 												<label>Search:<input type="search" id="searchInput" class="form-control form-control-sm" value="{{ keyword }}" placeholder="" aria-controls="basic-datatables"></label>
 											</div>
+											<br>
+											<label class="form-label">카테고리</label>
+											<br>
+											<div class="selectgroup selectgroup-pills">
+												<label class="selectgroup-item">
+													<input type="checkbox" name="category" value="NO_CATEG" class="selectgroup-input">
+													<span class="selectgroup-button">카테고리 매칭 안됨</span>
+												</label>
+												<label class="selectgroup-item">
+													<input type="checkbox" name="category" value="MATCHED_CATEG" class="selectgroup-input">
+													<span class="selectgroup-button">카테고리 매칭됨</span>
+												</label>
+											</div>
+											<br><br>
+											<label class="form-label">상태</label>
+											<br>
+											<div class="selectgroup selectgroup-pills">
+												<label class="selectgroup-item">
+													<input type="checkbox" name="autoState" value="CANT_AUTO" class="selectgroup-input">
+													<span class="selectgroup-button">자동 업로드 불가</span>
+												</label>
+											</div>
 										</div>
 									</div>
 									<div class="row">
@@ -65,7 +87,7 @@
 														<th style="width: 20%">이름(ko/en)</th>
 														<th style="width: 10%">상태</th>
 														<th style="width: 10%">등록일</th>
-														<th style="width: 5%">Action</th>
+														{% comment %} <th style="width: 5%">Action</th> {% endcomment %}
 													</tr>
 												</thead>
 												<tfoot>
@@ -76,12 +98,12 @@
 														<th>이름(ko/en)</th>
 														<th>상태</th>
 														<th>등록일</th>
-														<th>Action</th>
+														{% comment %} <th>Action</th> {% endcomment %}
 													</tr>
 												</tfoot>
 												<tbody id="liquorTable">
 													{% for liquor in crawled_liquor_list %}
-													<tr onclick="javascript:moveToModifyPage('{{liquor.id}}')">
+													<tr onclick="moveToModifyPage('{{liquor.id}}')">
 														<td>{{liquor.id}}</td>
 														<td style="text-align: center;">
 															<img src="{{liquor.img_url}}" style='width:80px;'>
@@ -148,13 +170,13 @@
 															-
 															{% endif %}
 														</td>
-														<td>
+														{% comment %} <td>
 															<div class="form-button-action">
 																<button type="button" onclick="javascript:moveToModifyPage('{{liquor.id}}')" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="데이터 수정">
 																	<i class="fa fa-edit"></i>
 																</button>
 															</div>
-														</td>
+														</td> {% endcomment %}
 													</tr>
 													{% endfor %}
 												</tbody>
@@ -221,7 +243,7 @@
 		
 		var gPage = 1;
 		var perPage = 10;
-		var prevSearchInput = "";
+		var prevSearchInput = '{{prevKeyword}}';
 		var canMove = true;
 
 		$(document).ready(function() {
@@ -236,24 +258,65 @@
 		function setEvent() {
 			$("#searchInput").on("change", function() {
 				var currentVal = $(this).val();
+				console.log("prevInput:[" + prevSearchInput + "]/changed:[" + currentVal +"]")
 				if(currentVal == prevSearchInput) {
 					return;
 				}
 
 				prevSearchInput = currentVal;
-				moveToLiquorListPage(1, currentVal);
+				//moveToLiquorListPage(1, currentVal);
+				refreshLiquorListPage();
 				
+			});
+
+			$('input[name="category"]').on('change', function() {
+				refreshLiquorListPage();
+			});
+
+			$('input[name="autoState"]').on('change', function() {
+				refreshLiquorListPage();
 			});
 
 		}
 
-		function moveToLiquorListPage(page, keyword) {
-			location.href = "/admin/crawled_data_mng/list_crawled_liquor.html?page=1&keyword=" + keyword;
+		{% comment %} function moveToLiquorListPage(page, keyword) {
+			location.href = "/crawled_data_mng/list_crawled_liquor.html?page="+page+"&keyword=" + keyword + "&prevKeyword=" + prevSearchInput;
+		} {% endcomment %}
+
+		function refreshLiquorListPage() {
+
+			// keyword
+			var keyword = $("#searchInput").val();
+
+			// category
+			var categFilters = [];	
+			// 선택된 체크박스들의 값을 배열에 저장
+			$('input[name="category"]:checked').each(function() {
+				categFilters.push($(this).val());
+			});
+
+			// autoState
+			var autoState = '';
+			$('input[name="autoState"]:checked').each(function() {
+				autoState = $(this).val();
+			});
+
+			var queryParams = $.param({
+				'page': 1,
+				'keyword': keyword,
+				'prevKeyword': prevSearchInput,
+				'categFilters': categFilters,
+				'autoState': autoState
+			});
+
+			var queryUrl = "/crawled_data_mng/list_crawled_liquor.html?" + queryParams;
+			console.log(queryUrl);
+			location.href = queryUrl;
 		}
 
 		function moveToModifyPage(liquorId) {
 			if(canMove) {
-				location.href = "/admin/crawled_data_mng/modify_crawled_liquor.html?id="+liquorId;
+				location.href = "/crawled_data_mng/modify_crawled_liquor.html?id="+liquorId;
 			}
 		}
 
@@ -274,7 +337,7 @@
 			let formData = new FormData;
 			formData.append("org_image_id", imageId);
 
-			var url = "/admin/raw_data_manager/api/rembg_queue";
+			var url = "/raw_data_manager/api/rembg_queue";
 
 			// send
 			$.ajax({

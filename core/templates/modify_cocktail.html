@@ -439,7 +439,7 @@
 												<span onclick="">x</span>
 											</div>
 											<div style="text-align: center;">
-												<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.png" style="width: 60px;">
+												<img src="http://tipsy.co.kr/raw_data_manager/image/default_image.png" style="width: 60px;">
 											</div>
 											<div style="text-align: center; padding: 3px;">
 												<span><b>이름</b></span>
@@ -606,7 +606,7 @@
 			}).then((willDel) => {
 				if (willDel) {
 					
-					var url = "/admin/raw_data_manager/api/cocktail";
+					var url = "/raw_data_manager/api/cocktail";
 
 					let formData = new FormData;
 					formData.append("cocktail_id", cocktail.cocktail_id);
@@ -623,7 +623,7 @@
 						success:function(data){
 							console.log(data);
 							printSuccessPanel("칵테일 영구 제거 완료", "");
-							location.replace("/admin/cocktail_list.html");
+							location.replace("/cocktail_list.html");
 						},
 						error:function(request, status, error){
 							console.log(error)
@@ -640,7 +640,7 @@
 		function searchDetailLiquor(keyword, categLv, categId) {
 
 
-			var searchUrl = "/admin/raw_data_manager/api/search?keyword="+keyword+"&target=liquor";
+			var searchUrl = "/raw_data_manager/api/search?keyword="+keyword+"&target=liquor";
 
 			if(categLv != null) {
 				searchUrl += "&categLv=" + categLv;	
@@ -692,7 +692,7 @@
 			var nameKr = $('#korNameInput').val();
 			var nameEn = $('#enNameInput').val();
 
-			var url = "/admin/raw_data_manager/api/cocktail_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
+			var url = "/raw_data_manager/api/cocktail_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
 
 			$.ajax({
 				url: url,
@@ -917,7 +917,7 @@
 			console.log(formData)
 
 
-			var url = "/admin/raw_data_manager/api/cocktail";
+			var url = "/raw_data_manager/api/cocktail";
 
 			console.log("칵테일 등록 API URL : " + url)
 			
@@ -934,7 +934,7 @@
 					console.log("insert cocktail result")
 					console.log(data)
 					alert("칵테일 정보 등록 완료.")
-					location.replace("/admin/cocktail_list.html")
+					location.replace("/cocktail_list.html")
 				},
 				error:function(request, status, error){
 					if(error == 'Forbidden') {
@@ -1012,7 +1012,7 @@
 		var categLv4Parent = new Map();
 		function loadCategTree() {
 
-			var url = "/admin/raw_data_manager/api/categ_tree"
+			var url = "/raw_data_manager/api/categ_tree"
 			
 			$.ajax({
 				url: url,
@@ -1291,7 +1291,7 @@
 			// url: http://localhost:8080/raw_data_manager/api/search?keyword=%EB%A0%88%EB%AA%AC&target=ingredient&categId=32&categLv=1
 
 			let lastCateg = selCategList[selCategList.length-1];
-			var url = "/admin/raw_data_manager/api/search?target=all&categId="+lastCateg+"&categLv="+lastLevel;
+			var url = "/raw_data_manager/api/search?target=all&categId="+lastCateg+"&categLv="+lastLevel;
 			
 			//console.log("[Get ingredient list URL]:"+url);
 		
@@ -1684,7 +1684,7 @@
 						<span onclick="">x</span>
 					</div>
 					<div style="text-align: center;">
-						<img src="http://tipsy.co.kr/admin/raw_data_manager/image/default_image.png" style="width: 60px;">
+						<img src="http://tipsy.co.kr/raw_data_manager/image/default_image.png" style="width: 60px;">
 					</div>
 					<div style="text-align: center; padding: 3px;">
 						<span><b>이름</b></span>

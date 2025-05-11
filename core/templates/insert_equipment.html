@@ -171,7 +171,7 @@
 			var nameKr = $('#korNameInput').val();
 			var nameEn = $('#enNameInput').val();
 
-			var url = "/admin/raw_data_manager/api/equipment_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
+			var url = "/raw_data_manager/api/equipment_dup_chck?nameKr="+nameKr+"&nameEn="+nameEn;
 
 			$.ajax({
 				url: url,
@@ -276,7 +276,7 @@
 			console.log("보내는 데이터 확인")
 			console.log(formData)
 
-			var url = "/admin/raw_data_manager/api/equipment";
+			var url = "/raw_data_manager/api/equipment";
 
 			console.log("도구 등록 API URL : " + url)
 			
@@ -293,7 +293,7 @@
 					console.log("insert equipment result")
 					console.log(data)
 					alert("도구 정보 등록 완료.")
-					location.replace("/admin/equipment_list.html")
+					location.replace("/equipment_list.html")
 				},
 				error:function(request, status, error){
 				}
@@ -309,7 +309,7 @@
 		var categLv4Parent = new Map()
 		function loadCategTree() {
 
-			var url = "/admin/raw_data_manager/api/categ_tree"
+			var url = "/raw_data_manager/api/categ_tree"
 			
 			$.ajax({
 				url: url,
