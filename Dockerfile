@@ -1,12 +1,16 @@
 FROM python:3.9-slim
 
-COPY manage.py gunicorn-cfg.py requirements_tipsyraw.txt ./
-COPY app app
-COPY authentication authentication
-COPY core core
-COPY raw_data_manager raw_data_manager
-COPY utils utils
-COPY logs logs
+# COPY manage.py gunicorn-cfg.py requirements_tipsyraw.txt ./
+# COPY app app
+# COPY authentication authentication
+# COPY core core
+# COPY raw_data_manager raw_data_manager
+# COPY utils utils
+# COPY logs logs
+
+WORKDIR /app
+
+COPY . /app/
 
 RUN apt update && apt install libpq-dev gcc curl -y
 RUN pip3 install --upgrade pip
